@@ -1,0 +1,118 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Shopping List</ion-title>
+        <ion-buttons slot="secondary">
+            <ion-menu-toggle>
+                <ion-button icon-only>
+                    <ion-icon name="menu"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
+        </ion-buttons>
+        <ion-buttons slot="primary">
+            <ion-button icon-only (click)="onShowOptions($event)">
+                <ion-icon name="more"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+    <ion-item>
+        <ion-searchbar #ingredientBar
+                   showCancelButton="false"
+                   animated (ionChange)="onIngredientNameChanged()"
+                   placeholder="+ New Item"
+                   debounce="700"
+                   (keyup.enter)="onAddItemFromSearchbar()"
+                   (ionFocus)="onIngredientBarFocus()"
+                   (ionBlur)="onIngredientBarBlur()"
+                   searchIcon="nutrition">
+        </ion-searchbar>
+        <ion-button fill="clear" size="small">
+            <ion-icon name="book"></ion-icon>
+        </ion-button>
+    </ion-item>
+
+    <div padding *ngIf="itemSuggestions.length > 0">
+        <ion-grid>
+            <ion-row>
+                <ion-col size="auto" *ngFor="let item of itemSuggestions; let j = index">
+                    <ion-button size="small" color="{{getButtonColor(item.itemColor)}}" (click)="pickSuggestion(item)">{{ item.itemName }}</ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+    <div padding *ngIf="showItemColorSelector">
+        <ion-grid>
+            <ion-row align-items-start>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor1')" color="itemColor1"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor1'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor2')" color="itemColor2"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor2'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor3')" color="itemColor3"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor3'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor4')" color="itemColor4"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor4'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+            </ion-row>
+            <ion-row align-items-start>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor5')" color="itemColor5"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor5'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor6')" color="itemColor6"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor6'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor7')" color="itemColor7"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor7'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+                <ion-col size="3">
+                    <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor8')" color="itemColor8"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor8'" name="checkmark"></ion-icon></ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    <!-- Displayed List -->
+    <ion-list #ingredientList class="unCollected" [inset]="false">
+        <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
+            <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
+                <div class="roundedCorners" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
+                <ion-label>
+                <h3>{{ ingredient.item.itemName }}</h3>
+                </ion-label>
+                <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
+            </ion-item>
+            <ion-item-options side="end">
+                <ion-button
+
+                        color="primary"
+                        (click)="onEdit(ingredient)"
+                >
+                    <ion-icon name="create"></ion-icon>
+                    Edit
+                </ion-button>
+                <ion-button
+
+                        color="secondary"
+                        (click)="onRemoveItem(ingredient)"
+                >
+                    <ion-icon name="trash"></ion-icon>
+                    Delete
+                </ion-button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+    <!-- Collected items List -->
+    <ion-list lines="none" position="bottom">
+            <ion-item class="isCollected" *ngFor="let ingredient of ingredients | isCollected : true; let i = index" (click)="onDeCollect(ingredient)">
+                <ion-label >
+                    <h3>{{ ingredient.item.itemName }}</h3>
+                </ion-label>
+                <ion-badge color="primary">{{ ingredient.amount }}</ion-badge>
+            </ion-item>
+    </ion-list>
+</ion-content>
