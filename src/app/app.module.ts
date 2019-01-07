@@ -13,17 +13,20 @@ import {environment} from '../environments/environment';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {IngredientOverlayPage} from './ingredient-overlay/ingredient-overlay.page';
 import {PersistenceOverlayComponent} from './persistence-overlay/persistence-overlay.component';
 import {SharedModule} from './shared/shared-module';
-import {ShoppingListService} from './shopping-list.service';
-import {SimpleItemService} from './simple-item.service';
+import {ShoppingListService} from './services/shopping-list.service';
+import {SimpleItemService} from './services/simple-item.service';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
     declarations: [
         AppComponent,
-        PersistenceOverlayComponent
+        PersistenceOverlayComponent,
+        IngredientOverlayPage
     ],
-    entryComponents: [PersistenceOverlayComponent],
+    entryComponents: [PersistenceOverlayComponent, IngredientOverlayPage],
     imports: [
         BrowserModule,
         IonicModule.forRoot(),
@@ -32,7 +35,8 @@ import {SimpleItemService} from './simple-item.service';
         AngularFireDatabaseModule,
         AngularFireAuthModule,
         HttpClientModule,
-        SharedModule
+        SharedModule,
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
     ],
     providers: [
         StatusBar,

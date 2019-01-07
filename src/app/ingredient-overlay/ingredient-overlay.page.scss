@@ -1,0 +1,18 @@
+.listButton {
+  width: 64px;
+}
+ion-content {
+  --background: rgba(0,0,0,.0)!important;;
+}
+/deep/ .inner-scroll{
+  background-color: rgba(255,0,0,.0)!important;;
+}
+.noBackground {
+  background-color: rgba(255,0,0,.0)!important;
+}
+*[id^='ion-overlay-'] > div {
+  --background: rgba(255,0,0,.0)!important;;
+}
+div {
+  background-color: rgba(255,0,0,.0)!important;;
+}

@@ -1,18 +1,18 @@
 import {HttpClient} from '@angular/common/http';
 import {EventEmitter, Injectable} from '@angular/core';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {SimpleItem} from '../models/simple-item';
 import {AuthService} from './auth.service';
-import {Ingredient} from './models/ingredient';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ShoppingListService {
+export class SimpleItemService {
 
     ref = null;
     DATABASE_PATH = null;
-    public newIngredientEvent = new EventEmitter<Ingredient[]>();
-    private ingredients: Ingredient[] = [];
+    public newItemEvent = new EventEmitter<SimpleItem[]>();
+    private items: SimpleItem[] = [];
 
     constructor(
         private httpClient: HttpClient,
@@ -23,48 +23,56 @@ export class ShoppingListService {
 
     setupHandlers() {
         // Setup DB PATH
-        this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/shopping-list';
+        this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/items';
         // Subscribe to value changes
         this.fireDatabase.object(this.DATABASE_PATH).snapshotChanges().subscribe(action => {
             if (action) {
-                this.ingredients = <Ingredient[]>action.payload.val();
-                if (this.ingredients === null) {
-                    this.ingredients = [];
-                } else {
-                    this.ingredients.sort(compare);
+                this.items = <SimpleItem[]>action.payload.val();
+                if (this.items === null) {
+                    this.items = [];
                 }
-                console.log(this.ingredients);
-                this.newIngredientEvent.emit(this.ingredients.slice());
+                this.newItemEvent.emit(this.items.slice());
             }
         });
     }
 
-    addItem(ingredient: Ingredient) {
-        this.ingredients.push(ingredient);
+    addItem(item: SimpleItem) {
+        this.items.push(item);
         this.updateDatabase();
     }
 
-    addItems(ingredients: Ingredient[]) {
-        this.ingredients.push(...ingredients);
+    addItems(items: SimpleItem[]) {
+        this.items.push(...items);
         this.updateDatabase();
     }
 
     getItems() {
-        return this.ingredients.slice();
+        return this.items.slice();
     }
 
-    removeItem(ingredient: Ingredient) {
-        this.ingredients.splice(this.ingredients.indexOf(ingredient), 1);
+    removeItem(item: SimpleItem) {
+        this.items.splice(this.items.indexOf(item), 1);
         this.updateDatabase();
     }
 
     updateDatabase() {
         const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.ingredients.slice());
+        itemRef.set(this.items.slice());
     }
 
-    updateItemStatuses(ingredients: Ingredient[]) {
-        this.ingredients = ingredients;
+    updateItemStatuses(items: SimpleItem[]) {
+        this.items = items;
+        this.updateDatabase();
+    }
+
+    filterItems(searchTerm) {
+        return this.items.filter((item) => {
+            return item.itemName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+        });
+    }
+
+    updateItem(item: SimpleItem) {
+        this.items[this.items.indexOf(item)] = item;
         this.updateDatabase();
     }
 }
@@ -87,14 +95,3 @@ export const snapshotToObject = snapshot => {
 
     return item;
 };
-
-function compare(a: Ingredient, b: Ingredient) {
-    if (a.item.itemColor < b.item.itemColor) {
-        return -1;
-    }
-    if (a.item.itemColor > b.item.itemColor) {
-        return 1;
-    }
-    return 0;
-}
-

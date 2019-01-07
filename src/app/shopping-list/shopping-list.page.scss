@@ -30,11 +30,9 @@
   0%   { width : 0; }
   100% { width: 100%; }
 }
-
-.listButton {
-  width: 64px;
+*[id^='ion-overlay-'] > div {
+  --background: rgba(255,0,0,.0)!important;;
 }
-
 ion-list.unCollected {
   --ion-background-color: white;
   border-bottom: 3px dotted slategrey;
@@ -54,4 +52,8 @@ ion-item.noPadding {
   border-bottom-right-radius: 15px;
   margin: 0px;
   padding-right: 5px;
+}
+ion-spinner {
+  display: block;
+  margin: auto;
 }

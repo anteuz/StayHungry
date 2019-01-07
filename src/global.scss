@@ -9,3 +9,14 @@
 @import '~@ionic/angular/css/text-alignment.css';
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
+
+.noBackground {
+  background-color: rgba(0,0,0,.0)!important;
+}
+#ion-overlay-1 > div {
+  background-color: rgba(0,0,0,.0);
+}
+*[id^='ion-overlay-'] > div {
+  --background: rgba(255,0,0,.0)!important;
+  background-color: rgba(0,0,0,.0);
+}

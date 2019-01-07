@@ -5,8 +5,8 @@ import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 
 import {Platform} from '@ionic/angular';
-import {ShoppingListService} from './shopping-list.service';
-import {SimpleItemService} from './simple-item.service';
+import {ShoppingListService} from './services/shopping-list.service';
+import {SimpleItemService} from './services/simple-item.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +14,7 @@ import {SimpleItemService} from './simple-item.service';
 })
 export class AppComponent {
 
-  private isAuthenticated = false;
+  public isAuthenticated = false;
 
   constructor(
     private platform: Platform,
