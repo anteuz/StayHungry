@@ -45,13 +45,57 @@ ion-item.noPadding {
   --padding-start: 0px;
 }
 
-::shadow div.roundedCorners {
+::shadow div.roundedCornersTop {
   width: 3px;
   height: 100%;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
+  border-top-right-radius: 25px;
   margin: 0px;
   padding-right: 5px;
+  margin-top: 20px;
+}
+::shadow div.roundedCornersBottom {
+  width: 3px;
+  height: 100%;
+  border-bottom-right-radius: 25px;
+  margin: 0px;
+  padding-right: 5px;
+  margin-bottom: 20px;
+}
+div.roundedCornersMiddle{
+  width: 3px;
+  height: 100%;
+  margin: 0px;
+  padding-right: 5px;
+}
+
+div.roundedCornersSingle {
+
+  width: 3px;
+  height: 100%;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  margin: 0px;
+  padding-right: 5px;
+ }
+div.roundedCornersSingle:before {
+  content : "";
+  position: absolute;
+  left    : 0;
+  z-index: 100;
+  top  : 0%;
+  width  : 5px;
+  height   : 19%;  /* or 100px */
+  background: white;
+}
+div.roundedCornersSingle:after {
+  content : "";
+  position: absolute;
+  left    : 0;
+  z-index: 100;
+  top  : 80%;
+  width  : 5px;
+  height   : 19%;  /* or 100px */
+  background: white;
 }
 ion-spinner {
   display: block;

@@ -22,7 +22,7 @@
                    (click)="openIngredientOverlay()"
                    searchIcon="nutrition">
         </ion-searchbar>
-        <ion-button fill="clear" size="small">
+        <ion-button fill="clear" size="small" (click)="onOpenItemsList()">
             <ion-icon name="book"></ion-icon>
         </ion-button>
     </ion-item>
@@ -31,7 +31,7 @@
     <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading">
         <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
             <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
-                <div class="roundedCorners" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
+                <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
                 <ion-label>
                 <h3>{{ ingredient.item.itemName }}</h3>
                 </ion-label>

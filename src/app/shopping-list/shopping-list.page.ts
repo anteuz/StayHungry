@@ -13,6 +13,7 @@ import {ShoppingListService} from '../services/shopping-list.service';
 export class ShoppingListPage implements OnInit, OnDestroy {
 
     ingredients: Ingredient[] = [];
+    ingredientMap: Map<string, Ingredient[]>;
     showSearchBar = true;
     @ViewChild('ingredientList') ingredientList: IonList;
     loading = true;
@@ -31,6 +32,8 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         this.subscriptions.add(this.slService.newIngredientEvent.subscribe(
             (ingredients) => {
                 this.ingredients = ingredients;
+                // Create groups by color for ui magic
+                this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
                 if (this.loading === true) {
                     this.loading = false;
                 }
@@ -75,6 +78,17 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         return '5px solid var(' + ingredientColor + ')';
     }
 
+    getStyleClass(ingredient: Ingredient) {
+        if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length > 1) {
+            return 'roundedCornersTop';
+        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length === 1) {
+            return 'roundedCornersSingle';
+        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === this.ingredientMap.get(ingredient.item.itemColor).length - 1) {
+            return 'roundedCornersBottom';
+        } else {
+            return 'roundedCornersMiddle';
+        }
+    }
 
     onCollect(ingredient: Ingredient) {
         ingredient.isCollected = true;
@@ -124,4 +138,25 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         this.showSearchBar = true;
         modal = null;
     }
+
+    onOpenItemsList() {
+        const grouped = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+        console.log(grouped);
+    }
+}
+
+function groupByVanilla2(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection && item.isCollected !== true) {
+            map.set(key, [item]);
+        } else {
+            if (item.isCollected != true) {
+                collection.push(item);
+            }
+        }
+    });
+    return map;
 }
