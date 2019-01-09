@@ -72,7 +72,8 @@ export class IngredientOverlayPage implements OnInit {
         }
         // Check if we need to store complete ingredient
         if (this.ingredientBar.value != null) {
-            if (this.ingredientBar.value.includes(',')) {
+            if (this.ingredientBar.value.includes(',')
+                && (this.ingredientBar.value.endsWith(',') || this.ingredientBar.value.endsWith(', '))) {
                 this.storeIngredients(false);
             }
         }

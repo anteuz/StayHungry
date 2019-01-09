@@ -58,7 +58,15 @@
         </ion-item-sliding>
     </ion-list>
     <!-- Collected items List -->
-    <ion-list lines="none" position="bottom">
+    <ion-list lines="none" position="bottom" *ngIf="(ingredients | isCollected : true).length > 0">
+            <ion-item>
+                <ion-label>
+                    <h3>Collected items: {{(ingredients | isCollected : true).length}} </h3>
+                </ion-label>
+                <ion-button slot="end" fill="clear" color="danger">
+                    <ion-icon name="trash"></ion-icon>
+                </ion-button>
+            </ion-item>
             <ion-item class="isCollected" *ngFor="let ingredient of ingredients | isCollected : true; let i = index" (click)="onDeCollect(ingredient)">
                 <ion-label >
                     <h3>{{ ingredient.item.itemName }}</h3>

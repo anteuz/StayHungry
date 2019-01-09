@@ -13,10 +13,7 @@
 .noBackground {
   background-color: rgba(0,0,0,.0)!important;
 }
-#ion-overlay-1 > div {
-  background-color: rgba(0,0,0,.0);
-}
+
 *[id^='ion-overlay-'] > div {
-  --background: rgba(255,0,0,.0)!important;
-  background-color: rgba(0,0,0,.0);
+  --background: rgba(255,255,255,0.4)!important;;
 }
