@@ -7,6 +7,7 @@ import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {Platform} from '@ionic/angular';
 import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
+import {SimpleStateService} from './services/simple-state-service';
 
 @Component({
   selector: 'app-root',
@@ -23,13 +24,14 @@ export class AppComponent {
     private router: Router,
     private fireAuth: AngularFireAuth,
     private slService: ShoppingListService,
-    private itemService: SimpleItemService
+    private itemService: SimpleItemService,
+    private stateService: SimpleStateService
   ) {
     this.initializeApp();
   }
 
-  initializeApp() {
-    this.platform.ready().then(() => {
+  async initializeApp() {
+    await this.platform.ready().then(() => {
       this.subscribeToAuthState();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -37,14 +39,16 @@ export class AppComponent {
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out
-  subscribeToAuthState() {
-    this.fireAuth.auth.onAuthStateChanged(user => {
+  async subscribeToAuthState() {
+    await this.fireAuth.auth.onAuthStateChanged(user => {
           if (user) {
             console.log('Authed user');
             this.isAuthenticated = true;
-            this.router.navigate(['/']);
-            this.slService.setupHandlers();
+            this.stateService.setupHandlers();
             this.itemService.setupHandlers();
+            this.slService.setupHandlers();
+            this.router.navigate(['/']);
+
 
           } else {
             console.log('Signed off user');

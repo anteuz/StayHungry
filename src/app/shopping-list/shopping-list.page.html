@@ -1,9 +1,10 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title>Kauppalista</ion-title>
+        <ion-title *ngIf="shoppingList != null">{{shoppingList.name}}</ion-title>
+        <ion-title *ngIf="shoppingList == null">Create shopping list</ion-title>
         <ion-buttons slot="secondary">
             <ion-menu-toggle>
-                <ion-button icon-only>
+                <ion-button icon-only menuClose>
                     <ion-icon name="menu"></ion-icon>
                 </ion-button>
             </ion-menu-toggle>
@@ -13,7 +14,7 @@
 </ion-header>
 
 <ion-content>
-    <ion-item *ngIf="showSearchBar">
+    <ion-item *ngIf="showSearchBar && shoppingList != null">
         <ion-searchbar #ingredientBar
                    showCancelButton="false"
                    animated
@@ -26,9 +27,16 @@
             <ion-icon name="book"></ion-icon>
         </ion-button>
     </ion-item>
+
     <!-- Displayed List -->
     <ion-spinner *ngIf="loading" name="lines" color="primary" align-self-center></ion-spinner>
-    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading">
+
+    <ion-item *ngIf="!loading && shoppingList == null">
+        <ion-icon name="alert" color="warning"></ion-icon>
+        <ion-label text-wrap>You have no shopping lists, please create one first!</ion-label>
+    </ion-item>
+
+    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList != null">
         <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
             <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
                 <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
@@ -58,7 +66,7 @@
         </ion-item-sliding>
     </ion-list>
     <!-- Collected items List -->
-    <ion-list lines="none" position="bottom" *ngIf="(ingredients | isCollected : true).length > 0">
+    <ion-list lines="none" position="bottom" *ngIf="shoppingList != null && (ingredients | isCollected : true).length > 0">
             <ion-item>
                 <ion-label>
                     <h3>Collected items: {{(ingredients | isCollected : true).length}} </h3>

@@ -12,6 +12,10 @@ const routes: Routes = [
   {
     path: '',
     component: ShoppingListPage
+  },
+  {
+    path: ':id',
+    component: ShoppingListPage
   }
 ];
 
@@ -20,7 +24,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-      SharedModule,
+    SharedModule,
     RouterModule.forChild(routes)
   ],
   declarations: [ShoppingListPage]

@@ -1,9 +1,13 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {IonList, ModalController} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
+import {AppState} from '../models/app-state';
 import {Ingredient} from '../models/ingredient';
+import {ShoppingList} from '../models/shopping-list';
 import {ShoppingListService} from '../services/shopping-list.service';
+import {SimpleStateService} from '../services/simple-state-service';
 
 @Component({
     selector: 'app-shopping-list',
@@ -12,38 +16,104 @@ import {ShoppingListService} from '../services/shopping-list.service';
 })
 export class ShoppingListPage implements OnInit, OnDestroy {
 
+    shoppingListID: string;
+    shoppingList: ShoppingList;
     ingredients: Ingredient[] = [];
     ingredientMap: Map<string, Ingredient[]>;
     showSearchBar = true;
     @ViewChild('ingredientList') ingredientList: IonList;
     loading = true;
-
+    appState: AppState = null;
     private subscriptions: Subscription = new Subscription();
 
-    constructor(
+     constructor(
         public slService: ShoppingListService,
-        public modalCtrl: ModalController
+        public modalCtrl: ModalController,
+        public router: Router,
+        public route: ActivatedRoute,
+        private stateService: SimpleStateService
     ) {
-
         console.log('Created constructor');
+        // If route param is empty, go to last opened shopping list
+        if (this.shoppingListID == null) {
+            this.stateService.getAppState().then(appState => this.appState = appState);
+        }
     }
 
-    ngOnInit() {
-        this.subscriptions.add(this.slService.newIngredientEvent.subscribe(
-            (ingredients) => {
-                this.ingredients = ingredients;
-                // Create groups by color for ui magic
-                this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
-                if (this.loading === true) {
-                    this.loading = false;
+    async ionViewWillEnter() {
+        console.log('ion view will enter');
+        // If route param is empty, go to last opened shopping list
+        if (this.shoppingListID == null) {
+            if (this.appState) {
+                this.shoppingListID = this.appState.lastVisited_ShoppingList;
+                console.log(this.shoppingListID);
+            }
+        }
+        // Get shopping List
+        try {
+            this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
+            console.log(this.shoppingList);
+            if (this.shoppingList) {
+                this.loading = false;
+                this.initializeIngredients();
+            }
+        } catch (e) {
+            this.loading = false;
+            this.shoppingList = null;
+            this.ingredients = null;
+        }
+    }
+
+    async ngOnInit() {
+        console.log('onInit');
+        // Get Route parameter
+        this.route.params
+            .subscribe(
+                (params: Params) => {
+                    this.shoppingListID = params['id'];
+                    if (this.shoppingListID != null) {
+                        this.stateService.updateLastVisitedShoppingList(this.shoppingListID);
+                    }
+                }
+            );
+
+        // If route param is empty, go to last opened shopping list
+        if (this.shoppingListID == null) {
+            const appState = await this.stateService.getAppState();
+            if (appState) {
+                this.shoppingListID = appState.lastVisited_ShoppingList;
+            }
+        }
+
+        // Subscribe for changes
+        this.subscriptions.add(this.slService.shoppingListsEvent.subscribe(
+            (event) => {
+
+                if (this.shoppingListID != null) {
+                    this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
+                    this.initializeIngredients();
                 }
             }
         ));
+
+        // Get shopping List
+        try {
+            this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
+
+            if (this.shoppingList) {
+                this.loading = false;
+                this.initializeIngredients();
+            }
+        } catch (e) {
+
+        }
     }
 
     onRemoveItem(index: Ingredient) {
         this.ingredientList.closeSlidingItems();
-        this.slService.removeItem(index);
+        this.ingredients.splice(this.ingredients.indexOf(index), 1);
+        this.shoppingList.items = this.ingredients;
+        this.slService.updateShoppingList(this.shoppingList);
     }
 
     async onEdit(ingredient: Ingredient) {
@@ -63,7 +133,10 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         modal.present();
 
         const {data} = await modal.onDidDismiss();
-        this.slService.updateItem(data);
+        this.ingredients[this.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
+        this.addItemsToShoppingList(data);
+        this.initializeIngredients();
+        this.slService.updateShoppingList(this.shoppingList);
         this.showSearchBar = true;
         modal = null;
         this.ingredientList.closeSlidingItems();
@@ -71,7 +144,6 @@ export class ShoppingListPage implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscriptions.unsubscribe();
-        console.log(this.subscriptions);
     }
 
     getStyle(ingredientColor: string) {
@@ -93,13 +165,15 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     onCollect(ingredient: Ingredient) {
         ingredient.isCollected = true;
         ingredient.isBeingCollected = false;
-        this.slService.updateItemStatuses(this.ingredients);
+        this.shoppingList.items = this.ingredients;
+        this.slService.updateShoppingList(this.shoppingList);
 
     }
 
     onDeCollect(ingredient: Ingredient) {
         ingredient.isCollected = false;
-        this.slService.updateItemStatuses(this.ingredients);
+        this.shoppingList.items = this.ingredients;
+        this.slService.updateShoppingList(this.shoppingList);
     }
 
     beingCollected(ingredient: Ingredient) {
@@ -135,13 +209,39 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         modal.present();
 
         const {data} = await modal.onDidDismiss(); // Maybe later?
+        this.addItemsToShoppingList(data);
+        this.initializeIngredients();
+        this.slService.updateShoppingList(this.shoppingList);
         this.showSearchBar = true;
         modal = null;
     }
 
     onOpenItemsList() {
         const grouped = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
-        console.log(grouped);
+    }
+
+    findIngredientUsingUUID(searchTerm) {
+        return this.ingredients.filter((ingredient) => {
+            return ingredient.uuid.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+        });
+    }
+
+    initializeIngredients() {
+
+        if (this.shoppingList.items != null) {
+            this.shoppingList.items.sort(compare);
+            this.ingredients = this.shoppingList.items;
+            this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+        }
+        // Create groups by color for ui magic
+        this.loading = false;
+    }
+
+    private addItemsToShoppingList(data) {
+        if (this.shoppingList.items == null) {
+            this.shoppingList.items = [];
+        }
+        this.shoppingList.items.push(...data);
     }
 }
 
@@ -153,10 +253,20 @@ function groupByVanilla2(list, keyGetter) {
         if (!collection && item.isCollected !== true) {
             map.set(key, [item]);
         } else {
-            if (item.isCollected != true) {
+            if (item.isCollected !== true) {
                 collection.push(item);
             }
         }
     });
     return map;
+}
+
+export function compare(a: Ingredient, b: Ingredient) {
+    if (a.item.itemColor < b.item.itemColor) {
+        return -1;
+    }
+    if (a.item.itemColor > b.item.itemColor) {
+        return 1;
+    }
+    return 0;
 }

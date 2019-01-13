@@ -1,6 +1,8 @@
 import {HttpClient} from '@angular/common/http';
 import {EventEmitter, Injectable} from '@angular/core';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {hasOwnProperty} from 'tslint/lib/utils';
+import {ShoppingList} from '../models/shopping-list';
 import {AuthService} from './auth.service';
 import {Ingredient} from '../models/ingredient';
 
@@ -11,74 +13,79 @@ export class ShoppingListService {
 
     ref = null;
     DATABASE_PATH = null;
-    public newIngredientEvent = new EventEmitter<Ingredient[]>();
+
+    public shoppingListsEvent = new EventEmitter<ShoppingList[]>();
+
     private ingredients: Ingredient[] = [];
+
+    private shoppingLists: ShoppingList [] = null;
 
     constructor(
         private httpClient: HttpClient,
         private authService: AuthService,
         private fireDatabase: AngularFireDatabase
-    ) {
-    }
+    ) {}
 
     setupHandlers() {
         // Setup DB PATH
         this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/shopping-list';
         // Subscribe to value changes
-        this.fireDatabase.object(this.DATABASE_PATH).snapshotChanges().subscribe(action => {
-            if (action) {
-                this.ingredients = <Ingredient[]>action.payload.val();
-                if (this.ingredients === null) {
-                    this.ingredients = [];
-                } else {
-                    this.ingredients.sort(compare);
+        this.fireDatabase.object(this.DATABASE_PATH).valueChanges().subscribe((payload: ShoppingList[]) => {
+            if (payload) {
+                this.shoppingLists = payload;
+                if (this.shoppingLists === null) {
+                    this.shoppingLists = [];
                 }
-                this.newIngredientEvent.emit(this.ingredients.slice());
+                this.shoppingListsEvent.emit(this.shoppingLists.slice());
             }
         });
     }
 
-    addItem(ingredient: Ingredient) {
-        this.ingredients.push(ingredient);
+    addItem(shoppingList: ShoppingList) {
+        if (this.shoppingLists == null) {
+            this.shoppingLists = [];
+        }
+        this.shoppingLists.push(shoppingList);
         this.updateDatabase();
     }
 
-    addItems(ingredients: Ingredient[]) {
-        this.ingredients.push(...ingredients);
+    addItems(shoppingLists: ShoppingList[]) {
+        if (this.shoppingLists == null) {
+            this.shoppingLists = [];
+        }
+        this.shoppingLists.push(... shoppingLists);
         this.updateDatabase();
     }
 
     getItems() {
-        return this.ingredients.slice();
+        return this.shoppingLists.slice();
     }
 
-    removeItem(ingredient: Ingredient) {
-        this.ingredients.splice(this.ingredients.indexOf(ingredient), 1);
+    removeShoppingList(shoppingList: ShoppingList) {
+        this.shoppingLists.splice(this.shoppingLists.indexOf(shoppingList), 1);
         this.updateDatabase();
     }
 
     updateDatabase() {
         const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.ingredients.slice());
+        itemRef.set(this.shoppingLists.slice());
     }
 
-    updateItemStatuses(ingredients: Ingredient[]) {
-        this.ingredients = ingredients;
+    updateShoppingLists(shoppingList: ShoppingList[]) {
+        if (this.shoppingLists == null) {
+            this.shoppingLists = [];
+        }
+        this.shoppingLists = shoppingList;
         this.updateDatabase();
     }
 
-    updateItem(data: Ingredient) {
-        console.log(data);
-        console.log('Data found with ingredient UUID: ' + this.findUsingUUID(data.uuid).toString());
-
-        this.ingredients[this.ingredients.indexOf(this.findUsingUUID(data.uuid)[0])] = data;
+    updateShoppingList(data: ShoppingList) {
+        this.shoppingLists[this.shoppingLists.indexOf(this.findUsingUUID(data.uuid))] = data;
         this.updateDatabase();
     }
 
-    findUsingUUID(searchTerm) {
-        return this.ingredients.filter((ingredient) => {
-            return ingredient.uuid.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-        });
+    findUsingUUID(searchTerm): ShoppingList {
+        return this.shoppingLists.find(shoppingList => shoppingList.uuid === searchTerm);
     }
 
 }
@@ -101,14 +108,3 @@ export const snapshotToObject = snapshot => {
 
     return item;
 };
-
-function compare(a: Ingredient, b: Ingredient) {
-    if (a.item.itemColor < b.item.itemColor) {
-        return -1;
-    }
-    if (a.item.itemColor > b.item.itemColor) {
-        return 1;
-    }
-    return 0;
-}
-

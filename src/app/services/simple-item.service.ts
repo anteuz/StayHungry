@@ -25,9 +25,9 @@ export class SimpleItemService {
         // Setup DB PATH
         this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/items';
         // Subscribe to value changes
-        this.fireDatabase.object(this.DATABASE_PATH).snapshotChanges().subscribe(action => {
-            if (action) {
-                this.items = <SimpleItem[]>action.payload.val();
+        this.fireDatabase.object(this.DATABASE_PATH).valueChanges().subscribe((value: SimpleItem[]) => {
+            if (value) {
+                this.items = value;
                 if (this.items === null) {
                     this.items = [];
                 }
