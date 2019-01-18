@@ -1,4 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {Router} from '@angular/router';
 import {IonList} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
@@ -14,6 +15,9 @@ import {ShoppingListService} from '../services/shopping-list.service';
 export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   shoppingLists: ShoppingList[] = [];
+  inEditMode: string = null;
+  shoppingListName: FormControl = null;
+
   private subscriptions: Subscription = new Subscription();
   @ViewChild('shoppingListsList') shoppingListsList: IonList;
   constructor(private slService: ShoppingListService, private router: Router) { }
@@ -37,16 +41,34 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   }
 
   onEdit(shoppingList: ShoppingList) {
-
+    this.inEditMode = shoppingList.uuid;
+    this.shoppingListName = new FormControl('');
+    this.shoppingListName.setValue(shoppingList.name);
+    this.shoppingListsList.closeSlidingItems();
+    console.log('Editing uuid = ' + this.inEditMode);
   }
 
   onRemoveItem(shoppingList: ShoppingList) {
     this.slService.removeShoppingList(shoppingList);
     this.shoppingListsList.closeSlidingItems();
+    this.inEditMode = null;
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  onChangeShoppingListName(shoppingList: ShoppingList) {
+    console.log(shoppingList);
+    console.log(this.shoppingListName.value);
+    shoppingList.name = this.shoppingListName.value;
+    this.slService.updateShoppingList(shoppingList);
+    this.inEditMode = null;
+    this.shoppingListName.reset();
+    this.shoppingListName = null;
+  }
+
+  ionWillClose() {
+    console.log('Menu closing');
+  }
 }

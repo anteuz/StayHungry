@@ -66,6 +66,8 @@ export class SimpleItemService {
     }
 
     filterItems(searchTerm) {
+        console.log(this.items);
+        console.log(searchTerm);
         return this.items.filter((item) => {
             return item.itemName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         });

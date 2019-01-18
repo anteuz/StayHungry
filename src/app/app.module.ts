@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 import {AngularFireModule} from '@angular/fire';
 import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabase, AngularFireDatabaseModule} from '@angular/fire/database';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 import {SplashScreen} from '@ionic-native/splash-screen/ngx';
@@ -35,6 +36,8 @@ import { ObjectNamePipe } from './shared/object-name.pipe';
     entryComponents: [PersistenceOverlayComponent, IngredientOverlayPage],
     imports: [
         BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
         IonicModule.forRoot(),
         IonicStorageModule.forRoot(),
         AppRoutingModule,

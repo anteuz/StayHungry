@@ -228,13 +228,23 @@ export class ShoppingListPage implements OnInit, OnDestroy {
 
     initializeIngredients() {
 
-        if (this.shoppingList.items != null) {
+        if (this.shoppingList != null && this.shoppingList.items != null) {
             this.shoppingList.items.sort(compare);
             this.ingredients = this.shoppingList.items;
             this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
         }
         // Create groups by color for ui magic
         this.loading = false;
+    }
+
+    clearCollected() {
+        for (let i = this.ingredients.length - 1; i >= 0; --i) {
+            if (this.ingredients[i].isCollected === true) {
+                this.ingredients.splice(i, 1);
+            }
+        }
+        this.shoppingList.items = this.ingredients;
+        this.slService.updateShoppingList(this.shoppingList);
     }
 
     private addItemsToShoppingList(data) {

@@ -71,7 +71,7 @@
                 <ion-label>
                     <h3>Collected items: {{(ingredients | isCollected : true).length}} </h3>
                 </ion-label>
-                <ion-button slot="end" fill="clear" color="danger">
+                <ion-button slot="end" fill="clear" color="danger" (click)="clearCollected()">
                     <ion-icon name="trash"></ion-icon>
                 </ion-button>
             </ion-item>
