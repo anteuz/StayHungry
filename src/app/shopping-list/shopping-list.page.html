@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-toolbar>
+    <ion-toolbar color="secondary">
         <ion-title *ngIf="shoppingList != null">{{shoppingList.name}}</ion-title>
         <ion-title *ngIf="shoppingList == null">Create shopping list</ion-title>
         <ion-buttons slot="secondary">
@@ -36,7 +36,7 @@
         <ion-label text-wrap>You have no shopping lists, please create one first!</ion-label>
     </ion-item>
 
-    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList != null">
+    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList != null && ingredients != undefined">
         <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
             <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
                 <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>

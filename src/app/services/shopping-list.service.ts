@@ -27,10 +27,12 @@ export class ShoppingListService {
     ) {}
 
     setupHandlers() {
+        console.log('Setting up Shopping-lists service..');
         // Setup DB PATH
         this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/shopping-list';
         // Subscribe to value changes
-        this.fireDatabase.object(this.DATABASE_PATH).valueChanges().subscribe((payload: ShoppingList[]) => {
+        this.fireDatabase.list<ShoppingList>(this.DATABASE_PATH).valueChanges().subscribe((payload: ShoppingList[]) => {
+            console.log(payload);
             if (payload) {
                 this.shoppingLists = payload;
                 if (this.shoppingLists === null) {
@@ -39,6 +41,7 @@ export class ShoppingListService {
                 this.shoppingListsEvent.emit(this.shoppingLists.slice());
             }
         });
+        console.log(this.DATABASE_PATH);
     }
 
     addItem(shoppingList: ShoppingList) {

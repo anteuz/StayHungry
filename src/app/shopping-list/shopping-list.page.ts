@@ -46,7 +46,6 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         if (this.shoppingListID == null) {
             if (this.appState) {
                 this.shoppingListID = this.appState.lastVisited_ShoppingList;
-                console.log(this.shoppingListID);
             }
         }
         // Get shopping List
@@ -82,6 +81,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             const appState = await this.stateService.getAppState();
             if (appState) {
                 this.shoppingListID = appState.lastVisited_ShoppingList;
+                this.router.navigate(['/tabs/tab1', this.shoppingListID]);
             }
         }
 
@@ -133,10 +133,13 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         modal.present();
 
         const {data} = await modal.onDidDismiss();
-        this.ingredients[this.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
-        this.addItemsToShoppingList(data);
-        this.initializeIngredients();
-        this.slService.updateShoppingList(this.shoppingList);
+        // if data is provided, if action is cancelled data is undefined (backdrop tapped)
+        if (data !== undefined) {
+            this.ingredients[this.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
+            this.addItemsToShoppingList(data);
+            this.initializeIngredients();
+            this.slService.updateShoppingList(this.shoppingList);
+        }
         this.showSearchBar = true;
         modal = null;
         this.ingredientList.closeSlidingItems();
@@ -255,7 +258,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 }
 
-function groupByVanilla2(list, keyGetter) {
+export function groupByVanilla2(list, keyGetter) {
     const map = new Map();
     list.forEach((item) => {
         const key = keyGetter(item);

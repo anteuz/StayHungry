@@ -11,6 +11,9 @@ const routes: Routes = [
   {
     path: '',
     component: RecipesPage
+  },
+  {
+    path: 'recipe', loadChildren: '../recipe/recipe.module#RecipePageModule'
   }
 ];
 

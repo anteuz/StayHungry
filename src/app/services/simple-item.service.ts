@@ -65,12 +65,19 @@ export class SimpleItemService {
         this.updateDatabase();
     }
 
-    filterItems(searchTerm) {
+    filterItems(searchTerm: string, exact: boolean) {
         console.log(this.items);
         console.log(searchTerm);
-        return this.items.filter((item) => {
-            return item.itemName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-        });
+        console.log(exact);
+        if (exact) {
+            return this.items.filter((item) => {
+                return item.itemName.toLowerCase() === searchTerm.toLowerCase();
+            });
+        } else {
+            return this.items.filter((item) => {
+                return item.itemName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+            });
+        }
     }
 
     updateItem(item: SimpleItem) {

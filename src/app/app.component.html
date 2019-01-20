@@ -1,12 +1,12 @@
 <ion-app>
     <ion-split-pane contentId="menu-content">
         <ion-menu #appMenu side="start" contentId="menu-content" style="border-right: 1px solid #dddddd;">
-            <ion-header>
-                <ion-toolbar>
+            <ion-header style="headerStyle">
+                <ion-toolbar color="secondary">
                     <ion-title>Shopping lists</ion-title>
                 </ion-toolbar>
             </ion-header>
-            <ion-content>
+            <ion-content style="splitMenu">
                     <!-- Shopping lists -->
                     <app-shopping-list-items></app-shopping-list-items>
                 <ion-list>

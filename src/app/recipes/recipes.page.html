@@ -1,7 +1,18 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Recipes</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="secondary">
+        <ion-title>Recipes</ion-title>
+        <ion-buttons slot="secondary">
+            <ion-menu-toggle>
+                <ion-button icon-only menuClose>
+                    <ion-icon name="menu"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
+            <ion-button (click)="onNewRecipe()">
+                <ion-icon name="add"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+
 </ion-header>
 
 <ion-content padding>

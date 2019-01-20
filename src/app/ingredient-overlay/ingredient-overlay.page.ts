@@ -37,12 +37,12 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     ngOnInit() {
-        this.ingredientBar.setFocus();
         if (this.mode === 'edit') {
             this.ingredientBar.value = this.ingredientToEdit.item.itemName + ' : ' + this.ingredientToEdit.amount;
             this.itemColorName = this.ingredientToEdit.item.itemColor;
             this.showColorSelector();
         }
+        this.ingredientBar.setFocus();
     }
 
     onIngredientBarFocus() {
@@ -66,7 +66,7 @@ export class IngredientOverlayPage implements OnInit {
             // empty previous suggestions
             this.itemSuggestions = [];
             // Handle suggestions
-            this.itemSuggestions.push(...this.itemService.filterItems(this.ingredientBar.value).splice(0, 10));
+            this.itemSuggestions.push(...this.itemService.filterItems(this.ingredientBar.value, false).splice(0, 10));
             // Check if we need color chooser
             this.showColorSelector();
         }
@@ -90,6 +90,8 @@ export class IngredientOverlayPage implements OnInit {
         //}
         this.ingredientBar.value = null;
         this.showItemColorSelector = false;
+
+        console.log(this.ingredients);
 
         if (this.mode === 'insert') {
             this.modalCtrl.dismiss(this.ingredients);
@@ -145,7 +147,7 @@ export class IngredientOverlayPage implements OnInit {
             return null;
         }
         return this.ingredients.filter((item) => {
-            return item.item.itemName.toLowerCase().indexOf(ingredientName.toLowerCase()) > -1;
+            return item.item.itemName.toLowerCase() === ingredientName.toLowerCase();
         });
     }
 
@@ -214,9 +216,10 @@ export class IngredientOverlayPage implements OnInit {
         } else {
             ingredientName = ingredientString.trim();
         }
-
+        console.log(ingredientName);
         // Check if we have already stored this kind of an ingredient into a DB
         let simpleItem: SimpleItem = this.checkIfItemExists(ingredientName);
+        console.log(simpleItem);
         // If we are in edit mode and item color is not what we wanted
         if (this.mode === 'edit' && simpleItem.itemColor !== ingredientColor) {
             simpleItem.itemColor = ingredientColor;
@@ -227,6 +230,7 @@ export class IngredientOverlayPage implements OnInit {
             simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor);
             this.itemService.addItem(simpleItem);
         }
+        console.log(simpleItem);
         console.log(ingredientColor);
         // Create full ingredient
         if (this.mode === 'insert') {
@@ -237,7 +241,8 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     private checkIfItemExists(ingredientName: string): SimpleItem {
-        const items: SimpleItem[] = this.itemService.filterItems(ingredientName);
+        const items: SimpleItem[] = this.itemService.filterItems(ingredientName, true);
+
         if (items != null) {
             if (items.length === 1) {
                 return items[0]; // Should present just one

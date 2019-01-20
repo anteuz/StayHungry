@@ -30,8 +30,8 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  async initializeApp() {
-    await this.platform.ready().then(() => {
+  initializeApp() {
+    this.platform.ready().then(() => {
       this.subscribeToAuthState();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -39,16 +39,16 @@ export class AppComponent {
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out
-  async subscribeToAuthState() {
-    await this.fireAuth.auth.onAuthStateChanged(user => {
+  subscribeToAuthState() {
+    this.fireAuth.auth.onAuthStateChanged(user => {
           if (user) {
             console.log('Authed user');
+            this.stateService.setupHandlers().then(() => {
+              this.itemService.setupHandlers();
+              this.slService.setupHandlers();
+            });
             this.isAuthenticated = true;
-            this.stateService.setupHandlers();
-            this.itemService.setupHandlers();
-            this.slService.setupHandlers();
-            this.router.navigate(['/']);
-
+            //this.router.navigate(['/']);
 
           } else {
             console.log('Signed off user');
