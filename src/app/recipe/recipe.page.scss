@@ -109,3 +109,7 @@ ion-spinner {
 .ng-invalid:not(form) {
   border-bottom: 1px solid var(--ion-color-danger);
 }
+.recipeImage {
+  width: auto;
+  height: 200px;
+}
