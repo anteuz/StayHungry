@@ -1,8 +1,15 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
+import * as BrowserCamera from '@ionic-native/camera';
 import {IonList, ModalController} from '@ionic/angular';
+import {Guid} from 'guid-typescript';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
 import {Ingredient} from '../models/ingredient';
+import {Recipe} from '../models/recipe';
 import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
+import {Platform} from '@ionic/angular';
 
 @Component({
     selector: 'app-recipe',
@@ -11,16 +18,37 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 })
 export class RecipePage implements OnInit {
 
-    ingredients: Ingredient[] = [];
-    ingredientMap: Map<string, Ingredient[]>;
+    mode;
     @ViewChild('ingredientList') ingredientList: IonList;
 
-    constructor(
-        private modalCtrl: ModalController
-    ) {
-    }
+    recipeImageURI: string;
+    recipeName: string;
+    recipeDescription: string;
+    ingredients: Ingredient[] = [];
+    ingredientMap: Map<string, Ingredient[]>;
 
-    ngOnInit() {
+    recipeForm: FormGroup;
+
+    constructor(
+        private platform: Platform,
+        private modalCtrl: ModalController,
+        private route: ActivatedRoute,
+        private router: Router,
+        private camera: Camera
+    ) {}
+
+    async ngOnInit() {
+        console.log('onInit');
+        // Get Route parameter
+        this.route.params
+            .subscribe(
+                (params: Params) => {
+                    this.mode = params['mode'];
+                }
+            );
+        if (this.mode === 'new' || this.mode === 'edit') {
+            this.initializeForm();
+        }
     }
 
     // Open ingredient overlay and add ingredients
@@ -103,5 +131,51 @@ export class RecipePage implements OnInit {
         return this.ingredients.filter((ingredient) => {
             return ingredient.uuid.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         });
+    }
+
+    initializeForm() {
+        if (this.mode === 'new') {
+            this.recipeForm = new FormGroup({
+                'recipeName': new FormControl(this.recipeName, Validators.required),
+                'recipeDescription': new FormControl(this.recipeDescription),
+                'recipeImageURI': new FormControl(this.recipeImageURI)
+            });
+        }
+    }
+    onSubmit() {
+        console.log(this.recipeForm);
+        if (this.recipeForm.valid) {
+            const recipe = new Recipe(Guid.create().toString(), this.recipeForm.get('recipeName').value, this.recipeForm.get('recipeDescription').value,  this.recipeForm.get('recipeImageURI').value, this.ingredients);
+            console.log(recipe);
+        }
+    }
+
+    getRecipeImageFromCamera() {
+
+        this.platform.ready().then(() => {
+            if (this.platform.is('cordova')) {
+                // make your native API calls
+                const options: CameraOptions = {
+                    quality: 100,
+                    destinationType: this.camera.DestinationType.FILE_URI,
+                    encodingType: this.camera.EncodingType.JPEG,
+                    mediaType: this.camera.MediaType.PICTURE
+                }
+
+                this.camera.getPicture(options).then((imageData) => {
+                    // imageData is either a base64 encoded string or a file URI
+                    console.log(imageData);
+                }, (err) => {
+                    console.log(err);
+                });
+            } else {
+                // fallback to browser APIs
+                BrowserCamera.Camera.getPicture()
+                    .then(data => console.log('Took a picture!', data))
+                    .catch(e => console.log('Error occurred while taking a picture', e));
+            }
+        });
+
+
     }
 }

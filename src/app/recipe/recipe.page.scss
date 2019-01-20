@@ -101,3 +101,11 @@ ion-spinner {
   display: block;
   margin: auto;
 }
+.ng-valid:not(form),
+.ng-valid.required {
+  border-bottom: 1px solid var(--ion-color-primary);
+}
+
+.ng-invalid:not(form) {
+  border-bottom: 1px solid var(--ion-color-danger);
+}

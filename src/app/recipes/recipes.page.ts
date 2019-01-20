@@ -17,6 +17,6 @@ export class RecipesPage implements OnInit {
   }
 
   onNewRecipe() {
-    this.router.navigate(['/tabs/tab2/recipe', 'edit'], {relativeTo: this.route});
+    this.router.navigate(['/tabs/tab2/recipe', 'new'], {relativeTo: this.route});
   }
 }
