@@ -7,13 +7,13 @@
 <ion-content>
     <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
     <ion-card>
-        <ion-img *ngIf="recipeImageURI != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-img *ngIf="recipeImageURI == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-item *ngIf="!platform.is('cordova')">
+        <ion-img *ngIf="downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-item *ngIf="!platformTypeCordova">
             <ion-label position="stacked">Choose recipe image</ion-label>
             <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)"/>
         </ion-item>
-        <ion-item *ngIf="platform.is('cordova')" lines="none">
+        <ion-item *ngIf="platformTypeCordova" lines="none">
             <ion-button fill="clear" (click)="getRecipeImageFromCamera()">
                 <ion-icon name="add" slot="start"></ion-icon>
                 <ion-label *ngIf="recipeImageURI != null">Edit image</ion-label>
@@ -22,17 +22,22 @@
         </ion-item>
         <ion-card-header>
             <ion-card-title>
-                <ion-input placeholder="Recipe name..." formControlName="recipeName"></ion-input>
+                <ion-label position="stacked">Recipe name</ion-label>
+                <ion-input placeholder="Type here..." formControlName="recipeName"></ion-input>
             </ion-card-title>
             <ion-card-subtitle>
-                <ion-input placeholder="Recipe description..." formControlName="recipeDescription"></ion-input>
+                <ion-label position="stacked">Recipe description</ion-label>
+                <ion-input placeholder="Optional" formControlName="recipeDescription"></ion-input>
             </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
+            <ion-item>
+                <ion-label>Recipe ingredients</ion-label>
+            </ion-item>
             <ion-grid>
                 <ion-list #ingredientList>
                     <ion-row>
-                        <ion-list-header>
+                        <ion-list-header class="noPadding">
                             <ion-col size="6">
                                 <ion-label>Item name</ion-label>
                             </ion-col>
@@ -86,10 +91,6 @@
                 <ion-icon name="add" slot="start"></ion-icon>
                 <ion-label>Add items</ion-label>
             </ion-button>
-            <ion-item *ngIf="recipeImageUploadPercentage">
-                <ion-label position="stacked">Uploading recipe image</ion-label>
-                <ion-progress-bar [value]="recipeImageUploadPercentage"></ion-progress-bar>
-            </ion-item>
         </ion-card-content>
         <ion-grid *ngIf="mode === 'view'">
             <ion-row>
@@ -123,7 +124,7 @@
                     </ion-button>
                 </ion-col>
                 <ion-col size="12" size-sm>
-                    <ion-button fill="clear" size="small" (click)="cancel()">
+                    <ion-button fill="clear" size="small" (click)="onCancel()">
                         <ion-icon slot="start" name="arrow-back" color="warning"></ion-icon>
                         <div>Cancel</div>
                     </ion-button>

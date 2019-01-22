@@ -27,23 +27,23 @@ export class SignInPage implements OnInit {
             message: 'Signing you in...'
         });
 
-        loadingDialog.present();
+        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
 
         this.authService.signin(form.value.email, form.value.password)
             .then(data => {
-                    loadingDialog.dismiss();
+                    loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
                     console.log('Navigating to shopping list..');
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/']).catch(e => console.log('Could not navigate'));
                 }
             )
             .catch(error => {
-                loadingDialog.dismiss();
+                loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
                 const alert = this.alertCtrl.create({
                     header: 'Signing failed!',
                     message: error.message,
                     buttons: ['Ok']
                 });
-                alert.then(alertWindow => alertWindow.present());
+                alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
             });
     }
 }

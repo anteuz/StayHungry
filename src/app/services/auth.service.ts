@@ -1,4 +1,4 @@
-import { Injectable }    from '@angular/core';
+import { Injectable } from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 
@@ -18,7 +18,7 @@ export class AuthService {
   }
 
   logout() {
-    this.fireAuth.auth.signOut();
+    this.fireAuth.auth.signOut().catch(e => console.log('Could not logout'));
   }
 
   getActiveUser() {

@@ -71,7 +71,7 @@ export class ShoppingListService {
 
     updateDatabase() {
         const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.shoppingLists.slice());
+        itemRef.set(this.shoppingLists.slice()).catch(e => console.log('Could not update item in DB'));
     }
 
     updateShoppingLists(shoppingList: ShoppingList[]) {
@@ -92,22 +92,3 @@ export class ShoppingListService {
     }
 
 }
-
-export const snapshotToArray = snapshot => {
-    const returnArr = [];
-
-    snapshot.forEach(childSnapshot => {
-        const item = childSnapshot.val();
-        item.key = childSnapshot.key;
-        returnArr.push(item);
-    });
-
-    return returnArr;
-};
-
-export const snapshotToObject = snapshot => {
-    const item = snapshot.val();
-    item.key = snapshot.key;
-
-    return item;
-};

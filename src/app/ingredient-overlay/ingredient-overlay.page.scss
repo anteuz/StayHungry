@@ -1,15 +1,21 @@
+*[id^='ion-overlay-'] > div {
+  --background: rgba(255,255,255,0.4)!important;
+}
 .listButton {
   width: 64px;
 }
 ion-content {
-  --background: rgba(0,0,0,.0)!important;;
+  --background: rgba(0,0,0,.0)!important;
+}
+.sc-ion-modal-md-h {
+  --background: rgba(0,0,0,.0)!important;
 }
 /deep/ .inner-scroll{
-  background-color: rgba(255,255,255,.0)!important;;
+  background-color: rgba(255,255,255,.0)!important;
 }
 .noBackground {
   background-color: rgba(255,255,255,.0)!important;
 }
 div {
-  background-color: rgba(255,255,255,.0)!important;;
+  background-color: rgba(255,255,255,.0)!important;
 }

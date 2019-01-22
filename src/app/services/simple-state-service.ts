@@ -29,7 +29,7 @@ export class SimpleStateService {
         }
     }
     updateDatabase() {
-        this.storage.set('state', JSON.stringify(this.appState));
+        this.storage.set('state', JSON.stringify(this.appState)).catch(e => console.log('Could not store state'));
     }
 
     async getAppState() {

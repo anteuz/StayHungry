@@ -18,4 +18,9 @@ export class CloudStoreService {
     const fileRef = this.storage.ref(filePath);
     return fileRef;
   }
+  removeImage(recipeUUID) {
+    const filePath = 'recipeImage_' + recipeUUID;
+    const fileRef = this.storage.ref(filePath).delete();
+    return fileRef;
+  }
 }

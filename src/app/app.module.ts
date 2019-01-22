@@ -17,8 +17,9 @@ import {environment} from '../environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {IngredientOverlayPage} from './ingredient-overlay/ingredient-overlay.page';
-import {PersistenceOverlayComponent} from './persistence-overlay/persistence-overlay.component';
+import {Recipe} from './models/recipe';
 import {CloudStoreService} from './services/cloud-store.service';
+import {RecipeServiceService} from './services/recipe-service.service';
 import {SimpleStateService} from './services/simple-state-service';
 import {SharedModule} from './shared/shared-module';
 import {ShoppingListService} from './services/shopping-list.service';
@@ -30,12 +31,11 @@ import { ObjectNamePipe } from './shared/object-name.pipe';
 @NgModule({
     declarations: [
         AppComponent,
-        PersistenceOverlayComponent,
         IngredientOverlayPage,
         ShoppingListItemsComponent,
         ObjectNamePipe
     ],
-    entryComponents: [PersistenceOverlayComponent, IngredientOverlayPage],
+    entryComponents: [IngredientOverlayPage],
     imports: [
         BrowserModule,
         FormsModule,
@@ -60,6 +60,7 @@ import { ObjectNamePipe } from './shared/object-name.pipe';
         SimpleItemService,
         SimpleStateService,
         CloudStoreService,
+        RecipeServiceService,
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]

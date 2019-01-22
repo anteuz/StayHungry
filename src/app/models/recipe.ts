@@ -1,3 +1,4 @@
+import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 import {Ingredient} from './ingredient';
 
 export class Recipe {
@@ -6,6 +7,7 @@ export class Recipe {
     public description: string = null;
     public imageURI: string = null;
     public ingredients: Ingredient [] = null;
+    ingredientMap: Map<string, Ingredient[]>;
 
     constructor(
         uuid: string,

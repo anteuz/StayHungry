@@ -31,26 +31,26 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   }
 
   toShoppingList(shoppingListID: string) {
-    this.router.navigate(['/tabs/tab1', shoppingListID]);
+    this.router.navigate(['/tabs/tab1', shoppingListID]).catch(e => console.log('Could not navigate to shopping list'));
   }
 
   onCreateNewList() {
     const shoppingList: ShoppingList = new ShoppingList(Guid.create().toString(), 'Shopping List', []);
     this.slService.addItem(shoppingList);
-    this.router.navigate(['/tabs/tab1', shoppingList.uuid]);
+    this.router.navigate(['/tabs/tab1', shoppingList.uuid]).catch(e => console.log('Could not navigate to shopping list'));
   }
 
   onEdit(shoppingList: ShoppingList) {
     this.inEditMode = shoppingList.uuid;
     this.shoppingListName = new FormControl('');
     this.shoppingListName.setValue(shoppingList.name);
-    this.shoppingListsList.closeSlidingItems();
+    this.shoppingListsList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
     console.log('Editing uuid = ' + this.inEditMode);
   }
 
   onRemoveItem(shoppingList: ShoppingList) {
     this.slService.removeShoppingList(shoppingList);
-    this.shoppingListsList.closeSlidingItems();
+    this.shoppingListsList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
     this.inEditMode = null;
   }
 

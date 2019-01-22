@@ -85,18 +85,18 @@ export class IngredientOverlayPage implements OnInit {
             this.storeIngredients(true);
         }
         // remove all ingredients no longer present in the search bar string
-        //if (this.mode === 'insert') {
+        // if (this.mode === 'insert') {
         //    this.slService.addItems(this.ingredients);
-        //}
+        // }
         this.ingredientBar.value = null;
         this.showItemColorSelector = false;
 
         console.log(this.ingredients);
 
         if (this.mode === 'insert') {
-            this.modalCtrl.dismiss(this.ingredients);
+            this.modalCtrl.dismiss(this.ingredients).catch(e => console.log('Could not close modal'));
         } else {
-            this.modalCtrl.dismiss(this.ingredients[0]);
+            this.modalCtrl.dismiss(this.ingredients[0]).catch(e => console.log('Could not close modal'));
         }
     }
 
@@ -138,7 +138,7 @@ export class IngredientOverlayPage implements OnInit {
 
     onDismiss(event: Event) {
         if (event.srcElement.localName === 'ion-content') {
-            this.modalCtrl.dismiss();
+            this.modalCtrl.dismiss().catch(e => console.log('Could not close modal'));
         }
     }
 

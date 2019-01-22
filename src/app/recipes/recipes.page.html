@@ -16,5 +16,78 @@
 </ion-header>
 
 <ion-content padding>
+    <ion-card *ngFor="let recipe of recipes; let i = index;">
+        <ion-img [src]="recipe.imageURI" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
 
+        <ion-card-header>
+            <ion-card-title>
+                {{recipe.name}}
+            </ion-card-title>
+            <ion-card-subtitle>
+                {{recipe.description}}
+            </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-item>
+                <ion-label>Recipe ingredients</ion-label>
+            </ion-item>
+            <ion-grid>
+                <ion-list #ingredientList>
+                    <ion-row>
+                        <ion-list-header class="noPadding">
+                            <ion-col size="6">
+                                <ion-label>Item name</ion-label>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-label>#</ion-label>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-label>To list</ion-label>
+                            </ion-col>
+                        </ion-list-header>
+                    </ion-row>
+                    <ion-row *ngFor="let ingredient of recipe.ingredients; let i = index">
+                        <ion-item-sliding>
+                            <ion-item class="noPadding">
+                                <div [class]="getStyleClass(recipe, ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
+                                <ion-col size="6">
+                                    <ion-label>
+                                        <h3>{{ ingredient.item.itemName }}</h3>
+                                    </ion-label>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-toggle></ion-toggle>
+                                </ion-col>
+                            </ion-item>
+                        </ion-item-sliding>
+                    </ion-row>
+                </ion-list>
+            </ion-grid>
+        </ion-card-content>
+        <ion-grid>
+            <ion-row>
+                <ion-col size="4" align-items-center justify-content-center text-center>
+                    <ion-button fill="clear" size="small" (click)="onAddIngredients(recipe)">
+                        <ion-icon slot="start" name="basket"></ion-icon>
+                        <ion-label align-self-center>Add to list</ion-label>
+                    </ion-button>
+                </ion-col>
+                <ion-col size="4" align-items-center justify-content-center text-center>
+                    <ion-button fill="clear" size="small" (click)="onEdit(recipe)" >
+                        <ion-icon slot="start" name="create"></ion-icon>
+                        <ion-label align-self-center>Edit</ion-label>
+                    </ion-button>
+                </ion-col>
+                <ion-col size="4" align-items-center justify-content-center text-center>
+                    <ion-button fill="clear" size="small" (click)="onDelete(recipe)" color="danger">
+                        <ion-icon slot="start" name="trash"></ion-icon>
+                        <ion-label align-self-center>Remove</ion-label>
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card>
 </ion-content>

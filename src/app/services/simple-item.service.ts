@@ -57,7 +57,7 @@ export class SimpleItemService {
 
     updateDatabase() {
         const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.items.slice());
+        itemRef.set(this.items.slice()).catch(e => console.log('Could not update item in DB'));
     }
 
     updateItemStatuses(items: SimpleItem[]) {

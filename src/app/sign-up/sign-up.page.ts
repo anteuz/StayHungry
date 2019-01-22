@@ -23,21 +23,21 @@ export class SignUpPage implements OnInit {
         const loadingDialog = await this.loadingCtrl.create({
             message: 'Signing you up...'
         });
-        loadingDialog.present();
+        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
         this.authService.signup(form.value.email, form.value.password)
             .then(
                 data => {
-                    loadingDialog.dismiss();
+                    loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
                 }
             ).catch(
             error => {
-                loadingDialog.dismiss();
+                loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
                 const alert = this.alertCtrl.create({
                     header: 'Signup failed!',
                     message: error.message,
                     buttons: ['Ok']
                 });
-                alert.then(alertWindows => alertWindows.present());
+                alert.then(alertWindows => alertWindows.present()).catch(e => console.log('Could not alert'));
             }
         );
     }

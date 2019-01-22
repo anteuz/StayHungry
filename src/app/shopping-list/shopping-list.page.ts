@@ -36,7 +36,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         console.log('Created constructor');
         // If route param is empty, go to last opened shopping list
         if (this.shoppingListID == null) {
-            this.stateService.getAppState().then(appState => this.appState = appState);
+            this.stateService.getAppState().then(appState => this.appState = appState).catch(e => console.log('Could not get app state'));
         }
     }
 
@@ -81,7 +81,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             const appState = await this.stateService.getAppState();
             if (appState) {
                 this.shoppingListID = appState.lastVisited_ShoppingList;
-                this.router.navigate(['/tabs/tab1', this.shoppingListID]);
+                this.router.navigate(['/tabs/tab1', this.shoppingListID]).catch(e => console.log('Could not navigate to tabs!'));
             }
         }
 
@@ -110,7 +110,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 
     onRemoveItem(index: Ingredient) {
-        this.ingredientList.closeSlidingItems();
+        this.ingredientList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
         this.ingredients.splice(this.ingredients.indexOf(index), 1);
         this.shoppingList.items = this.ingredients;
         this.slService.updateShoppingList(this.shoppingList);
@@ -130,7 +130,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                 }
         });
         this.showSearchBar = false;
-        modal.present();
+        modal.present().catch(e => console.log('Could not present modal!'));
 
         const {data} = await modal.onDidDismiss();
         // if data is provided, if action is cancelled data is undefined (backdrop tapped)
@@ -142,7 +142,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         }
         this.showSearchBar = true;
         modal = null;
-        this.ingredientList.closeSlidingItems();
+        this.ingredientList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
     }
 
     ngOnDestroy() {
@@ -209,7 +209,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                 }
         });
         this.showSearchBar = false;
-        modal.present();
+        modal.present().catch(e => console.log('Could not present modal!'));
 
         const {data} = await modal.onDidDismiss(); // Maybe later?
         this.addItemsToShoppingList(data);

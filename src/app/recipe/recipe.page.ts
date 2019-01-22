@@ -1,10 +1,10 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import * as BrowserCamera from '@ionic-native/camera';
 import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
 import {File} from '@ionic-native/file/ngx';
-import {IonList, ModalController, Platform} from '@ionic/angular';
+import {IonList, LoadingController, ModalController, Platform} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -12,6 +12,7 @@ import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.pa
 import {Ingredient} from '../models/ingredient';
 import {Recipe} from '../models/recipe';
 import {CloudStoreService} from '../services/cloud-store.service';
+import {RecipeServiceService} from '../services/recipe-service.service';
 import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 
 @Component({
@@ -19,11 +20,12 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
     templateUrl: './recipe.page.html',
     styleUrls: ['./recipe.page.scss'],
 })
-export class RecipePage implements OnInit {
+export class RecipePage implements OnInit, OnDestroy {
 
     mode;
     @ViewChild('ingredientList') ingredientList: IonList;
 
+    recipeUUID;
     recipeImageURI;
     recipeImageUploadPercentage: number;
     downloadURL: Observable<string>;
@@ -32,6 +34,7 @@ export class RecipePage implements OnInit {
     ingredients: Ingredient[] = [];
     ingredientMap: Map<string, Ingredient[]>;
     recipeForm: FormGroup;
+    platformTypeCordova: boolean;
 
     constructor(
         private platform: Platform,
@@ -40,11 +43,16 @@ export class RecipePage implements OnInit {
         private router: Router,
         private camera: Camera,
         private cloudStore: CloudStoreService,
-        private file: File
+        private file: File,
+        private loadingCtrl: LoadingController,
+        private recipeService: RecipeServiceService
     ) {
     }
 
     async ngOnInit() {
+        this.platformTypeCordova = this.platform.is('cordova');
+        this.recipeUUID = Guid.create().toString();
+
         console.log('onInit');
         // Get Route parameter
         this.route.params
@@ -71,7 +79,7 @@ export class RecipePage implements OnInit {
                     'mode': 'insert'
                 }
         });
-        modal.present();
+        modal.present().catch(e => console.log('Could not show modal!'));
 
         const {data} = await modal.onDidDismiss(); // Maybe later?
         if (data !== undefined) {
@@ -94,7 +102,7 @@ export class RecipePage implements OnInit {
                     'ingredient': ingredient
                 }
         });
-        modal.present();
+        modal.present().catch(e => console.log('Could not show modal!'));
 
         const {data} = await modal.onDidDismiss();
         // if data is provided, if action is cancelled data is undefined (backdrop tapped)
@@ -103,7 +111,7 @@ export class RecipePage implements OnInit {
             this.initializeIngredients();
         }
         modal = null;
-        this.ingredientList.closeSlidingItems();
+        this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
     }
 
     getStyle(ingredientColor: string) {
@@ -130,7 +138,7 @@ export class RecipePage implements OnInit {
     }
 
     onRemoveItem(index: Ingredient) {
-        this.ingredientList.closeSlidingItems();
+        this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
         this.ingredients.splice(this.ingredients.indexOf(index), 1);
     }
 
@@ -153,102 +161,110 @@ export class RecipePage implements OnInit {
         const files = event.srcElement.files;
         console.log(files);
         this.recipeImageURI = files[0];
+        this.uploadFile(this.recipeUUID);
     }
 
-    uploadFile(recipe: Recipe) {
-        console.log('create upload task...');
-        const uploadTask = this.cloudStore.storeRecipeImage(this.recipeImageURI, recipe.uuid);
+    async uploadFile(recipeUUID: string) {
+
+        const loadingDialog = await this.loadingCtrl.create({
+            message: 'Uploading image...',
+            translucent: false,
+            cssClass: 'loadingDialog'
+        });
+
+        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
+
+        const uploadTask = this.cloudStore.storeRecipeImage(this.recipeImageURI, recipeUUID);
+
         uploadTask.percentageChanges().subscribe(value => this.recipeImageUploadPercentage = value.valueOf() / 100);
         uploadTask.snapshotChanges().pipe(
             finalize
             (
                 () => {
-                    this.downloadURL = this.cloudStore.getReferenceToUploadedFile(recipe.uuid).getDownloadURL();
+                    this.downloadURL = this.cloudStore.getReferenceToUploadedFile(recipeUUID).getDownloadURL();
                     this.downloadURL.subscribe((value) => {
-                        recipe.imageURI = value;
-                        console.log(recipe.imageURI);
+                        // save download url as recipe img src
+                        this.recipeImageURI = value;
                         // persist
-
+                        console.log(value);
                         // navigate away
+                        loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
+                        if (this.platformTypeCordova) {
+                            this.camera.cleanup();
+                        }
                     });
                 }
             )).subscribe();
+
     }
 
     onSubmit() {
-        console.log(this.recipeForm);
-        const recipe = new Recipe(Guid.create().toString(), this.recipeForm.get('recipeName').value, this.recipeForm.get('recipeDescription').value, this.recipeImageURI, this.ingredients);
-        if (this.recipeImageURI) {
-            this.uploadFile(recipe);
-        }
-        console.log('Image uploaded');
-        console.log(recipe);
-        if (this.recipeForm.valid) {
-            console.log(recipe);
-        }
+        const recipe = new Recipe(
+            this.recipeUUID,
+            this.recipeForm.get('recipeName').value,
+            this.recipeForm.get('recipeDescription').value,
+            this.recipeImageURI,
+            this.ingredients);
+
+        this.recipeService.addItem(recipe);
+
+        this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
     }
 
     getRecipeImageFromCamera() {
 
         this.platform.ready().then(() => {
-            if (this.platform.is('cordova')) {
+            if (this.platformTypeCordova) {
                 // make your native API calls
                 const options: CameraOptions = {
-                    quality: 80,
+                    quality: 100,
                     destinationType: this.camera.DestinationType.FILE_URI,
                     encodingType: this.camera.EncodingType.JPEG,
                     mediaType: this.camera.MediaType.PICTURE
                 };
 
                 this.camera.getPicture(options).then((imageData) => {
-                    // imageData is either a base64 encoded string or a file URI
-                    this.makeFileIntoBlob(imageData).then(value => this.recipeImageURI = value);
+                    const currentName = imageData.replace(/^.*[\\\/]/, '');
+                    const path = imageData.replace(/[^\/]*$/, '');
+                    this.file.readAsArrayBuffer(path, currentName).then((res) => {
+                        this.recipeImageURI = new Blob([res], {
+                            type: 'image/jpeg'
+                        });
+                        this.uploadFile(this.recipeUUID);
+                    }).catch(e => console.log(e));
                 }, (err) => {
                     console.log(err);
                 });
 
             } else {
-                // fallback to browser APIs
+                // fallback to browser APIs, actually not implemented
                 BrowserCamera.Camera.getPicture()
                     .then(data => console.log('Took a picture!', data))
                     .catch(e => console.log('Error occurred while taking a picture', e));
             }
-        });
+        }).catch(e => console.log('Could not enable camera!' + e));
     }
 
-    // FILE STUFF
-    makeFileIntoBlob(_imagePath) {
-        // INSTALL PLUGIN - cordova plugin add cordova-plugin-file
-        return new Promise((resolve, reject) => {
-            let fileName = '';
-            this.file
-                .resolveLocalFilesystemUrl(_imagePath)
-                .then(fileEntry => {
-                    let {name, nativeURL} = fileEntry;
+    onCancel() {
+        // camera clean up
+        if (this.platformTypeCordova) {
+            this.camera.cleanup().catch(e => console.log('Cordova not available, could not clean'));
+        }
 
-                    // get the path..
-                    let path = nativeURL.substring(0, nativeURL.lastIndexOf('/'));
-                    console.log('path', path);
-                    console.log('fileName', name);
+        if (this.downloadURL != null && this.mode === 'new') {
+            // remove picture as this will not be persisted
+            this.cloudStore.removeImage(this.recipeUUID);
+        }
+        this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
 
-                    fileName = name;
-
-                    // we are provided the name, so now read the file into
-                    // a buffer
-                    return this.file.readAsArrayBuffer(path, name);
-                })
-                .then(buffer => {
-                    // get the buffer and make a blob to be saved
-                    let imgBlob = new Blob([buffer], {
-                        type: 'image/jpeg'
-                    });
-                    console.log(imgBlob.type, imgBlob.size);
-                    resolve({
-                        fileName,
-                        imgBlob
-                    });
-                })
-                .catch(e => reject(e));
-        });
+    }
+    ngOnDestroy() {
+        console.log('On destroy');
+        this.recipeUUID = null;
+        this.recipeImageURI = null;
+        this.recipeImageUploadPercentage = null;
+        this.recipeName = null;
+        this.recipeDescription = null;
+        this.ingredients = null;
     }
 }

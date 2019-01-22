@@ -5,6 +5,7 @@ import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 
 import {Platform} from '@ionic/angular';
+import {RecipeServiceService} from './services/recipe-service.service';
 import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
 import {SimpleStateService} from './services/simple-state-service';
@@ -25,7 +26,8 @@ export class AppComponent {
     private fireAuth: AngularFireAuth,
     private slService: ShoppingListService,
     private itemService: SimpleItemService,
-    private stateService: SimpleStateService
+    private stateService: SimpleStateService,
+    private recipeService: RecipeServiceService
   ) {
     this.initializeApp();
   }
@@ -35,7 +37,7 @@ export class AppComponent {
       this.subscribeToAuthState();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-    });
+    }).catch(e => console.log('Could not initialize platform'));
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out
@@ -46,14 +48,15 @@ export class AppComponent {
             this.stateService.setupHandlers().then(() => {
               this.itemService.setupHandlers();
               this.slService.setupHandlers();
-            });
+              this.recipeService.setupHandlers();
+            }).catch(e => console.log(e));
             this.isAuthenticated = true;
-            //this.router.navigate(['/']);
+            // this.router.navigate(['/']);
 
           } else {
             console.log('Signed off user');
             this.isAuthenticated = false;
-            this.router.navigate(['sign-in']);
+            this.router.navigate(['sign-in']).catch(e => console.log(e));
           }
         }
     );
