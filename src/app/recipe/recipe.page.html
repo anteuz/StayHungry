@@ -8,9 +8,9 @@
     <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
     <ion-card>
         <ion-img *ngIf="mode === 'view'" [src]="recipe.imageURI" alt="Picture of {{recipe.name}}" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-img *ngIf="mode === 'edit' && downloadURL == null" alt="Picture of this item" (src)="recipe.imageURI" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="mode === 'edit' && downloadURL == null" alt="Picture of this item" [src]="recipe.imageURI" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-img *ngIf="mode === 'new' || mode === 'edit' && downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-img *ngIf="mode === 'new' || mode === 'edit' && downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="mode === 'new' && downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-item *ngIf="mode === 'new' || mode === 'edit' && !platformTypeCordova">
             <ion-label position="stacked">Choose recipe image</ion-label>
             <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)"/>
@@ -35,7 +35,7 @@
             </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <ion-item>
+            <ion-item class="noPadding">
                 <ion-label>Recipe ingredients</ion-label>
             </ion-item>
             <ion-grid>
@@ -66,7 +66,9 @@
                                     <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
                                 </ion-col>
                                 <ion-col size="3">
-                                    <ion-toggle [checked]="ingredient.isCollectedAsDefault" [value]="ingredient.isCollectedAsDefault"></ion-toggle>
+                                    <ion-toggle *ngIf="mode === 'edit' || mode === 'new'" [checked]="ingredient.isCollectedAsDefault" [value]="ingredient.isCollectedAsDefault" (ionChange)="onToggleIngredientCollectionDefault(ingredient)"></ion-toggle>
+                                    <ion-icon *ngIf="mode === 'view' && ingredient.isCollectedAsDefault" name="checkmark-circle-outline" color="success"></ion-icon>
+                                    <ion-icon *ngIf="mode === 'view' && !ingredient.isCollectedAsDefault" name="close-circle-outline" color="danger"></ion-icon>
                                 </ion-col>
                             </ion-item>
                             <ion-item-options side="end">
@@ -75,7 +77,7 @@
                     </ion-row>
                 </ion-list>
             </ion-grid>
-            <ion-button (click)="addItems()" fill="clear">
+            <ion-button (click)="addItems()" fill="clear" *ngIf="mode === 'edit' || mode === 'new'" >
                 <ion-icon name="add" slot="start"></ion-icon>
                 <ion-label>Add items</ion-label>
             </ion-button>

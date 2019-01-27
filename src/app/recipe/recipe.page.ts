@@ -64,7 +64,7 @@ export class RecipePage implements OnInit, OnDestroy {
         }
         if (this.mode === 'view' || this.mode === 'edit') {
             this.recipe = this.recipeService.findUsingUUID(this.recipeUUID);
-            if (this.recipe.ingredientMap == null || this.recipe.ingredientMap === undefined) {
+            if ((this.recipe.ingredientMap == null || this.recipe.ingredientMap === undefined) && this.recipe.ingredients !== undefined) {
                 this.recipe.ingredients.sort(compare);
                 this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
             }
@@ -89,6 +89,9 @@ export class RecipePage implements OnInit, OnDestroy {
 
         const {data} = await modal.onDidDismiss(); // Maybe later?
         if (data !== undefined) {
+            if (this.recipe.ingredients === null || this.recipe.ingredients === undefined) {
+                this.recipe.ingredients = [];
+            }
             this.recipe.ingredients.push(...data);
             this.initializeIngredients();
         }
@@ -137,7 +140,7 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     initializeIngredients() {
-        if (this.recipe.ingredients != null) {
+        if (this.recipe.ingredients != null || this.recipe.ingredients != undefined) {
             this.recipe.ingredients.sort(compare);
             this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
         }
@@ -155,9 +158,10 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     initializeForm() {
+
         this.recipeForm = new FormGroup({
             'recipeName': new FormControl(this.recipe.name, Validators.required),
-            'recipeDescription': new FormControl(this.recipe.description)
+            'recipeDescription': new FormControl(this.recipe.description || null)
         });
     }
 
@@ -211,7 +215,7 @@ export class RecipePage implements OnInit, OnDestroy {
         }
         if (this.mode === 'edit') {
             this.recipeService.updateRecipe(this.recipe);
-            this.router.navigate(['/tabs/tab2', 'view', this.recipe.uuid], {relativeTo: this.route});
+            this.router.navigate(['/tabs/tab2/recipe', 'view', this.recipe.uuid], {relativeTo: this.route});
         }
     }
 
@@ -262,8 +266,11 @@ export class RecipePage implements OnInit, OnDestroy {
             // remove picture as this will not be persisted
             this.cloudStore.removeImage(this.recipe.uuid);
         }
-        this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
-
+        if (this.mode === 'new') {
+            this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
+        } else {
+            this.router.navigate(['/tabs/tab2/recipe', 'view', this.recipe.uuid], {relativeTo: this.route});
+        }
     }
 
     ngOnDestroy() {
@@ -271,5 +278,11 @@ export class RecipePage implements OnInit, OnDestroy {
         this.recipe = null;
         this.mode = null;
         this.downloadURL = null;
+        this.recipeForm = null;
+    }
+
+    onToggleIngredientCollectionDefault(ingredient: Ingredient) {
+        console.log(ingredient.isCollectedAsDefault);
+        this.recipe.ingredients[this.recipe.ingredients.indexOf(ingredient)].isCollectedAsDefault = !ingredient.isCollectedAsDefault;
     }
 }

@@ -1,14 +1,45 @@
 <ion-header>
     <ion-toolbar color="secondary">
-        <ion-title>Recipes</ion-title>
+        <ion-segment scrollable>
+            <ion-segment-button>
+                <ion-icon name="globe" ariaLabel="All"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="basket" ariaLabel="Basic stuff"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="pizza"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="wine"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="ice-cream"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="construct"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="medkit"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button>
+                <ion-icon name="shirt"></ion-icon>
+            </ion-segment-button>
+        </ion-segment>
         <ion-buttons slot="secondary">
             <ion-menu-toggle>
                 <ion-button icon-only menuClose>
-                    <ion-icon name="menu"></ion-icon>
+                    <ion-icon slot="icon-only" name="menu"></ion-icon>
                 </ion-button>
             </ion-menu-toggle>
             <ion-button (click)="onNewRecipe()">
-                <ion-icon name="add"></ion-icon>
+                <ion-icon slot="icon-only" name="add"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="primary">
+            <ion-button (click)="checkCart()" id="notification-button">
+                <ion-icon name="cart" slot="icon-only"></ion-icon>
+                <ion-badge id="notifications-badge" slot="end" color="danger">22</ion-badge>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -16,6 +47,7 @@
 </ion-header>
 
 <ion-content padding>
+
     <ion-virtual-scroll #virtualScroll [items]="recipes">
         <ion-item *virtualItem="let recipe">
                 <ion-thumbnail slot="start">
@@ -25,7 +57,7 @@
                     <h3>{{recipe.name}}</h3>
                     <p>{{recipe.ingredients | objectName}}</p>
                 </ion-label>
-                <ion-icon slot="end" name="cart" (click)="openRecipe(recipe)"> </ion-icon>
+                <ion-icon slot="end" name="add-circle" (click)="openRecipe(recipe)"> </ion-icon>
         </ion-item>
     </ion-virtual-scroll>
 </ion-content>
