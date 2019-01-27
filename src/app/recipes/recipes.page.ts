@@ -47,6 +47,10 @@ export class RecipesPage implements OnInit, OnDestroy {
     this.recipeService.removeRecipe(recipe);
   }
 
+  openRecipe(recipe: Recipe) {
+    this.router.navigate(['/tabs/tab2/recipe', 'view', recipe.uuid], {relativeTo: this.route}).catch(e => console.log('Could not navigate'));
+  }
+
   getStyle(ingredientColor: string) {
     return '5px solid var(' + ingredientColor + ')';
   }

@@ -1,15 +1,17 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {NavParams} from '@ionic/angular';
 import {IsCollectedPipe} from './iscollected.pipe';
+import {ObjectNamePipe} from './object-name.pipe';
 
 @NgModule({
     declarations: [
-        IsCollectedPipe
+        IsCollectedPipe,
+        ObjectNamePipe
     ],
     exports: [
         CommonModule,
-        IsCollectedPipe
+        IsCollectedPipe,
+        ObjectNamePipe
     ]
 })
 export class SharedModule {}

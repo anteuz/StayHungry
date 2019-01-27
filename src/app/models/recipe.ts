@@ -5,7 +5,7 @@ export class Recipe {
     public uuid: string = null;
     public name: string = null;
     public description: string = null;
-    public imageURI: string = null;
+    public imageURI: any = null;
     public ingredients: Ingredient [] = null;
     ingredientMap: Map<string, Ingredient[]>;
 
@@ -13,7 +13,7 @@ export class Recipe {
         uuid: string,
         name: string,
         description: string,
-        imageURI: string,
+        imageURI: any,
         ingredients: Ingredient []
     ) {
         this.uuid = uuid;

@@ -16,6 +16,10 @@ const routes: Routes = [
   {
     path: ':mode',
     component: RecipePage
+  },
+  {
+    path: ':mode/:id',
+    component: RecipePage
   }
 ];
 

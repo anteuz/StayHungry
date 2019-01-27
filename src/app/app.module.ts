@@ -17,7 +17,6 @@ import {environment} from '../environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {IngredientOverlayPage} from './ingredient-overlay/ingredient-overlay.page';
-import {Recipe} from './models/recipe';
 import {CloudStoreService} from './services/cloud-store.service';
 import {RecipeServiceService} from './services/recipe-service.service';
 import {SimpleStateService} from './services/simple-state-service';
@@ -32,8 +31,7 @@ import { ObjectNamePipe } from './shared/object-name.pipe';
     declarations: [
         AppComponent,
         IngredientOverlayPage,
-        ShoppingListItemsComponent,
-        ObjectNamePipe
+        ShoppingListItemsComponent
     ],
     entryComponents: [IngredientOverlayPage],
     imports: [

@@ -7,27 +7,31 @@
 <ion-content>
     <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
     <ion-card>
-        <ion-img *ngIf="downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-img *ngIf="downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-item *ngIf="!platformTypeCordova">
+        <ion-img *ngIf="mode === 'view'" [src]="recipe.imageURI" alt="Picture of {{recipe.name}}" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="mode === 'edit' && downloadURL == null" alt="Picture of this item" (src)="recipe.imageURI" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="mode === 'new' || mode === 'edit' && downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="mode === 'new' || mode === 'edit' && downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-item *ngIf="mode === 'new' || mode === 'edit' && !platformTypeCordova">
             <ion-label position="stacked">Choose recipe image</ion-label>
             <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)"/>
         </ion-item>
-        <ion-item *ngIf="platformTypeCordova" lines="none">
+        <ion-item *ngIf="mode === 'new' || mode === 'edit' && platformTypeCordova" lines="none">
             <ion-button fill="clear" (click)="getRecipeImageFromCamera()">
                 <ion-icon name="add" slot="start"></ion-icon>
-                <ion-label *ngIf="recipeImageURI != null">Edit image</ion-label>
-                <ion-label *ngIf="recipeImageURI == null">Add image</ion-label>
+                <ion-label *ngIf="recipe.imageURI != null">Edit image</ion-label>
+                <ion-label *ngIf="recipe.imageURI == null">Add image</ion-label>
             </ion-button>
         </ion-item>
         <ion-card-header>
             <ion-card-title>
-                <ion-label position="stacked">Recipe name</ion-label>
-                <ion-input placeholder="Type here..." formControlName="recipeName"></ion-input>
+                <ion-label *ngIf="mode === 'view'">{{recipe.name}}</ion-label>
+                <ion-label *ngIf="mode === 'new' || mode === 'edit'" position="stacked">Recipe name</ion-label>
+                <ion-input *ngIf="mode === 'new' || mode === 'edit'" placeholder="Type here..." formControlName="recipeName"></ion-input>
             </ion-card-title>
             <ion-card-subtitle>
-                <ion-label position="stacked">Recipe description</ion-label>
-                <ion-input placeholder="Optional" formControlName="recipeDescription"></ion-input>
+                <ion-label *ngIf="mode === 'view'">{{recipe.description}}</ion-label>
+                <ion-label *ngIf="mode === 'new' || mode === 'edit'" position="stacked">Recipe description</ion-label>
+                <ion-input *ngIf="mode === 'new' || mode === 'edit'" placeholder="Optional" formControlName="recipeDescription"></ion-input>
             </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
@@ -49,7 +53,7 @@
                             </ion-col>
                         </ion-list-header>
                     </ion-row>
-                    <ion-row *ngFor="let ingredient of ingredients; let i = index">
+                    <ion-row *ngFor="let ingredient of recipe.ingredients; let i = index">
                         <ion-item-sliding>
                             <ion-item class="noPadding">
                                 <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
@@ -66,22 +70,6 @@
                                 </ion-col>
                             </ion-item>
                             <ion-item-options side="end">
-                                <ion-item-option
-                                        size="small"
-                                        color="primary"
-                                        (click)="onEdit(ingredient)"
-                                >
-                                    <ion-icon name="create"></ion-icon>
-                                    Edit
-                                </ion-item-option>
-                                <ion-item-option
-                                        size="small"
-                                        color="secondary"
-                                        (click)="onRemoveItem(ingredient)"
-                                >
-                                    <ion-icon name="trash"></ion-icon>
-                                    Delete
-                                </ion-item-option>
                             </ion-item-options>
                         </ion-item-sliding>
                     </ion-row>

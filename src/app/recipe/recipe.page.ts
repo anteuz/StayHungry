@@ -24,15 +24,10 @@ export class RecipePage implements OnInit, OnDestroy {
 
     mode;
     @ViewChild('ingredientList') ingredientList: IonList;
-
+    recipe: Recipe;
     recipeUUID;
-    recipeImageURI;
     recipeImageUploadPercentage: number;
     downloadURL: Observable<string>;
-    recipeName: string;
-    recipeDescription: string;
-    ingredients: Ingredient[] = [];
-    ingredientMap: Map<string, Ingredient[]>;
     recipeForm: FormGroup;
     platformTypeCordova: boolean;
 
@@ -51,7 +46,6 @@ export class RecipePage implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.platformTypeCordova = this.platform.is('cordova');
-        this.recipeUUID = Guid.create().toString();
 
         console.log('onInit');
         // Get Route parameter
@@ -59,9 +53,21 @@ export class RecipePage implements OnInit, OnDestroy {
             .subscribe(
                 (params: Params) => {
                     this.mode = params['mode'];
+                    this.recipeUUID = params['id'];
                 }
             );
-        if (this.mode === 'new' || this.mode === 'edit') {
+
+        console.log(this.mode);
+        if (this.mode === 'new') {
+           this.recipe = new Recipe(Guid.create().toString(), null, null, null, []);
+            this.initializeForm();
+        }
+        if (this.mode === 'view' || this.mode === 'edit') {
+            this.recipe = this.recipeService.findUsingUUID(this.recipeUUID);
+            if (this.recipe.ingredientMap == null || this.recipe.ingredientMap === undefined) {
+                this.recipe.ingredients.sort(compare);
+                this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
+            }
             this.initializeForm();
         }
     }
@@ -83,7 +89,7 @@ export class RecipePage implements OnInit, OnDestroy {
 
         const {data} = await modal.onDidDismiss(); // Maybe later?
         if (data !== undefined) {
-            this.ingredients.push(...data);
+            this.recipe.ingredients.push(...data);
             this.initializeIngredients();
         }
         modal = null;
@@ -107,7 +113,7 @@ export class RecipePage implements OnInit, OnDestroy {
         const {data} = await modal.onDidDismiss();
         // if data is provided, if action is cancelled data is undefined (backdrop tapped)
         if (data !== undefined) {
-            this.ingredients[this.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
+            this.recipe.ingredients[this.recipe.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
             this.initializeIngredients();
         }
         modal = null;
@@ -119,11 +125,11 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     getStyleClass(ingredient: Ingredient) {
-        if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length > 1) {
+        if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.recipe.ingredientMap.get(ingredient.item.itemColor).length > 1) {
             return 'roundedCornersTop';
-        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length === 1) {
+        } else if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.recipe.ingredientMap.get(ingredient.item.itemColor).length === 1) {
             return 'roundedCornersSingle';
-        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === this.ingredientMap.get(ingredient.item.itemColor).length - 1) {
+        } else if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === this.recipe.ingredientMap.get(ingredient.item.itemColor).length - 1) {
             return 'roundedCornersBottom';
         } else {
             return 'roundedCornersMiddle';
@@ -131,40 +137,38 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     initializeIngredients() {
-        if (this.ingredients != null) {
-            this.ingredients.sort(compare);
-            this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+        if (this.recipe.ingredients != null) {
+            this.recipe.ingredients.sort(compare);
+            this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
         }
     }
 
     onRemoveItem(index: Ingredient) {
         this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
-        this.ingredients.splice(this.ingredients.indexOf(index), 1);
+        this.recipe.ingredients.splice(this.recipe.ingredients.indexOf(index), 1);
     }
 
     findIngredientUsingUUID(searchTerm) {
-        return this.ingredients.filter((ingredient) => {
+        return this.recipe.ingredients.filter((ingredient) => {
             return ingredient.uuid.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         });
     }
 
     initializeForm() {
-        if (this.mode === 'new') {
-            this.recipeForm = new FormGroup({
-                'recipeName': new FormControl(this.recipeName, Validators.required),
-                'recipeDescription': new FormControl(this.recipeDescription)
-            });
-        }
+        this.recipeForm = new FormGroup({
+            'recipeName': new FormControl(this.recipe.name, Validators.required),
+            'recipeDescription': new FormControl(this.recipe.description)
+        });
     }
 
     onChangeImageUpload(event) {
         const files = event.srcElement.files;
         console.log(files);
-        this.recipeImageURI = files[0];
-        this.uploadFile(this.recipeUUID);
+        this.recipe.imageURI = files[0];
+        this.uploadFile();
     }
 
-    async uploadFile(recipeUUID: string) {
+    private async uploadFile() {
 
         const loadingDialog = await this.loadingCtrl.create({
             message: 'Uploading image...',
@@ -174,17 +178,17 @@ export class RecipePage implements OnInit, OnDestroy {
 
         loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
 
-        const uploadTask = this.cloudStore.storeRecipeImage(this.recipeImageURI, recipeUUID);
+        const uploadTask = this.cloudStore.storeRecipeImage(this.recipe.imageURI, this.recipe.uuid);
 
         uploadTask.percentageChanges().subscribe(value => this.recipeImageUploadPercentage = value.valueOf() / 100);
         uploadTask.snapshotChanges().pipe(
             finalize
             (
                 () => {
-                    this.downloadURL = this.cloudStore.getReferenceToUploadedFile(recipeUUID).getDownloadURL();
+                    this.downloadURL = this.cloudStore.getReferenceToUploadedFile(this.recipe.uuid).getDownloadURL();
                     this.downloadURL.subscribe((value) => {
                         // save download url as recipe img src
-                        this.recipeImageURI = value;
+                        this.recipe.imageURI = value;
                         // persist
                         console.log(value);
                         // navigate away
@@ -199,16 +203,16 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     onSubmit() {
-        const recipe = new Recipe(
-            this.recipeUUID,
-            this.recipeForm.get('recipeName').value,
-            this.recipeForm.get('recipeDescription').value,
-            this.recipeImageURI ? this.recipeImageURI : null,
-            this.ingredients);
-
-        this.recipeService.addItem(recipe);
-
-        this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
+        this.recipe.name =  this.recipeForm.get('recipeName').value;
+        this.recipe.description = this.recipeForm.get('recipeDescription').value;
+        if (this.mode === 'new') {
+            this.recipeService.addItem(this.recipe);
+            this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
+        }
+        if (this.mode === 'edit') {
+            this.recipeService.updateRecipe(this.recipe);
+            this.router.navigate(['/tabs/tab2', 'view', this.recipe.uuid], {relativeTo: this.route});
+        }
     }
 
     getRecipeImageFromCamera() {
@@ -227,10 +231,10 @@ export class RecipePage implements OnInit, OnDestroy {
                     const currentName = imageData.replace(/^.*[\\\/]/, '');
                     const path = imageData.replace(/[^\/]*$/, '');
                     this.file.readAsArrayBuffer(path, currentName).then((res) => {
-                        this.recipeImageURI = new Blob([res], {
+                        this.recipe.imageURI = new Blob([res], {
                             type: 'image/jpeg'
                         });
-                        this.uploadFile(this.recipeUUID);
+                        this.uploadFile();
                     }).catch(e => console.log(e));
                 }, (err) => {
                     console.log(err);
@@ -244,6 +248,9 @@ export class RecipePage implements OnInit, OnDestroy {
             }
         }).catch(e => console.log('Could not enable camera!' + e));
     }
+    onEditRecipe() {
+        this.router.navigate(['/tabs/tab2/recipe', 'edit', this.recipe.uuid], {relativeTo: this.route});
+    }
 
     onCancel() {
         // camera clean up
@@ -253,18 +260,16 @@ export class RecipePage implements OnInit, OnDestroy {
 
         if (this.downloadURL != null && this.mode === 'new') {
             // remove picture as this will not be persisted
-            this.cloudStore.removeImage(this.recipeUUID);
+            this.cloudStore.removeImage(this.recipe.uuid);
         }
         this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
 
     }
+
     ngOnDestroy() {
         console.log('On destroy');
-        this.recipeUUID = null;
-        this.recipeImageURI = null;
-        this.recipeImageUploadPercentage = null;
-        this.recipeName = null;
-        this.recipeDescription = null;
-        this.ingredients = null;
+        this.recipe = null;
+        this.mode = null;
+        this.downloadURL = null;
     }
 }

@@ -8,7 +8,9 @@ export class ObjectNamePipe implements PipeTransform {
 
   transform(value: Ingredient[]): string[] {
     const names: string[] = [];
-
+    if (value === undefined) {
+      return names;
+    }
     for (let i = 0; i < value.length; i++) {
       if (value != null) {
         names.push(value[i].item.itemName);

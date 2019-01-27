@@ -18,11 +18,14 @@
 <ion-content padding>
     <ion-virtual-scroll #virtualScroll [items]="recipes">
         <ion-item *virtualItem="let recipe">
-                <ion-avatar slot="start">
-                    <ion-img [src]="recipe.imageURI"></ion-img>
-                </ion-avatar>
-                <ion-label>{{recipe.name}}</ion-label>
-                <ion-icon slot="end" name="close-circle"></ion-icon>
+                <ion-thumbnail slot="start">
+                    <ion-img [src]="recipe.imageURI" [alt]="recipe.name"></ion-img>
+                </ion-thumbnail>
+                <ion-label>
+                    <h3>{{recipe.name}}</h3>
+                    <p>{{recipe.ingredients | objectName}}</p>
+                </ion-label>
+                <ion-icon slot="end" name="cart" (click)="openRecipe(recipe)"> </ion-icon>
         </ion-item>
     </ion-virtual-scroll>
 </ion-content>
