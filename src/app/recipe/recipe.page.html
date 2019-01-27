@@ -62,7 +62,7 @@
                                     <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
                                 </ion-col>
                                 <ion-col size="3">
-                                    <ion-toggle></ion-toggle>
+                                    <ion-toggle [checked]="ingredient.isCollectedAsDefault" [value]="ingredient.isCollectedAsDefault"></ion-toggle>
                                 </ion-col>
                             </ion-item>
                             <ion-item-options side="end">

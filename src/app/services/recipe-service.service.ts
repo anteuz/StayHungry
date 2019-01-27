@@ -26,7 +26,7 @@ export class RecipeServiceService {
         // Setup DB PATH
         this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/recipes';
         // Subscribe to value changes
-        this.fireDatabase.list<Recipe>(this.DATABASE_PATH).valueChanges().subscribe((payload: Recipe[]) => {
+        this.fireDatabase.list<Recipe>(this.DATABASE_PATH).valueChanges().subscribe((payload) => {
             if (payload) {
                 this.recipes = payload;
                 console.log(payload);

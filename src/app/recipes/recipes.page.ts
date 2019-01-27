@@ -1,5 +1,6 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {IonItem, IonVirtualScroll} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {Ingredient} from '../models/ingredient';
 import {Recipe} from '../models/recipe';
@@ -16,6 +17,7 @@ export class RecipesPage implements OnInit, OnDestroy {
 
   recipes: Recipe[] = [];
   subscriptions: Subscription = new Subscription();
+  @ViewChild('virtualScroll') virtualScroll: IonVirtualScroll;
   constructor(
       private router: Router,
       private route: ActivatedRoute,
@@ -25,9 +27,11 @@ export class RecipesPage implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.subscriptions.add(
-      this.recipeService.recipeEvent.subscribe((recipes: Recipe[]) => this.recipes = recipes)
+      this.recipeService.recipeEvent.subscribe((recipes: Recipe[]) => {
+          this.recipes = recipes;
+          console.log(this.recipes);
+      })
     );
-
   }
 
   ngOnDestroy(): void {
@@ -42,6 +46,7 @@ export class RecipesPage implements OnInit, OnDestroy {
     this.cloudStore.removeImage(recipe.uuid);
     this.recipeService.removeRecipe(recipe);
   }
+
   getStyle(ingredientColor: string) {
     return '5px solid var(' + ingredientColor + ')';
   }

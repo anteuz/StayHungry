@@ -203,7 +203,7 @@ export class RecipePage implements OnInit, OnDestroy {
             this.recipeUUID,
             this.recipeForm.get('recipeName').value,
             this.recipeForm.get('recipeDescription').value,
-            this.recipeImageURI,
+            this.recipeImageURI ? this.recipeImageURI : null,
             this.ingredients);
 
         this.recipeService.addItem(recipe);
