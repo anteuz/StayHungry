@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IonItem, IonVirtualScroll} from '@ionic/angular';
+import {IonItem, IonItemSliding, IonVirtualScroll} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {Ingredient} from '../models/ingredient';
 import {Recipe} from '../models/recipe';
@@ -17,6 +17,8 @@ export class RecipesPage implements OnInit, OnDestroy {
 
   recipes: Recipe[] = [];
   subscriptions: Subscription = new Subscription();
+  recipeFilter = 'all';
+
   @ViewChild('virtualScroll') virtualScroll: IonVirtualScroll;
   constructor(
       private router: Router,
@@ -42,13 +44,9 @@ export class RecipesPage implements OnInit, OnDestroy {
     this.router.navigate(['/tabs/tab2/recipe', 'new'], {relativeTo: this.route}).catch(e => console.log('Could not navigate'));
   }
 
-  onDelete(recipe: Recipe) {
-    this.cloudStore.removeImage(recipe.uuid);
-    this.recipeService.removeRecipe(recipe);
-  }
-
-  openRecipe(recipe: Recipe) {
-    this.router.navigate(['/tabs/tab2/recipe', 'view', recipe.uuid], {relativeTo: this.route}).catch(e => console.log('Could not navigate'));
+  openRecipe(recipe: Recipe, slidingItem: IonItemSliding) {
+      slidingItem.closeOpened();
+      this.router.navigate(['/tabs/tab2/recipe', 'view', recipe.uuid], {relativeTo: this.route}).catch(e => console.log('Could not navigate'));
   }
 
   getStyle(ingredientColor: string) {
@@ -70,4 +68,13 @@ export class RecipesPage implements OnInit, OnDestroy {
       return 'roundedCornersMiddle';
     }
   }
+    segmentChanged(event: any) {
+      this.recipeFilter = event.detail.value;
+      console.log(this.recipeFilter);
+      if (this.recipeFilter === 'all') {
+          this.recipes = this.recipeService.getItems();
+      } else {
+          this.recipes = this.recipeService.filterUsingCategory(this.recipeFilter);
+      }
+    }
 }

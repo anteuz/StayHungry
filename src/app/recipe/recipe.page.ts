@@ -59,7 +59,7 @@ export class RecipePage implements OnInit, OnDestroy {
 
         console.log(this.mode);
         if (this.mode === 'new') {
-           this.recipe = new Recipe(Guid.create().toString(), null, null, null, []);
+           this.recipe = new Recipe(Guid.create().toString(), null, null, null, [], null);
             this.initializeForm();
         }
         if (this.mode === 'view' || this.mode === 'edit') {
@@ -121,6 +121,12 @@ export class RecipePage implements OnInit, OnDestroy {
         }
         modal = null;
         this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
+    }
+
+    onDeleteRecipe() {
+        this.cloudStore.removeImage(this.recipe.uuid);
+        this.recipeService.removeRecipe(this.recipe);
+        this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
     }
 
     getStyle(ingredientColor: string) {
@@ -284,5 +290,9 @@ export class RecipePage implements OnInit, OnDestroy {
     onToggleIngredientCollectionDefault(ingredient: Ingredient) {
         console.log(ingredient.isCollectedAsDefault);
         this.recipe.ingredients[this.recipe.ingredients.indexOf(ingredient)].isCollectedAsDefault = !ingredient.isCollectedAsDefault;
+    }
+
+    segmentChanged(event: any) {
+        this.recipe.category = event.detail.value;
     }
 }

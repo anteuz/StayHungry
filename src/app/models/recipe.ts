@@ -8,18 +8,21 @@ export class Recipe {
     public imageURI: any = null;
     public ingredients: Ingredient [] = null;
     ingredientMap: Map<string, Ingredient[]>;
+    public category: string = 'food';
 
     constructor(
         uuid: string,
         name: string,
         description: string,
         imageURI: any,
-        ingredients: Ingredient []
+        ingredients: Ingredient [],
+        category: string
     ) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.imageURI = imageURI;
         this.ingredients = ingredients || null;
+        this.category = category || 'food';
     }
 }

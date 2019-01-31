@@ -76,4 +76,8 @@ export class RecipeServiceService {
     findUsingUUID(searchTerm): Recipe {
         return this.recipes.find(recipe => recipe.uuid === searchTerm);
     }
+
+    filterUsingCategory(category): Recipe[] {
+        return this.recipes.filter(recipe => recipe.category === category);
+    }
 }

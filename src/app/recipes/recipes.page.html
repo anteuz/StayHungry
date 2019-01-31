@@ -1,28 +1,28 @@
 <ion-header>
     <ion-toolbar color="secondary">
-        <ion-segment scrollable>
-            <ion-segment-button>
+        <ion-segment scrollable (ionChange)="segmentChanged($event)">
+            <ion-segment-button checked value="all">
                 <ion-icon name="globe" ariaLabel="All"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="basicStuff">
                 <ion-icon name="basket" ariaLabel="Basic stuff"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="food">
                 <ion-icon name="pizza"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="drinks">
                 <ion-icon name="wine"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="desserts">
                 <ion-icon name="ice-cream"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="householdUtilities">
                 <ion-icon name="construct"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="apothecary">
                 <ion-icon name="medkit"></ion-icon>
             </ion-segment-button>
-            <ion-segment-button>
+            <ion-segment-button value="clothes">
                 <ion-icon name="shirt"></ion-icon>
             </ion-segment-button>
         </ion-segment>
@@ -49,15 +49,27 @@
 <ion-content padding>
 
     <ion-virtual-scroll #virtualScroll [items]="recipes">
-        <ion-item *virtualItem="let recipe">
+        <ion-item-sliding *virtualItem="let recipe" #slidingItem>
+            <ion-item>
                 <ion-thumbnail slot="start">
-                    <ion-img [src]="recipe.imageURI" [alt]="recipe.name"></ion-img>
+                    <ion-img [src]="recipe.imageURI ? recipe.imageURI : 'assets/images/No_image_available.svg'" [alt]="recipe.name"></ion-img>
                 </ion-thumbnail>
                 <ion-label>
                     <h3>{{recipe.name}}</h3>
                     <p>{{recipe.ingredients | objectName}}</p>
                 </ion-label>
-                <ion-icon slot="end" name="add-circle" (click)="openRecipe(recipe)"> </ion-icon>
-        </ion-item>
+                <ion-icon slot="end" name="add-circle" (click)="addToCart(recipe)"></ion-icon>
+            </ion-item>
+            <ion-item-options side="end">
+                <ion-item-option
+                        size="small"
+                        color="primary"
+                        (click)="openRecipe(recipe, slidingItem)"
+                >
+                    <ion-icon name="open"></ion-icon>
+                    View
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
     </ion-virtual-scroll>
 </ion-content>

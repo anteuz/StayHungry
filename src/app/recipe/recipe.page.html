@@ -9,9 +9,9 @@
     <ion-card>
         <ion-img *ngIf="mode === 'view'" [src]="recipe.imageURI" alt="Picture of {{recipe.name}}" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-img *ngIf="mode === 'edit' && downloadURL == null" alt="Picture of this item" [src]="recipe.imageURI" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-img *ngIf="mode === 'new' || mode === 'edit' && downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
+        <ion-img *ngIf="(mode === 'new' || mode === 'edit') && downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-img *ngIf="mode === 'new' && downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-item *ngIf="mode === 'new' || mode === 'edit' && !platformTypeCordova">
+        <ion-item *ngIf="(mode === 'new' || mode === 'edit') && !platformTypeCordova">
             <ion-label position="stacked">Choose recipe image</ion-label>
             <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)"/>
         </ion-item>
@@ -35,7 +35,36 @@
             </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-            <ion-item class="noPadding">
+            <ion-item class="noPadding" lines="none">
+                <ion-label position="stacked">Recipe category</ion-label>
+                <ion-segment scrollable (ionChange)="segmentChanged($event)" [value]="recipe.category" [disabled]="mode === 'view' ? true : false">
+                    <ion-segment-button checked value="all">
+                        <ion-icon name="globe" ariaLabel="All"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="basicStuff">
+                        <ion-icon name="basket" ariaLabel="Basic stuff"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="food">
+                        <ion-icon name="pizza"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="drinks">
+                        <ion-icon name="wine"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="desserts">
+                        <ion-icon name="ice-cream"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="householdUtilities">
+                        <ion-icon name="construct"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="apothecary">
+                        <ion-icon name="medkit"></ion-icon>
+                    </ion-segment-button>
+                    <ion-segment-button value="clothes">
+                        <ion-icon name="shirt"></ion-icon>
+                    </ion-segment-button>
+                </ion-segment>
+            </ion-item>
+            <ion-item class="noPadding" lines="none">
                 <ion-label>Recipe ingredients</ion-label>
             </ion-item>
             <ion-grid>
@@ -71,7 +100,23 @@
                                     <ion-icon *ngIf="mode === 'view' && !ingredient.isCollectedAsDefault" name="close-circle-outline" color="danger"></ion-icon>
                                 </ion-col>
                             </ion-item>
-                            <ion-item-options side="end">
+                            <ion-item-options side="end" *ngIf="mode === 'new' || mode === 'edit'">
+                                <ion-item-option
+                                        size="small"
+                                        color="primary"
+                                        (click)="onEdit(ingredient)"
+                                >
+                                    <ion-icon name="create"></ion-icon>
+                                    Edit
+                                </ion-item-option>
+                                <ion-item-option
+                                        size="small"
+                                        color="secondary"
+                                        (click)="onRemoveItem(ingredient)"
+                                >
+                                    <ion-icon name="trash"></ion-icon>
+                                    Delete
+                                </ion-item-option>
                             </ion-item-options>
                         </ion-item-sliding>
                     </ion-row>
