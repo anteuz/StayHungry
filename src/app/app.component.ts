@@ -61,4 +61,7 @@ export class AppComponent {
         }
     );
   }
+  onLogout() {
+    this.fireAuth.auth.signOut();
+  }
 }

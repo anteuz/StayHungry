@@ -7,6 +7,7 @@ import {AngularFireStorageModule} from '@angular/fire/storage';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
+import {ImageResizer} from '@ionic-native/image-resizer/ngx';
 import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 
@@ -25,15 +26,18 @@ import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ShoppingListItemsComponent } from './shopping-list-items/shopping-list-items.component';
-import { ObjectNamePipe } from './shared/object-name.pipe';
+import { CartPopoverComponent } from './cart-popover/cart-popover.component';
+import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping-list-transfer.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         IngredientOverlayPage,
-        ShoppingListItemsComponent
+        ShoppingListItemsComponent,
+        CartPopoverComponent,
+        ShoppingListTransferComponent
     ],
-    entryComponents: [IngredientOverlayPage],
+    entryComponents: [IngredientOverlayPage, CartPopoverComponent, ShoppingListTransferComponent],
     imports: [
         BrowserModule,
         FormsModule,
@@ -59,6 +63,7 @@ import { ObjectNamePipe } from './shared/object-name.pipe';
         SimpleStateService,
         CloudStoreService,
         RecipeServiceService,
+        ImageResizer,
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]

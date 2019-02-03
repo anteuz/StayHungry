@@ -1,0 +1,63 @@
+<ion-content (click)="onDismiss($event)">
+    <ion-list lines="none">
+        <ion-list-header>
+            <ion-label>Read to move these items to shopping list</ion-label>
+        </ion-list-header>
+        <div *ngFor="let recipe of cart.recipes">
+            <ion-item-divider sticky="true">
+                <ion-avatar slot="start">
+                    <ion-img [src]="recipe.imageURI ? recipe.imageURI : 'assets/images/No_image_available.svg'"
+                             [alt]="recipe.name"></ion-img>
+                </ion-avatar>
+                <ion-label text-center justify-content-center align-items-center align-self-center>{{recipe.name}}</ion-label>
+            </ion-item-divider>
+            <ion-grid>
+                <ion-list #ingredientList>
+                    <ion-row>
+                        <ion-list-header class="noPadding">
+                            <ion-col size="6">
+                                <ion-label>Item name</ion-label>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-label>#</ion-label>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-label>Include</ion-label>
+                            </ion-col>
+                        </ion-list-header>
+                    </ion-row>
+                    <ion-row *ngFor="let ingredient of recipe.ingredients; let i = index">
+                        <ion-item-sliding>
+                        <ion-item class="noPadding">
+                            <div [class]="getStyleClass(recipe, ingredient)"
+                                 [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
+                            <ion-col size="6">
+                                <ion-label>
+                                    <h3>{{ ingredient.item.itemName }}</h3>
+                                </ion-label>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-badge *ngIf="ingredient.amount != '0'"
+                                           color="primary">{{ ingredient.amount }}</ion-badge>
+                            </ion-col>
+                            <ion-col size="3">
+                                <ion-toggle [checked]="ingredient.isCollectedAsDefault"
+                                            [value]="ingredient.isCollectedAsDefault"
+                                            (ionChange)="isItemCollected(recipe, ingredient)"></ion-toggle>
+                            </ion-col>
+                        </ion-item>
+                        </ion-item-sliding>
+                    </ion-row>
+                </ion-list>
+            </ion-grid>
+        </div>
+    </ion-list>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-button expand="block" fill="solid" text-center (click)="addToShoppingList()">
+            <ion-icon name="add" slot="start"></ion-icon>
+            <ion-label>Add to shopping list</ion-label>
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

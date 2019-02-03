@@ -126,3 +126,7 @@ ion-spinner {
   display: block;
   margin: auto;
 }
+cartPopover .popover-content{ width: 320px; }
+.cartPopover {
+  --width: 320px;
+}

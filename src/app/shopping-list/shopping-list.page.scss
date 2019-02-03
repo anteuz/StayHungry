@@ -35,8 +35,6 @@
 }
 ion-list.unCollected {
   --ion-background-color: white;
-  border-bottom: 3px dotted slategrey;
-  margin-bottom: 3px;
   padding-left: 0px;
   padding-right: 0px;
 }
@@ -103,4 +101,12 @@ ion-spinner {
 }
 .sc-ion-modal-md-h {
   --background: rgba(0,0,0,.0)!important;
+}
+.shopping-list-border {
+  position: relative;
+  margin-top: -6px;
+  margin-left: 1px;
+  height: 6px;
+  background: url(../../assets/images/wave.png) repeat-x 0 0;
+  background-size: auto 6px;
 }

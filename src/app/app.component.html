@@ -14,11 +14,11 @@
                         <ion-label>Settings</ion-label>
                     </ion-list-header>
                     <!-- End Shopping Lists -->
-                    <ion-item *ngIf="!isAuthenticated" slot="start" (click)="onLoad(signinPage)">
+                    <ion-item *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-in']">
                         <ion-icon name="log-in"></ion-icon>
                         <ion-label>Sign in</ion-label>
                     </ion-item>
-                    <ion-item *ngIf="!isAuthenticated" slot="start" (click)="onLoad(signupPage)">
+                    <ion-item *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-up']">
                         <ion-icon name="person"></ion-icon>
                         <ion-label>Sign up</ion-label>
                     </ion-item>

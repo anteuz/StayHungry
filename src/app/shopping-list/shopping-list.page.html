@@ -33,10 +33,10 @@
 
     <ion-item *ngIf="!loading && shoppingList == null">
         <ion-icon name="alert" color="warning"></ion-icon>
-        <ion-label text-wrap>You have no shopping lists, please create one first!</ion-label>
+        <ion-label id="no-shopping-list-text" text-wrap>You have no shopping lists, please create one first!</ion-label>
     </ion-item>
 
-    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList != null && ingredients != undefined">
+    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList !== null && ingredients !== undefined" lines="inset">
         <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
             <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
                 <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
@@ -65,8 +65,9 @@
             </ion-item-options>
         </ion-item-sliding>
     </ion-list>
+    <div class="shopping-list-border"></div>
     <!-- Collected items List -->
-    <ion-list lines="none" position="bottom" *ngIf="shoppingList != null && (ingredients | isCollected : true).length > 0">
+    <ion-list lines="none" position="bottom" *ngIf="shoppingList !== null && ingredients !== null && (ingredients | isCollected : true).length > 0">
             <ion-item>
                 <ion-label>
                     <h3>Collected items: {{(ingredients | isCollected : true).length}} </h3>

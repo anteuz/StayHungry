@@ -231,7 +231,7 @@ export class RecipePage implements OnInit, OnDestroy {
             if (this.platformTypeCordova) {
                 // make your native API calls
                 const options: CameraOptions = {
-                    quality: 100,
+                    quality: 70,
                     destinationType: this.camera.DestinationType.FILE_URI,
                     encodingType: this.camera.EncodingType.JPEG,
                     mediaType: this.camera.MediaType.PICTURE

@@ -1,7 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IonItem, IonItemSliding, IonVirtualScroll} from '@ionic/angular';
+import {IonItem, IonItemSliding, IonVirtualScroll, PopoverController} from '@ionic/angular';
+import {Guid} from 'guid-typescript';
 import {Subscription} from 'rxjs';
+import {CartPopoverComponent} from '../cart-popover/cart-popover.component';
+import {Cart} from '../models/cart';
 import {Ingredient} from '../models/ingredient';
 import {Recipe} from '../models/recipe';
 import {CloudStoreService} from '../services/cloud-store.service';
@@ -18,13 +21,15 @@ export class RecipesPage implements OnInit, OnDestroy {
   recipes: Recipe[] = [];
   subscriptions: Subscription = new Subscription();
   recipeFilter = 'all';
+  cart: Cart = null;
 
   @ViewChild('virtualScroll') virtualScroll: IonVirtualScroll;
   constructor(
       private router: Router,
       private route: ActivatedRoute,
       private recipeService: RecipeServiceService,
-      private cloudStore: CloudStoreService) { }
+      private cloudStore: CloudStoreService,
+      public popoverController: PopoverController) { }
 
   ngOnInit() {
 
@@ -75,6 +80,31 @@ export class RecipesPage implements OnInit, OnDestroy {
           this.recipes = this.recipeService.getItems();
       } else {
           this.recipes = this.recipeService.filterUsingCategory(this.recipeFilter);
+      }
+    }
+
+    addToCart(recipe: Recipe) {
+      if (this.cart === null) {
+        this.cart = new Cart(Guid.create().toString(), []);
+      }
+      this.cart.recipes.push(recipe);
+    }
+
+    async checkCart(event: Event) {
+      const popover = await this.popoverController.create({
+        component: CartPopoverComponent,
+        event: event,
+        translucent: false,
+        cssClass: 'cartPopover',
+        componentProps: {
+          cart: this.cart
+        }
+      });
+      popover.present();
+      const {data} = await popover.onDidDismiss();
+      console.log(data);
+      if (data !== undefined) {
+        this.cart = data;
       }
     }
 }
