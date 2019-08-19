@@ -23,7 +23,7 @@ export class RecipesPage implements OnInit, OnDestroy {
   recipeFilter = 'all';
   cart: Cart = null;
 
-  @ViewChild('virtualScroll') virtualScroll: IonVirtualScroll;
+  @ViewChild('virtualScroll', {static: false}) virtualScroll: IonVirtualScroll;
   constructor(
       private router: Router,
       private route: ActivatedRoute,

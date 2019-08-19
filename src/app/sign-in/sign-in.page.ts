@@ -46,4 +46,5 @@ export class SignInPage implements OnInit {
                 alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
             });
     }
+
 }

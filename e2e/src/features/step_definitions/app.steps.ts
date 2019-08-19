@@ -1,7 +1,7 @@
 import {expect} from 'chai';
-import {Before, Given, Then, When} from 'cucumber';
+import {After, AfterAll, Before, Given, Then, When} from 'cucumber';
 
-import {AppPage} from '../pages/app.po';
+import {AppPage} from '../../pages/app.po';
 
 let page: AppPage;
 
@@ -18,4 +18,8 @@ When(/^I do nothing$/, () => {
 
 Then(/^I should see log-in screen$/, async () => {
     expect(await page.getTitleText()).to.equal('Please log in..');
+});
+
+AfterAll(function () {
+    // page.pushLogout();
 });

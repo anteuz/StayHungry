@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar color="secondary">
-        <ion-title *ngIf="shoppingList != null">{{shoppingList.name}}</ion-title>
-        <ion-title *ngIf="shoppingList == null">Create shopping list</ion-title>
+        <ion-title *ngIf="shoppingList != null" id="shoppingListTitle">{{shoppingList.name}}</ion-title>
+        <ion-title *ngIf="shoppingList == null" id="shoppingListTitle">Create shopping list</ion-title>
         <ion-buttons slot="secondary">
             <ion-menu-toggle>
                 <ion-button icon-only menuClose>
@@ -33,7 +33,7 @@
 
     <ion-item *ngIf="!loading && shoppingList == null">
         <ion-icon name="alert" color="warning"></ion-icon>
-        <ion-label id="no-shopping-list-text" text-wrap>You have no shopping lists, please create one first!</ion-label>
+        <ion-label id="noShoppingList" text-wrap>You have no shopping lists, please create one first!</ion-label>
     </ion-item>
 
     <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList !== null && ingredients !== undefined" lines="inset">

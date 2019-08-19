@@ -14,18 +14,18 @@
                         <ion-label>Settings</ion-label>
                     </ion-list-header>
                     <!-- End Shopping Lists -->
-                    <ion-item *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-in']">
-                        <ion-icon name="log-in"></ion-icon>
+                    <ion-button fill="clear" *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-in']">
+                        <ion-icon name="log-in" slot="start"></ion-icon>
                         <ion-label>Sign in</ion-label>
-                    </ion-item>
-                    <ion-item *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-up']">
-                        <ion-icon name="person"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-up']">
+                        <ion-icon name="person" slot="start"></ion-icon>
                         <ion-label>Sign up</ion-label>
-                    </ion-item>
-                    <ion-item *ngIf="isAuthenticated" slot="start" (click)="onLogout()" lines="none">
-                        <ion-icon name="log-out" size="small"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" id="logout-button" *ngIf="isAuthenticated" slot="start" (click)="onLogout()" lines="none">
+                        <ion-icon name="log-out" slot="start"></ion-icon>
                         <ion-label>Logout</ion-label>
-                    </ion-item>
+                    </ion-button>
                 </ion-list>
             </ion-content>
         </ion-menu>

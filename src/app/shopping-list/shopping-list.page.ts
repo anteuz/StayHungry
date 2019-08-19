@@ -21,7 +21,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     ingredients: Ingredient[] = [];
     ingredientMap: Map<string, Ingredient[]>;
     showSearchBar = true;
-    @ViewChild('ingredientList') ingredientList: IonList;
+    @ViewChild('ingredientList', {static: false}) ingredientList: IonList;
     loading = true;
     appState: AppState = null;
     private subscriptions: Subscription = new Subscription();
@@ -154,7 +154,10 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 
     getStyleClass(ingredient: Ingredient) {
-        if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length > 1) {
+         if (this.ingredientMap === undefined || ingredient === undefined) {
+             return 'roundedCornersTop';
+         }
+        else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length > 1) {
             return 'roundedCornersTop';
         } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length === 1) {
             return 'roundedCornersSingle';
@@ -165,21 +168,21 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         }
     }
 
-    onCollect(ingredient: Ingredient) {
+    async onCollect(ingredient: Ingredient) {
         ingredient.isCollected = true;
         ingredient.isBeingCollected = false;
         this.shoppingList.items = this.ingredients;
-        this.slService.updateShoppingList(this.shoppingList);
+        await this.slService.updateShoppingList(this.shoppingList);
 
     }
 
-    onDeCollect(ingredient: Ingredient) {
+    async onDeCollect(ingredient: Ingredient) {
         ingredient.isCollected = false;
         this.shoppingList.items = this.ingredients;
-        this.slService.updateShoppingList(this.shoppingList);
+        await this.slService.updateShoppingList(this.shoppingList);
     }
 
-    beingCollected(ingredient: Ingredient) {
+    async beingCollected(ingredient: Ingredient) {
         if (ingredient.isBeingCollected) {
             return 'collected';
         } else {

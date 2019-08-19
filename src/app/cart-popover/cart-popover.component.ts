@@ -29,7 +29,9 @@ export class CartPopoverComponent implements OnInit {
     }
 
     onDismiss(event: Event) {
-        if (event.srcElement.localName === 'ion-content') {
+    	//TODO: FIXME
+    	console.log(event);
+        if (event.type === 'ion-content') {
             this.popoverCtrl.dismiss(this.cart).catch(e => console.log('Could not pop-over modal'));
         }
     }

@@ -19,7 +19,7 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   shoppingListName: FormControl = null;
 
   private subscriptions: Subscription = new Subscription();
-  @ViewChild('shoppingListsList') shoppingListsList: IonList;
+  @ViewChild('shoppingListsList', {static: false}) shoppingListsList: IonList;
   constructor(private slService: ShoppingListService, private router: Router) { }
 
   ngOnInit() {

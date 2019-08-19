@@ -24,7 +24,8 @@ export class ShoppingListService {
         private httpClient: HttpClient,
         private authService: AuthService,
         private fireDatabase: AngularFireDatabase
-    ) {}
+    ) {
+    }
 
     setupHandlers() {
         console.log('Setting up Shopping-lists service..');
@@ -52,11 +53,31 @@ export class ShoppingListService {
         this.updateDatabase();
     }
 
-    addItems(shoppingLists: ShoppingList[]) {
+    addItemToShoppingList(shoppingList: ShoppingList, ingredient: Ingredient) {
+        // Create new shopping list if empty, else check if ingredient already exists and increment amount
+        if (this.shoppingLists == null) {
+            this.shoppingLists = [];
+        } else {
+
+            const existingIngredient = this.findUsingIngredientName(shoppingList, ingredient.item.itemName);
+
+            if (existingIngredient != null) {
+                existingIngredient.amount += ingredient.amount;
+                shoppingList.items[shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid))] = existingIngredient;
+            } else {
+                shoppingList.items.push(ingredient);
+            }
+        }
+
+        this.shoppingLists.push(shoppingList);
+        this.updateDatabase();
+    }
+
+    addItems(shoppingList: ShoppingList, ingredients: Ingredient[]) {
         if (this.shoppingLists == null) {
             this.shoppingLists = [];
         }
-        this.shoppingLists.push(... shoppingLists);
+        this.shoppingLists.push(shoppingList);
         this.updateDatabase();
     }
 
@@ -91,4 +112,11 @@ export class ShoppingListService {
         return this.shoppingLists.find(shoppingList => shoppingList.uuid === searchTerm);
     }
 
+    findUsingIngredientName(shoppingList: ShoppingList, searchTerm): Ingredient {
+        return shoppingList.items.find(item => item.item.itemName === searchTerm);
+    }
+
+    findUsingIngredientUUID(shoppingList: ShoppingList, searchTerm): Ingredient {
+        return shoppingList.items.find(item => item.uuid === searchTerm);
+    }
 }

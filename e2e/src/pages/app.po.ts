@@ -9,4 +9,9 @@ export class AppPage {
   getTitleText() {
     return element(by.id('sign-in-title')).getText();
   }
+  pushLogout() {
+    if (element(by.css('ion-button[id=logout-button]')).isPresent()) {
+      element(by.css('ion-button[id=logout-button]')).click();
+    }
+  }
 }

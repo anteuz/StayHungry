@@ -6,6 +6,7 @@
 
 .collected {
   position: relative;
+  text-decoration: line-through;
 }
 
 .collected:after {
@@ -18,10 +19,11 @@
   background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(255,255,255,0.738532913165266) 0%, rgba(236,236,236,0.738532913165266) 100%);
   animation-name: strike;
-  animation-duration: 2s;
+  animation-duration: 700ms;
   animation-timing-function: linear;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+
 }
 
 /* Keyframes for initial animation */

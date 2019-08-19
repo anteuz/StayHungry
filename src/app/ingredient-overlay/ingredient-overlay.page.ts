@@ -14,7 +14,7 @@ import {SimpleItemService} from '../services/simple-item.service';
 })
 export class IngredientOverlayPage implements OnInit {
 
-    @ViewChild('ingredientBar') ingredientBar: IonSearchbar;
+    @ViewChild('ingredientBar', {static: false}) ingredientBar: IonSearchbar;
     itemColorName = '';
     showItemColorSelector = false;
     itemSuggestions: SimpleItem[] = [];
@@ -137,7 +137,8 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     onDismiss(event: Event) {
-        if (event.srcElement.localName === 'ion-content') {
+    	console.log(event);
+        if (event.type === 'ion-content') {
             this.modalCtrl.dismiss().catch(e => console.log('Could not close modal'));
         }
     }

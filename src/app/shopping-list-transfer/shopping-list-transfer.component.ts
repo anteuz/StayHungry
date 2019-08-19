@@ -77,7 +77,8 @@ export class ShoppingListTransferComponent implements OnInit {
     }
 
     onDismiss(event: Event) {
-        if (event.srcElement.localName === 'ion-content') {
+    	console.log(event);
+        if (event.type === 'ion-content') {
             this.modalController.dismiss('Cancelled').catch(e => console.log('Could not pop-over modal'));
         }
     }

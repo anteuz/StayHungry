@@ -23,7 +23,7 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 export class RecipePage implements OnInit, OnDestroy {
 
     mode;
-    @ViewChild('ingredientList') ingredientList: IonList;
+    @ViewChild('ingredientList', {static: false}) ingredientList: IonList;
     recipe: Recipe;
     recipeUUID;
     recipeImageUploadPercentage: number;
@@ -45,7 +45,7 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        this.platformTypeCordova = this.platform.is('cordova');
+        this.platformTypeCordova = this.platform.is('desktop');
 
         console.log('onInit');
         // Get Route parameter

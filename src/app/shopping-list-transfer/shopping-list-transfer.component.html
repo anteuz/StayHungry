@@ -1,7 +1,13 @@
+<ion-header>
+    <ion-toolbar color="secondary">
+        <ion-title>Ready to move to shopping list</ion-title>
+    </ion-toolbar>
+</ion-header>
+
 <ion-content (click)="onDismiss($event)">
     <ion-list lines="none">
         <ion-list-header>
-            <ion-label>Read to move these items to shopping list</ion-label>
+            <ion-label>Recipes & Items</ion-label>
         </ion-list-header>
         <div *ngFor="let recipe of cart.recipes">
             <ion-item-divider sticky="true">

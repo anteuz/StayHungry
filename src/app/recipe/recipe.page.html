@@ -11,9 +11,11 @@
         <ion-img *ngIf="mode === 'edit' && downloadURL == null" alt="Picture of this item" [src]="recipe.imageURI" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-img *ngIf="(mode === 'new' || mode === 'edit') && downloadURL != null" [src]="downloadURL | async" alt="Picture of this item" align-items-center justify-content-center class="recipeImage"></ion-img>
         <ion-img *ngIf="mode === 'new' && downloadURL == null" alt="Picture of this item" src="assets/images/No_image_available.svg" align-items-center justify-content-center class="recipeImage"></ion-img>
-        <ion-item *ngIf="(mode === 'new' || mode === 'edit') && !platformTypeCordova">
-            <ion-label position="stacked">Choose recipe image</ion-label>
-            <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)"/>
+        <ion-item *ngIf="(mode === 'new' || mode === 'edit') && !platformTypeCordova" type="button">
+            <ion-icon name="camera" slot="start"></ion-icon>
+            <ion-label for="fileInput">
+                <input type="file" capture accept="image/*" (change)="onChangeImageUpload($event)" id="fileInput"/>
+            </ion-label>
         </ion-item>
         <ion-item *ngIf="mode === 'new' || mode === 'edit' && platformTypeCordova" lines="none">
             <ion-button fill="clear" (click)="getRecipeImageFromCamera()">

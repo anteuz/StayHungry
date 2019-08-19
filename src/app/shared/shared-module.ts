@@ -4,6 +4,8 @@ import {IsCollectedPipe} from './iscollected.pipe';
 import {ObjectNamePipe} from './object-name.pipe';
 
 @NgModule({
+	imports:
+		[CommonModule],
     declarations: [
         IsCollectedPipe,
         ObjectNamePipe

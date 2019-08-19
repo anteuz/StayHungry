@@ -4,17 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
-import {SharedModule} from '../shared/shared-module';
 
-import { RecipesPage } from './recipes.page';
+import { WeeklyMenuPage } from './weekly-menu.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: RecipesPage
-  },
-  {
-    path: 'recipe', loadChildren: '../recipe/recipe.module#RecipePageModule'
+    component: WeeklyMenuPage
   }
 ];
 
@@ -23,9 +19,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [RecipesPage]
+  declarations: [WeeklyMenuPage]
 })
-export class RecipesPageModule {}
+export class WeeklyMenuPageModule {}

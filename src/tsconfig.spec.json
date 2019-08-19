@@ -3,13 +3,15 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "types": [
-      "jasmine",
+      "jest",
       "node"
-    ]
+    ],
+    "module": "commonjs",
+    "allowJs": true
   },
   "files": [
-    "test.ts",
-    "polyfills.ts"
+    "zone-flags.ts",
+	  "polyfills.ts"
   ],
   "include": [
     "**/*.spec.ts",
