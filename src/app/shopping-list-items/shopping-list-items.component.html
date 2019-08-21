@@ -3,7 +3,7 @@
     <ion-item>
         <ion-label text-wrap (click)="toShoppingList(shoppingList.uuid)">
             <ion-text color="primary">
-                <ion-input *ngIf="inEditMode === shoppingList.uuid" autofocus="true" type="text" [formControl]="shoppingListName" required (keyup.enter)="onChangeShoppingListName(shoppingList)"></ion-input>
+                <ion-input id="{{shoppingList.uuid}}_inputField" name="{{shoppingList.uuid}}_input" *ngIf="inEditMode === shoppingList.uuid" autofocus="true" type="text" [value]="shoppingList.name" required (keyup.enter)="onChangeShoppingListName(shoppingList)"></ion-input>
                 <h3 *ngIf="inEditMode == null || inEditMode !== shoppingList.uuid">{{shoppingList.name}}</h3>
             </ion-text>
             <p *ngIf="shoppingList.items != undefined">{{shoppingList.items | objectName}}</p>

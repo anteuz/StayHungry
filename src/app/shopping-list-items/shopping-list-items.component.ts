@@ -6,6 +6,7 @@ import {Guid} from 'guid-typescript';
 import {Subscription} from 'rxjs';
 import {ShoppingList} from '../models/shopping-list';
 import {ShoppingListService} from '../services/shopping-list.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-shopping-list-items',
@@ -20,7 +21,7 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   @ViewChild('shoppingListsList', {static: false}) shoppingListsList: IonList;
-  constructor(private slService: ShoppingListService, private router: Router) { }
+  constructor(private slService: ShoppingListService, private router: Router, private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.subscriptions.add(this.slService.shoppingListsEvent.subscribe(
@@ -32,6 +33,7 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   toShoppingList(shoppingListID: string) {
     this.router.navigate(['/tabs/tab1', shoppingListID]).catch(e => console.log('Could not navigate to shopping list'));
+    this.endEditMode();
   }
 
   onCreateNewList() {
@@ -42,16 +44,17 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   onEdit(shoppingList: ShoppingList) {
     this.inEditMode = shoppingList.uuid;
-    this.shoppingListName = new FormControl('');
-    this.shoppingListName.setValue(shoppingList.name);
+
+    // this.shoppingListName = new FormControl('');
+    // this.shoppingListName.setValue(shoppingList.name);
     this.shoppingListsList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
-    console.log('Editing uuid = ' + this.inEditMode);
+    console.log(this.shoppingListName);
   }
 
   onRemoveItem(shoppingList: ShoppingList) {
     this.slService.removeShoppingList(shoppingList);
     this.shoppingListsList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
-    this.inEditMode = null;
+    this.endEditMode();
   }
 
   ngOnDestroy(): void {
@@ -59,13 +62,17 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   }
 
   onChangeShoppingListName(shoppingList: ShoppingList) {
-    console.log(shoppingList);
-    console.log(this.shoppingListName.value);
-    shoppingList.name = this.shoppingListName.value;
+    // shoppingList.name = this.shoppingListName.value;
     this.slService.updateShoppingList(shoppingList);
-    this.inEditMode = null;
-    this.shoppingListName.reset();
-    this.shoppingListName = null;
+    this.endEditMode();
+  }
+
+  endEditMode() {
+  	this.inEditMode = null;
+  	if (this.shoppingListName !== null) {
+		this.shoppingListName.reset(true);
+	}
+  	this.shoppingListName = null;
   }
 
   ionWillClose() {
