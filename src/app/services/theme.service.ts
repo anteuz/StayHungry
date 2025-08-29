@@ -62,6 +62,16 @@ export class ThemeService implements OnDestroy {
       'frozen': 'category-frozen',
       'other': 'category-other',
       
+      // CSS variable format for new categories (what gets stored in items)
+      '--ion-color-category-fruits': 'category-fruits',
+      '--ion-color-category-vegetables': 'category-vegetables',
+      '--ion-color-category-dairy': 'category-dairy',
+      '--ion-color-category-meat': 'category-meat',
+      '--ion-color-category-grains': 'category-grains',
+      '--ion-color-category-pantry': 'category-pantry',
+      '--ion-color-category-frozen': 'category-frozen',
+      '--ion-color-category-other': 'category-other',
+      
       // Backward compatibility for existing itemColor1-8
       '--ion-color-itemColor1': 'category-frozen', // Cyan
       '--ion-color-itemColor2': 'category-vegetables', // Green

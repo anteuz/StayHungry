@@ -339,8 +339,9 @@ export class IngredientOverlayPage implements OnInit {
                 this.itemService.addItem(simpleItem);
             }
         }
-        console.log(simpleItem);
-        console.log(finalColor);
+        console.log('Created SimpleItem:', simpleItem);
+        console.log('Final color for item:', finalColor);
+        console.log('Selected category:', this.selectedCategory);
         // Create full ingredient
         if (this.mode === 'insert') {
             return new Ingredient(Guid.create().toString(), simpleItem, ingredientAmount);

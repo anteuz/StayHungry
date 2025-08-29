@@ -22,6 +22,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     shoppingList: ShoppingList;
     ingredients: Ingredient[] = [];
     ingredientMap: Map<string, Ingredient[]>;
+    categorizedIngredients: Array<{category: any, items: Ingredient[]}> = [];
     showSearchBar = true;
     @ViewChild('ingredientList', {static: false}) ingredientList: IonList;
     loading = true;
@@ -197,34 +198,112 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         return `5px solid var(${cssVariable})`;
     }
 
-    getStyleClass(ingredient: Ingredient) {
-         if (this.ingredientMap === undefined || ingredient === undefined) {
-             return 'roundedCornersTop';
-         }
-        else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length > 1) {
-            return 'roundedCornersTop';
-        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.ingredientMap.get(ingredient.item.itemColor).length === 1) {
-            return 'roundedCornersSingle';
-        } else if (this.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === this.ingredientMap.get(ingredient.item.itemColor).length - 1) {
-            return 'roundedCornersBottom';
-        } else {
-            return 'roundedCornersMiddle';
-        }
+    getCategoryStyle(ingredient: Ingredient) {
+        const cssVariable = this.getCategoryColor(ingredient.item.itemColor);
+        
+        // All items use the same border-left styling
+        return {
+            'border-left': `5px solid var(${cssVariable})`
+        };
     }
 
+    private getCategoryColor(ingredientColor: string): string {
+        // Handle both new category colors and legacy itemColor variables
+        let cssVariable = ingredientColor;
+        
+        // If itemColor doesn't start with --, it might be a legacy format or category name
+        if (!ingredientColor.startsWith('--')) {
+            // Try to get the proper CSS variable from theme service
+            cssVariable = this.themeService.getCategoryVariable(ingredientColor);
+        }
+        
+        // Ensure we have a valid CSS variable format
+        if (!cssVariable.startsWith('--')) {
+            cssVariable = '--ion-color-category-other';
+        }
+        
+        return cssVariable;
+    }
+
+    getStyleClass(ingredient: Ingredient) {
+        if (this.ingredientMap === undefined || ingredient === undefined) {
+            return 'roundedCornersTop';
+        }
+        
+        const categoryItems = this.ingredientMap.get(ingredient.item.itemColor);
+        if (!categoryItems) {
+            return 'roundedCornersMiddle';
+        }
+        
+        const itemIndex = categoryItems.indexOf(ingredient);
+        const totalItems = categoryItems.length;
+        
+        // Single item in category
+        if (totalItems === 1) {
+            return 'roundedCornersMiddle';
+        }
+        
+        // First item (top)
+        if (itemIndex === 0) {
+            return 'roundedCornersTop';
+        }
+        
+        // Last item (bottom)
+        if (itemIndex === totalItems - 1) {
+            return 'roundedCornersBottom';
+        }
+        
+        // Middle items
+        return 'roundedCornersMiddle';
+    }
     async onCollect(ingredient: Ingredient) {
+        console.log('Collecting ingredient:', ingredient.item.itemName);
         ingredient.isCollected = true;
         ingredient.isBeingCollected = false;
-        // Efficiently sort ingredients to move collected items to bottom
+        
+        // Ensure the shopping list items array is properly updated
+        this.shoppingList.items = [...this.ingredients]; // Create new array reference
+        
+        // Sort ingredients to move collected items to bottom
         this.sortIngredients();
-        await this.slService.updateShoppingList(this.shoppingList);
+        
+        // Update the service and database
+        try {
+            await this.slService.updateShoppingList(this.shoppingList);
+            console.log('Successfully saved collected state to database');
+        } catch (error) {
+            console.error('Failed to save collected state to database:', error);
+            // Revert the change if database update fails
+            ingredient.isCollected = false;
+            ingredient.isBeingCollected = false;
+        }
+        
+        // Refresh local state
+        this.initializeIngredients();
     }
 
     async onDeCollect(ingredient: Ingredient) {
+        console.log('De-collecting ingredient:', ingredient.item.itemName);
         ingredient.isCollected = false;
-        // Efficiently sort ingredients to move uncollected items to top
+        
+        // Ensure the shopping list items array is properly updated
+        this.shoppingList.items = [...this.ingredients]; // Create new array reference
+        
+        // Sort ingredients to move uncollected items to top
         this.sortIngredients();
-        await this.slService.updateShoppingList(this.shoppingList);
+        
+        // Update the service and database
+        try {
+            await this.slService.updateShoppingList(this.shoppingList);
+            console.log('Successfully saved de-collected state to database');
+        } catch (error) {
+            console.error('Failed to save de-collected state to database:', error);
+            // Revert the change if database update fails
+            ingredient.isCollected = true;
+        }
+        
+        // Refresh local state
+        this.initializeIngredients();
     }
 
     async beingCollected(ingredient: Ingredient) {
@@ -241,6 +320,13 @@ export class ShoppingListPage implements OnInit, OnDestroy {
 
     cancelCollect(ingredient: Ingredient) {
         ingredient.isBeingCollected = false;
+    }
+
+    onTransitionEnd(event: TransitionEvent, ingredient: Ingredient) {
+        // Only trigger onCollect for the transform transition to avoid multiple calls
+        if (event.propertyName === 'transform' && ingredient.isBeingCollected) {
+            this.onCollect(ingredient);
+        }
     }
 
     async openIngredientOverlay() {
@@ -317,6 +403,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             this.shoppingList.items.sort(compare);
             this.ingredients = this.shoppingList.items;
             this.ingredientMap = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+            this.categorizedIngredients = this.getCategorizedIngredients();
         }
         // Create groups by color for ui magic
         this.loading = false;
@@ -329,6 +416,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         if (this.ingredients && this.ingredients.length > 0) {
             this.ingredients.sort(compare);
             this.shoppingList.items = this.ingredients;
+            this.categorizedIngredients = this.getCategorizedIngredients();
         }
     }
 
@@ -347,6 +435,71 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             this.shoppingList.items = [];
         }
         this.shoppingList.items.push(...data);
+    }
+
+    /**
+     * Get category information from itemColor using the theme service
+     */
+    getCategoryFromItemColor(itemColor: string): any {
+        const categoryKey = this.themeService.getCategoryKey(itemColor);
+        const availableCategories = this.themeService.getAvailableCategories();
+        const result = availableCategories.find(cat => cat.key === categoryKey) || 
+                      availableCategories.find(cat => cat.key === 'other');
+        
+        // Debug logging to help identify category mapping issues
+        if (categoryKey === 'other' && itemColor !== '--ion-color-category-other') {
+            console.log('Item defaulting to Other category:', {
+                itemColor: itemColor,
+                categoryKey: categoryKey,
+                mappedCategory: result
+            });
+        }
+        
+        return result;
+    }
+
+    /**
+     * Organize ingredients by category for display with category headers
+     */
+    getCategorizedIngredients(): Array<{category: any, items: Ingredient[]}> {
+        if (!this.ingredients || this.ingredients.length === 0) {
+            return [];
+        }
+
+        // Filter out collected items for categorization
+        const uncollectedIngredients = this.ingredients.filter(ingredient => !ingredient.isCollected);
+        
+        // Group ingredients by category
+        const categoryMap = new Map<string, Ingredient[]>();
+        
+        uncollectedIngredients.forEach(ingredient => {
+            const category = this.getCategoryFromItemColor(ingredient.item.itemColor);
+            const categoryKey = category.key;
+            
+            if (!categoryMap.has(categoryKey)) {
+                categoryMap.set(categoryKey, []);
+            }
+            categoryMap.get(categoryKey).push(ingredient);
+        });
+
+        // Convert map to array and sort categories
+        const categorizedResults: Array<{category: any, items: Ingredient[]}> = [];
+        const availableCategories = this.themeService.getAvailableCategories();
+        
+        // Iterate through categories in predefined order
+        availableCategories.forEach(category => {
+            const items = categoryMap.get(category.key);
+            if (items && items.length > 0) {
+                // Sort items within category by name
+                items.sort((a, b) => a.item.itemName.localeCompare(b.item.itemName));
+                categorizedResults.push({
+                    category: category,
+                    items: items
+                });
+            }
+        });
+
+        return categorizedResults;
     }
 }
 

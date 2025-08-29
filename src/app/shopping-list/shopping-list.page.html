@@ -50,50 +50,78 @@
         <ion-label id="noShoppingList" text-wrap>You have no shopping lists, please create one first!</ion-label>
     </ion-item>
 
-    <ion-list #ingredientList class="shopping-list unCollected" [inset]="false" *ngIf="!loading && shoppingList !== null && ingredients !== undefined" lines="inset">
-        <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index" class="ingredient-sliding">
-            <ion-item 
-                class="ingredient-item noPadding" 
-                [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" 
-                (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" 
-                (animationend)="onCollect(ingredient)"
-                button
-                [attr.aria-label]="'Mark ' + ingredient.item.itemName + ' as collected'">
-                <div 
-                    [class]="getStyleClass(ingredient) + ' category-indicator'" 
-                    [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"
-                    [attr.aria-hidden]="true">
-                </div>
-                <ion-label class="ingredient-label">
-                    <h3 class="ingredient-name">{{ ingredient.item.itemName }}</h3>
+    <!-- Category-based Shopping List -->
+    <div *ngIf="!loading && shoppingList !== null && categorizedIngredients && categorizedIngredients.length > 0" 
+         class="categorized-shopping-list">
+        <div *ngFor="let categoryGroup of categorizedIngredients" class="category-group">
+            <!-- Category Header -->
+            <ion-item class="category-header" lines="none">
+                <ion-icon 
+                    [name]="categoryGroup.category.icon" 
+                    [color]="categoryGroup.category.color" 
+                    slot="start"
+                    class="category-icon">
+                </ion-icon>
+                <ion-label>
+                    <h2 class="category-title">{{ categoryGroup.category.name }}</h2>
                 </ion-label>
-                <ion-badge 
-                    *ngIf="ingredient.amount != '0'" 
-                    color="primary" 
-                    class="amount-badge">
-                    {{ ingredient.amount }}
-                </ion-badge>
+                <ion-badge color="medium" slot="end">{{ categoryGroup.items.length }}</ion-badge>
             </ion-item>
-            <ion-item-options side="end">
-                <ion-item-option
-                        size="small"
-                        color="primary"
-                        (click)="onEdit(ingredient)"
-                >
-                    <ion-icon name="create"></ion-icon>
-                    Edit
-                </ion-item-option>
-                <ion-item-option
-                        size="small"
-                        color="secondary"
-                        (click)="onRemoveItem(ingredient)"
-                >
-                    <ion-icon name="trash"></ion-icon>
-                    Delete
-                </ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
-    </ion-list>
+
+            <!-- Category Items -->
+            <ion-list #ingredientList class="shopping-list unCollected" [inset]="false" lines="inset">
+                <ion-item-sliding *ngFor="let ingredient of categoryGroup.items; let i = index" 
+                                  [class]="'ingredient-sliding ' + getStyleClass(ingredient)">
+                    <ion-item 
+                        class="ingredient-item noPadding" 
+                        [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" 
+                        (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" 
+                        (transitionend)="onTransitionEnd($event, ingredient)"
+                        button
+                        [attr.aria-label]="'Mark ' + ingredient.item.itemName + ' as collected'">
+                        <div 
+                            [class]="getStyleClass(ingredient) + ' category-indicator'" 
+                            [ngStyle]="getCategoryStyle(ingredient)"
+                            [attr.aria-hidden]="true">
+                        </div>
+                        <ion-label class="ingredient-label">
+                            <h3 class="ingredient-name">{{ ingredient.item.itemName }}</h3>
+                        </ion-label>
+                        <ion-badge 
+                            *ngIf="ingredient.amount != '0'" 
+                            color="primary" 
+                            class="amount-badge">
+                            {{ ingredient.amount }}
+                        </ion-badge>
+                    </ion-item>
+                    <ion-item-options side="end">
+                        <ion-item-option
+                                size="small"
+                                color="primary"
+                                (click)="onEdit(ingredient)"
+                        >
+                            <ion-icon name="create"></ion-icon>
+                            Edit
+                        </ion-item-option>
+                        <ion-item-option
+                                size="small"
+                                color="secondary"
+                                (click)="onRemoveItem(ingredient)"
+                        >
+                            <ion-icon name="trash"></ion-icon>
+                            Delete
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </ion-list>
+        </div>
+    </div>
+
+    <!-- Fallback: No uncollected items but shopping list exists -->
+    <ion-item *ngIf="!loading && shoppingList !== null && categorizedIngredients && categorizedIngredients.length === 0 && (ingredients | isCollected : false).length === 0">
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        <ion-label text-wrap>All items collected! Great job!</ion-label>
+    </ion-item>
     <div class="shopping-list-border"></div>
     <!-- Collected items List -->
     <ion-list lines="none" position="bottom" *ngIf="shoppingList !== null && ingredients !== null && (ingredients | isCollected : true).length > 0">

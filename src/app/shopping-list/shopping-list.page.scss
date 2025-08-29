@@ -50,7 +50,7 @@
 }
 
 .ingredient-sliding {
-  margin-bottom: var(--space-xs);
+  margin-bottom: 1px; // Minimal gap between categories
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -62,6 +62,27 @@
       transform: translateY(-1px);
     }
   }
+  
+  // Visual grouping for category items
+  &.roundedCornersTop {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    margin-bottom: 0;
+  }
+  
+  &.roundedCornersMiddle {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+  
+  &.roundedCornersBottom {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin-bottom: var(--space-xs);
+  }
+  
+  &.roundedCornersSingle {
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xs);
+  }
 }
 
 .ingredient-item {
@@ -69,9 +90,19 @@
   --border-radius: var(--radius-lg);
   --padding-start: 0;
   --padding-end: var(--space-md);
-  --padding-top: var(--space-sm);
-  --padding-bottom: var(--space-sm);
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --min-height: 32px;
   position: relative;
+  
+  // Force override Ionic's default padding
+  &.item {
+    --padding-top: 0 !important;
+    --padding-bottom: 0 !important;
+    --inner-padding-top: 0 !important;
+    --inner-padding-bottom: 0 !important;
+    min-height: 32px !important;
+  }
   
   &:hover {
     --background: var(--ion-color-light-tint);
@@ -81,7 +112,7 @@
     opacity: 0.7;
     background: var(--ion-color-step-50);
     transform: scale(0.98);
-    transition: all 0.3s ease-in-out;
+    transition: all 0.6s ease-in-out;
     
     .ingredient-name {
       text-decoration: line-through;
@@ -96,10 +127,44 @@
 
 .category-indicator {
   width: 5px;
-  border-top-right-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
   margin-right: var(--space-md);
   transition: all 0.2s ease-in-out;
+  
+  // Default styling - only apply if not specifically styled by class
+  &:not(.roundedCornersTop):not(.roundedCornersMiddle):not(.roundedCornersBottom):not(.roundedCornersSingle) {
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+  }
+  
+  // Category grouping styles
+  &.roundedCornersTop {
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-right-radius: 0;
+    border-top-left-radius: var(--radius-lg);
+    border-bottom-left-radius: 0;
+  }
+  
+  &.roundedCornersMiddle {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  
+  &.roundedCornersBottom {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: var(--radius-lg);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: var(--radius-lg);
+  }
+  
+  &.roundedCornersSingle {
+    // Single items are completely flat like middle items
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
 
 .ingredient-label {
@@ -292,5 +357,130 @@ body.dark-theme {
   .ingredient-item {
     --padding-top: var(--space-md);
     --padding-bottom: var(--space-md);
+  }
+}
+
+// Collected items section styling
+.shopping-list-border {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--ion-color-medium) 50%, transparent 100%);
+  margin: var(--space-md) var(--space-sm);
+  border-radius: 1px;
+}
+
+// Collected items list styling
+ion-list[position="bottom"] {
+  --background: var(--ion-color-light-shade);
+  border-radius: var(--radius-lg);
+  margin: var(--space-sm);
+  box-shadow: var(--shadow-sm);
+  
+  ion-item:first-child {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    font-weight: 600;
+    
+    ion-label h3 {
+      color: var(--ion-color-primary-contrast);
+      font-size: var(--font-size-sm);
+    }
+  }
+  
+  .isCollected {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-medium);
+    border-radius: 0;
+    margin: 0;
+    
+    &:last-child {
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+    
+    ion-label h3 {
+      color: var(--ion-color-medium);
+      text-decoration: line-through;
+      font-size: var(--font-size-sm);
+    }
+    
+    ion-badge {
+      --background: var(--ion-color-medium);
+      --color: var(--ion-color-light);
+    }
+  }
+}
+
+// Category-based Shopping List Styling
+.categorized-shopping-list {
+  padding: 0;
+  
+  .category-group {
+    margin-bottom: var(--space-lg);
+    
+    &:last-child {
+      margin-bottom: var(--space-sm);
+    }
+  }
+  
+  .category-header {
+    --background: var(--ion-color-step-50);
+    --border-radius: var(--radius-lg);
+    --padding-start: var(--space-md);
+    --padding-end: var(--space-md);
+    --padding-top: var(--space-sm);
+    --padding-bottom: var(--space-sm);
+    --min-height: 48px;
+    
+    margin: var(--space-xs) var(--space-sm) var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    border: 1px solid var(--ion-color-step-100);
+    
+    .category-icon {
+      font-size: 1.4em;
+      margin-right: var(--space-xs);
+    }
+    
+    .category-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      margin: 0;
+      text-transform: capitalize;
+    }
+    
+    ion-badge {
+      --background: var(--ion-color-medium);
+      --color: var(--ion-color-light);
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      border-radius: var(--radius-full);
+    }
+  }
+  
+  // Adjust spacing for items under categories
+  .shopping-list {
+    margin-top: 0;
+    margin-bottom: 0;
+    
+    .ingredient-sliding {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Dark theme adjustments for category headers
+.dark-theme {
+  .category-header {
+    --background: var(--ion-color-step-100);
+    border-color: var(--ion-color-step-200);
+    
+    .category-title {
+      color: var(--ion-color-light);
+    }
   }
 }

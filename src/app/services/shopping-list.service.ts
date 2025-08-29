@@ -109,10 +109,20 @@ export class ShoppingListService {
     updateDatabase() {
         if (!this.DATABASE_PATH || !this.authService.isAuthenticated()) {
             console.error('Cannot update database: user not authenticated or no database path set');
-            return;
+            return Promise.reject('User not authenticated or no database path');
         }
+        
+        console.log('Updating database with shopping lists:', this.shoppingLists?.length || 0, 'lists');
         const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
-        set(itemRef, this.shoppingLists.slice()).catch(e => console.log('Could not update item in DB'));
+        
+        return set(itemRef, this.shoppingLists.slice())
+            .then(() => {
+                console.log('Successfully updated shopping lists in database');
+            })
+            .catch(e => {
+                console.error('Failed to update shopping lists in database:', e);
+                throw e;
+            });
     }
 
     updateShoppingLists(shoppingList: ShoppingList[]) {
@@ -124,8 +134,20 @@ export class ShoppingListService {
     }
 
     updateShoppingList(data: ShoppingList) {
-        this.shoppingLists[this.shoppingLists.indexOf(this.findUsingUUID(data.uuid))] = data;
-        this.updateDatabase();
+        if (!this.shoppingLists || !data || !data.uuid) {
+            console.error('Cannot update shopping list: invalid data or no shopping lists loaded');
+            return Promise.reject('Invalid data or no shopping lists loaded');
+        }
+        
+        const index = this.shoppingLists.findIndex(sl => sl && sl.uuid === data.uuid);
+        if (index !== -1) {
+            this.shoppingLists[index] = data;
+            console.log('Shopping list updated locally, saving to database:', data.uuid);
+            return this.updateDatabase();
+        } else {
+            console.error('Shopping list not found for update:', data.uuid);
+            return Promise.reject('Shopping list not found');
+        }
     }
 
     findUsingUUID(searchTerm): ShoppingList {

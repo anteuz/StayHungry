@@ -20,11 +20,12 @@
   
   font-size: var(--font-size-sm);
   font-weight: 500;
-  padding: var(--space-sm) var(--space-md); /* Increased padding for better touch targets */
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   margin: var(--space-xs);
   transition: all 0.2s ease-in-out;
-  min-height: 64px; /* Ensure adequate touch target size */
+  min-width: 80px;
+  max-width: 120px;
   
   &.tab-selected {
     --color: var(--ion-color-secondary-contrast);
@@ -38,18 +39,20 @@
   }
   
   ion-icon {
-    font-size: 2.2em; /* Increased from 1.3em for better visibility */
-    margin-bottom: var(--space-sm);
+    font-size: 1.4em;
+    margin-bottom: var(--space-xs);
     transition: transform 0.2s ease-in-out;
-    min-height: 32px; /* Ensure minimum touch target */
   }
   
   ion-label {
-    font-size: var(--font-size-sm); /* Increased from xs for better readability */
+    font-size: var(--font-size-sm);
     font-weight: 600;
     text-transform: none;
     letter-spacing: 0.3px;
-    margin-top: var(--space-xs);
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.2;
   }
   
   &:hover:not(.tab-selected) {
