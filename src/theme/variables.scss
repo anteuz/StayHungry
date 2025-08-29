@@ -1,31 +1,31 @@
 // Ionic Variables and Theming. For more info, please see:
 // http://ionicframework.com/docs/theming/
 
-/** Ionic CSS Variables **/
+/** Enhanced StayHungry Theme System **/
 :root {
-  /** primary **/
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  /** Food-Inspired Primary Colors **/
+  --ion-color-primary: #2D7D32; /* Fresh Green */
+  --ion-color-primary-rgb: 45, 125, 50;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #3171e0;
-  --ion-color-primary-tint: #4c8dff;
+  --ion-color-primary-shade: #285d2c;
+  --ion-color-primary-tint: #429447;
 
   /** secondary **/
-  --ion-color-secondary: #0cd1e8;
-  --ion-color-secondary-rgb: 12, 209, 232;
+  --ion-color-secondary: #FF8F00; /* Warm Orange */
+  --ion-color-secondary-rgb: 255, 143, 0;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #0bb8cc;
-  --ion-color-secondary-tint: #24d6ea;
+  --ion-color-secondary-shade: #e07e00;
+  --ion-color-secondary-tint: #ff9f1a;
 
   /** tertiary **/
-  --ion-color-tertiary: #7044ff;
-  --ion-color-tertiary-rgb: 112, 68, 255;
+  --ion-color-tertiary: #6A1B9A; /* Deep Purple */
+  --ion-color-tertiary-rgb: 106, 27, 154;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #633ce0;
-  --ion-color-tertiary-tint: #7e57ff;
+  --ion-color-tertiary-shade: #5d1887;
+  --ion-color-tertiary-tint: #7932a4;
 
   /** success **/
   --ion-color-success: #10dc60;
@@ -75,7 +75,94 @@
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 
-  /** item colors **/
+  /** Food Category Colors **/
+  --ion-color-category-fruits: #E91E63; /* Pink for fruits */
+  --ion-color-category-fruits-rgb: 233, 30, 99;
+  --ion-color-category-fruits-contrast: #ffffff;
+  --ion-color-category-fruits-contrast-rgb: 255, 255, 255;
+  --ion-color-category-fruits-shade: #cd1a57;
+  --ion-color-category-fruits-tint: #eb3573;
+
+  --ion-color-category-vegetables: #4CAF50; /* Green for vegetables */
+  --ion-color-category-vegetables-rgb: 76, 175, 80;
+  --ion-color-category-vegetables-contrast: #ffffff;
+  --ion-color-category-vegetables-contrast-rgb: 255, 255, 255;
+  --ion-color-category-vegetables-shade: #439a46;
+  --ion-color-category-vegetables-tint: #5eb762;
+
+  --ion-color-category-dairy: #2196F3; /* Blue for dairy */
+  --ion-color-category-dairy-rgb: 33, 150, 243;
+  --ion-color-category-dairy-contrast: #ffffff;
+  --ion-color-category-dairy-contrast-rgb: 255, 255, 255;
+  --ion-color-category-dairy-shade: #1e84d6;
+  --ion-color-category-dairy-tint: #37a5f4;
+
+  --ion-color-category-meat: #795548; /* Brown for meat */
+  --ion-color-category-meat-rgb: 121, 85, 72;
+  --ion-color-category-meat-contrast: #ffffff;
+  --ion-color-category-meat-contrast-rgb: 255, 255, 255;
+  --ion-color-category-meat-shade: #6a4b40;
+  --ion-color-category-meat-tint: #86675a;
+
+  --ion-color-category-grains: #FF9800; /* Orange for grains */
+  --ion-color-category-grains-rgb: 255, 152, 0;
+  --ion-color-category-grains-contrast: #ffffff;
+  --ion-color-category-grains-contrast-rgb: 255, 255, 255;
+  --ion-color-category-grains-shade: #e08600;
+  --ion-color-category-grains-tint: #ffa21a;
+
+  --ion-color-category-pantry: #9C27B0; /* Purple for pantry */
+  --ion-color-category-pantry-rgb: 156, 39, 176;
+  --ion-color-category-pantry-contrast: #ffffff;
+  --ion-color-category-pantry-contrast-rgb: 255, 255, 255;
+  --ion-color-category-pantry-shade: #89229b;
+  --ion-color-category-pantry-tint: #a63db8;
+
+  --ion-color-category-frozen: #00BCD4; /* Cyan for frozen */
+  --ion-color-category-frozen-rgb: 0, 188, 212;
+  --ion-color-category-frozen-contrast: #ffffff;
+  --ion-color-category-frozen-contrast-rgb: 255, 255, 255;
+  --ion-color-category-frozen-shade: #00a5ba;
+  --ion-color-category-frozen-tint: #1ac6d9;
+
+  --ion-color-category-other: #607D8B; /* Blue-grey for other */
+  --ion-color-category-other-rgb: 96, 125, 139;
+  --ion-color-category-other-contrast: #ffffff;
+  --ion-color-category-other-contrast-rgb: 255, 255, 255;
+  --ion-color-category-other-shade: #546e7a;
+  --ion-color-category-other-tint: #708a97;
+
+  /** Design Tokens - Spacing Scale (8pt grid) **/
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /** Typography Scale **/
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  /** Border Radius **/
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /** Shadow System **/
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /** Legacy item colors (for backward compatibility) **/
   --ion-color-itemColor8: #b4bec6;
   --ion-color-itemColor8-rgb: 180, 190, 198;
   --ion-color-itemColor8-contrast: #000000;
@@ -133,6 +220,114 @@
   --ion-color-itemColor1-shade: #219baf;
   --ion-color-itemColor1-tint: #3cb8cd;
 
+}
+
+/** Dark Theme Variables **/
+body.dark-theme {
+  --ion-color-primary: #66BB6A; /* Lighter green for dark mode */
+  --ion-color-primary-rgb: 102, 187, 106;
+  
+  --ion-color-secondary: #FFB74D; /* Lighter orange for dark mode */
+  --ion-color-secondary-rgb: 255, 183, 77;
+  
+  --ion-background-color: #121212;
+  --ion-background-color-rgb: 18, 18, 18;
+  
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+  
+  --ion-color-step-50: #1e1e1e;
+  --ion-color-step-100: #2a2a2a;
+  --ion-color-step-150: #363636;
+  --ion-color-step-200: #414141;
+  --ion-color-step-250: #4d4d4d;
+  --ion-color-step-300: #595959;
+  --ion-color-step-350: #656565;
+  --ion-color-step-400: #717171;
+  --ion-color-step-450: #7d7d7d;
+  --ion-color-step-500: #898989;
+  --ion-color-step-550: #949494;
+  --ion-color-step-600: #a0a0a0;
+  --ion-color-step-650: #acacac;
+  --ion-color-step-700: #b8b8b8;
+  --ion-color-step-750: #c4c4c4;
+  --ion-color-step-800: #d0d0d0;
+  --ion-color-step-850: #dbdbdb;
+  --ion-color-step-900: #e7e7e7;
+  --ion-color-step-950: #f3f3f3;
+}
+
+/** Food Category Color Classes **/
+.ion-color-category-fruits {
+  --ion-color-base: var(--ion-color-category-fruits);
+  --ion-color-base-rgb: var(--ion-color-category-fruits-rgb);
+  --ion-color-contrast: var(--ion-color-category-fruits-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-fruits-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-fruits-shade);
+  --ion-color-tint: var(--ion-color-category-fruits-tint);
+}
+
+.ion-color-category-vegetables {
+  --ion-color-base: var(--ion-color-category-vegetables);
+  --ion-color-base-rgb: var(--ion-color-category-vegetables-rgb);
+  --ion-color-contrast: var(--ion-color-category-vegetables-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-vegetables-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-vegetables-shade);
+  --ion-color-tint: var(--ion-color-category-vegetables-tint);
+}
+
+.ion-color-category-dairy {
+  --ion-color-base: var(--ion-color-category-dairy);
+  --ion-color-base-rgb: var(--ion-color-category-dairy-rgb);
+  --ion-color-contrast: var(--ion-color-category-dairy-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-dairy-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-dairy-shade);
+  --ion-color-tint: var(--ion-color-category-dairy-tint);
+}
+
+.ion-color-category-meat {
+  --ion-color-base: var(--ion-color-category-meat);
+  --ion-color-base-rgb: var(--ion-color-category-meat-rgb);
+  --ion-color-contrast: var(--ion-color-category-meat-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-meat-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-meat-shade);
+  --ion-color-tint: var(--ion-color-category-meat-tint);
+}
+
+.ion-color-category-grains {
+  --ion-color-base: var(--ion-color-category-grains);
+  --ion-color-base-rgb: var(--ion-color-category-grains-rgb);
+  --ion-color-contrast: var(--ion-color-category-grains-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-grains-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-grains-shade);
+  --ion-color-tint: var(--ion-color-category-grains-tint);
+}
+
+.ion-color-category-pantry {
+  --ion-color-base: var(--ion-color-category-pantry);
+  --ion-color-base-rgb: var(--ion-color-category-pantry-rgb);
+  --ion-color-contrast: var(--ion-color-category-pantry-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-pantry-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-pantry-shade);
+  --ion-color-tint: var(--ion-color-category-pantry-tint);
+}
+
+.ion-color-category-frozen {
+  --ion-color-base: var(--ion-color-category-frozen);
+  --ion-color-base-rgb: var(--ion-color-category-frozen-rgb);
+  --ion-color-contrast: var(--ion-color-category-frozen-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-frozen-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-frozen-shade);
+  --ion-color-tint: var(--ion-color-category-frozen-tint);
+}
+
+.ion-color-category-other {
+  --ion-color-base: var(--ion-color-category-other);
+  --ion-color-base-rgb: var(--ion-color-category-other-rgb);
+  --ion-color-contrast: var(--ion-color-category-other-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-other-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-other-shade);
+  --ion-color-tint: var(--ion-color-category-other-tint);
 }
 
 .ion-color-itemColor8 {

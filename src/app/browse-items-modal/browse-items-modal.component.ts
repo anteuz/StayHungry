@@ -5,6 +5,7 @@ import { SimpleItem } from '../models/simple-item';
 import { SimpleItemService } from '../services/simple-item.service';
 import { Ingredient } from '../models/ingredient';
 import { Guid } from 'guid-typescript';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-browse-items-modal',
@@ -30,7 +31,8 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
 
   constructor(
     private modalCtrl: ModalController,
-    private simpleItemService: SimpleItemService
+    private simpleItemService: SimpleItemService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
@@ -200,7 +202,21 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
   }
 
   getStyle(itemColor: string) {
-    return '5px solid var(' + itemColor + ')';
+    // Handle both new category colors and legacy itemColor variables
+    let cssVariable = itemColor;
+    
+    // If itemColor doesn't start with --, it might be a legacy format or category name
+    if (!itemColor.startsWith('--')) {
+      // Try to get the proper CSS variable from theme service
+      cssVariable = this.themeService.getCategoryVariable(itemColor);
+    }
+    
+    // Ensure we have a valid CSS variable format
+    if (!cssVariable.startsWith('--')) {
+      cssVariable = '--ion-color-category-other';
+    }
+    
+    return `5px solid var(${cssVariable})`;
   }
 
   getStyleClass(item: SimpleItem): string {

@@ -1,12 +1,141 @@
-.isCollected {
-  text-decoration: line-through;
+// Enhanced Shopping List Styling with Design Tokens
+
+.search-container {
+  --background: var(--ion-color-light);
+  --padding-start: var(--space-md);
+  --padding-end: var(--space-md);
+  margin: var(--space-sm);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Strikethrough */
+.enhanced-searchbar {
+  --background: transparent;
+  --color: var(--ion-color-dark);
+  --placeholder-color: var(--ion-color-medium);
+  --icon-color: var(--ion-color-primary);
+  --border-radius: var(--radius-md);
+  
+  .searchbar-input {
+    font-size: var(--font-size-base);
+  }
+}
 
+.browse-button {
+  --color: var(--ion-color-primary);
+  --background-hover: var(--ion-color-primary-tint);
+  border-radius: var(--radius-md);
+  margin-left: var(--space-sm);
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  ion-icon {
+    font-size: 1.2em;
+  }
+}
+
+.shopping-list {
+  padding: var(--space-sm);
+  
+  &.unCollected {
+    --ion-background-color: transparent;
+    border: none;
+    margin-bottom: var(--space-sm);
+  }
+}
+
+.ingredient-sliding {
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+}
+
+.ingredient-item {
+  --background: var(--ion-color-light);
+  --border-radius: var(--radius-lg);
+  --padding-start: 0;
+  --padding-end: var(--space-md);
+  --padding-top: var(--space-sm);
+  --padding-bottom: var(--space-sm);
+  position: relative;
+  
+  &:hover {
+    --background: var(--ion-color-light-tint);
+  }
+  
+  &.collected {
+    opacity: 0.6;
+    
+    .ingredient-name {
+      text-decoration: line-through;
+    }
+  }
+}
+
+.category-indicator {
+  width: 5px;
+  border-top-right-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  margin-right: var(--space-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.ingredient-label {
+  flex: 1;
+  margin: 0;
+}
+
+.ingredient-name {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  margin: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.amount-badge {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: var(--space-xs) var(--space-sm);
+  margin-left: var(--space-sm);
+}
+
+// Loading state
+ion-spinner {
+  display: block;
+  margin: var(--space-3xl) auto;
+  --color: var(--ion-color-primary);
+}
+
+// No shopping list message
+ion-item ion-icon[name="alert"] {
+  color: var(--ion-color-warning);
+  font-size: 1.5em;
+  margin-right: var(--space-md);
+}
+
+#noShoppingList {
+  font-size: var(--font-size-base);
+  color: var(--ion-color-medium);
+  line-height: 1.5;
+}
+
+// Strike-through animation for collected items
 .collected {
   position: relative;
-  text-decoration: line-through;
 }
 
 .collected:after {
@@ -19,96 +148,89 @@
   background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(255,255,255,0.738532913165266) 0%, rgba(236,236,236,0.738532913165266) 100%);
   animation-name: strike;
-  animation-duration: 700ms;
+  animation-duration: 0.4s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
-
 }
 
-/* Keyframes for initial animation */
-
-@keyframes strike{
+@keyframes strike {
   0%   { width : 0; }
   100% { width: 100%; }
 }
-*[id^='ion-overlay-'] > div {
-  --background: rgba(255,0,0,.0)!important;;
-}
-ion-list.unCollected {
-  --ion-background-color: white;
-  padding-left: 0px;
-  padding-right: 0px;
+
+// Enhanced item options
+ion-item-options {
+  ion-item-option {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    
+    ion-icon {
+      font-size: 1.1em;
+      margin-bottom: var(--space-xs);
+    }
+  }
 }
 
-ion-item.noPadding {
-  --padding-start: 0px;
+// Dark theme support
+body.dark-theme {
+  .ingredient-item {
+    --background: var(--ion-color-step-100);
+    
+    &:hover {
+      --background: var(--ion-color-step-150);
+    }
+  }
+  
+  .ingredient-name {
+    color: var(--ion-text-color);
+  }
+  
+  .search-container {
+    --background: var(--ion-color-step-100);
+  }
+  
+  .enhanced-searchbar {
+    --color: var(--ion-text-color);
+    --placeholder-color: var(--ion-color-step-400);
+  }
 }
 
-::shadow div.roundedCornersTop {
-  width: 3px;
-  height: 100%;
-  border-top-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
-  margin-top: 20px;
-}
-::shadow div.roundedCornersBottom {
-  width: 3px;
-  height: 100%;
-  border-bottom-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
-  margin-bottom: 20px;
-}
-div.roundedCornersMiddle{
-  width: 3px;
-  height: 100%;
-  margin: 0px;
-  padding-right: 5px;
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .ingredient-sliding,
+  .browse-button,
+  .category-indicator,
+  .ingredient-name {
+    transition: none;
+  }
+  
+  .ingredient-sliding:hover {
+    transform: none;
+  }
+  
+  .browse-button:hover {
+    transform: none;
+  }
+  
+  .collected:after {
+    animation: none;
+    width: 100%;
+  }
 }
 
-div.roundedCornersSingle {
-
-  width: 3px;
-  height: 100%;
-  border-top-right-radius: 25px;
-  border-bottom-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
- }
-div.roundedCornersSingle:before {
-  content : "";
-  position: absolute;
-  left    : 0;
-  z-index: 100;
-  top  : 0%;
-  width  : 5px;
-  height   : 19%;  /* or 100px */
-  background: white;
-}
-div.roundedCornersSingle:after {
-  content : "";
-  position: absolute;
-  left    : 0;
-  z-index: 100;
-  top  : 80%;
-  width  : 5px;
-  height   : 19%;  /* or 100px */
-  background: white;
-}
-ion-spinner {
-  display: block;
-  margin: auto;
-}
-.sc-ion-modal-md-h {
-  --background: rgba(0,0,0,.0)!important;
-}
-.shopping-list-border {
-  position: relative;
-  margin-top: -6px;
-  margin-left: 1px;
-  height: 6px;
-  background: url(../../assets/images/wave.png) repeat-x 0 0;
-  background-size: auto 6px;
+// Large screen optimizations
+@media (min-width: 768px) {
+  .search-container {
+    margin: var(--space-md) var(--space-lg);
+  }
+  
+  .shopping-list {
+    padding: var(--space-md) var(--space-lg);
+  }
+  
+  .ingredient-item {
+    --padding-top: var(--space-md);
+    --padding-bottom: var(--space-md);
+  }
 }

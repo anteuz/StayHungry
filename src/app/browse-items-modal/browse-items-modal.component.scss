@@ -1,39 +1,108 @@
-ion-header {
-  ion-toolbar:last-child {
-    --border-width: 0 0 1px 0;
-    --border-color: var(--ion-color-light-shade);
-  }
+// Enhanced Browse Items Modal Styling with Design Tokens
+
+.header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
 }
 
-ion-content {
+.header-icon {
+  font-size: 1.3em;
+  color: var(--ion-color-secondary-contrast);
+}
+
+.sort-segment {
   --background: var(--ion-color-light);
+  margin: var(--space-sm);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
-ion-item.noPadding {
-  --padding-start: 0px;
+.sort-button {
+  --color: var(--ion-color-medium);
+  --color-checked: var(--ion-color-primary);
+  --indicator-color: var(--ion-color-primary);
+  font-size: var(--font-size-sm);
+  transition: all 0.2s ease-in-out;
+  
+  &.segment-button-checked {
+    --color: var(--ion-color-primary);
+    font-weight: 600;
+  }
+  
+  ion-icon {
+    margin-top: var(--space-xs);
+    font-size: 1.1em;
+  }
 }
 
-.browse-item {
-  margin: 4px 16px;
-  border-radius: 8px;
-  --background: white;
-  --border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.items-list {
+  padding: var(--space-sm);
+}
+
+.item-sliding {
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
   
-  &:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
   }
+}
+
+.item-card {
+  --background: var(--ion-color-light);
+  --border-radius: var(--radius-lg);
+  --padding-start: 0;
+  --padding-end: var(--space-md);
+  --padding-top: var(--space-sm);
+  --padding-bottom: var(--space-sm);
   
-  // Ensure proper padding for the custom border styling
-  .item-native {
-    padding-left: 0;
+  &:hover {
+    --background: var(--ion-color-light-tint);
   }
+}
+
+.category-indicator {
+  width: 5px;
+  border-top-right-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  margin-right: var(--space-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.item-label {
+  flex: 1;
+  margin: 0;
+}
+
+.item-name {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.usage-info {
+  font-size: var(--font-size-xs);
+  color: var(--ion-color-medium);
+  margin: 0;
+  font-weight: 400;
 }
 
 .add-icon {
-  font-size: 1.2em;
-  margin-left: 8px;
+  font-size: 1.5em;
+  opacity: 0.7;
+  transition: all 0.2s ease-in-out;
+  
+  .item-card:hover & {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
 .empty-state {
@@ -41,146 +110,56 @@ ion-item.noPadding {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: var(--space-3xl);
   text-align: center;
-  padding: 60px 40px;
   height: 60vh;
-  
-  ion-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-  }
-  
-  h3 {
-    color: var(--ion-color-dark);
-    margin: 0 0 10px 0;
-    font-weight: 600;
-  }
-  
-  p {
-    color: var(--ion-color-medium);
-    margin: 0;
-    line-height: 1.4;
-  }
 }
 
-// Reuse the same styling classes from shopping list
-.roundedCornersTop,
-.roundedCornersMiddle,
-.roundedCornersBottom,
-.roundedCornersSingle {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  z-index: 1;
+.empty-icon {
+  font-size: 4em;
+  margin-bottom: var(--space-lg);
+  opacity: 0.5;
 }
 
-.roundedCornersTop {
-  border-radius: 8px 0 0 0;
+.empty-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0 0 var(--space-md) 0;
 }
 
-.roundedCornersMiddle {
-  border-radius: 0;
+.empty-description {
+  font-size: var(--font-size-base);
+  color: var(--ion-color-medium);
+  line-height: 1.5;
+  max-width: 300px;
+  margin: 0;
 }
 
-.roundedCornersBottom {
-  border-radius: 0 0 0 8px;
-}
-
-.roundedCornersSingle {
-  border-radius: 8px 0 0 8px;
-}
-
-// Match shopping list padding and styling
-::shadow div.roundedCornersTop {
-  width: 3px;
-  height: 100%;
-  border-top-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
-  margin-top: 20px;
-}
-
-::shadow div.roundedCornersBottom {
-  width: 3px;
-  height: 100%;
-  border-bottom-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
-  margin-bottom: 20px;
-}
-
-div.roundedCornersMiddle {
-  width: 3px;
-  height: 100%;
-  margin: 0px;
-  padding-right: 5px;
-}
-
-div.roundedCornersSingle {
-  width: 3px;
-  height: 100%;
-  border-top-right-radius: 25px;
-  border-bottom-right-radius: 25px;
-  margin: 0px;
-  padding-right: 5px;
-}
-
-div.roundedCornersSingle:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  z-index: 100;
-  top: 0%;
-  width: 5px;
-  height: 19%;
-  background: white;
-}
-
-div.roundedCornersSingle:after {
-  content: "";
-  position: absolute;
-  left: 0;
-  z-index: 100;
-  top: 80%;
-  width: 5px;
-  height: 19%;
-  background: white;
-}
-
-// Segment styling
-ion-segment {
-  --background: var(--ion-color-light);
-  margin: 8px 16px;
-  border-radius: 8px;
-}
-
-ion-segment-button {
-  --color: var(--ion-color-medium);
-  --color-checked: var(--ion-color-primary);
-  --background-checked: white;
-  --border-radius: 6px;
-  min-height: 36px;
-  
-  ion-label {
-    font-size: 0.9em;
-    font-weight: 500;
-  }
-  
-  ion-icon {
-    font-size: 1.1em;
-    margin-top: 2px;
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .item-sliding,
+  .add-icon,
+  .sort-button {
+    transition: none;
   }
 }
 
-// High performance optimizations
-.browse-item {
-  contain: layout;
-  will-change: transform;
-}
-
-// Infinite scroll loading
-ion-infinite-scroll-content {
-  --color: var(--ion-color-primary);
+// Dark theme support
+body.dark-theme {
+  .item-card {
+    --background: var(--ion-color-step-100);
+    
+    &:hover {
+      --background: var(--ion-color-step-150);
+    }
+  }
+  
+  .item-name {
+    color: var(--ion-text-color);
+  }
+  
+  .sort-segment {
+    --background: var(--ion-color-step-100);
+  }
 }

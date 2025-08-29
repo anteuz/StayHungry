@@ -9,6 +9,7 @@ import {RecipeServiceService} from './services/recipe-service.service';
 import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
 import {SimpleStateService} from './services/simple-state-service';
+import {ThemeService} from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent {
     private slService: ShoppingListService,
     private itemService: SimpleItemService,
     private stateService: SimpleStateService,
-    private recipeService: RecipeServiceService
+    private recipeService: RecipeServiceService,
+    private themeService: ThemeService
   ) {
     this.initializeApp();
   }
@@ -34,12 +36,22 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.subscribeToAuthState();
       
+      // Initialize theme service - this will auto-detect system preferences
+      // and apply the appropriate theme
+      
       // Only set StatusBar style on native platforms
       if (this.platform.is('hybrid')) {
-        StatusBar.setStyle({ style: Style.Default });
+        this.updateStatusBarForTheme();
         SplashScreen.hide();
       }
     }).catch(e => console.log('Could not initialize platform'));
+  }
+
+  private updateStatusBarForTheme() {
+    const currentTheme = this.themeService.getCurrentTheme();
+    StatusBar.setStyle({ 
+      style: currentTheme === 'dark' ? Style.Dark : Style.Light 
+    });
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out

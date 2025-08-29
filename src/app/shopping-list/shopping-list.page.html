@@ -1,30 +1,44 @@
 <ion-header>
     <ion-toolbar color="secondary">
-        <ion-title *ngIf="shoppingList != null" id="shoppingListTitle">{{shoppingList.name}}</ion-title>
-        <ion-title *ngIf="shoppingList == null" id="shoppingListTitle">Create shopping list</ion-title>
+        <ion-title *ngIf="shoppingList != null" id="shoppingListTitle" class="header-title">
+          <ion-icon name="basket" class="header-icon"></ion-icon>
+          {{shoppingList.name}}
+        </ion-title>
+        <ion-title *ngIf="shoppingList == null" id="shoppingListTitle" class="header-title">
+          <ion-icon name="add-circle" class="header-icon"></ion-icon>
+          Create shopping list
+        </ion-title>
         <ion-buttons slot="secondary">
             <ion-menu-toggle>
-                <ion-button icon-only menuClose>
+                <ion-button fill="clear" aria-label="Open menu">
                     <ion-icon name="menu"></ion-icon>
                 </ion-button>
             </ion-menu-toggle>
         </ion-buttons>
+        <ion-buttons slot="end">
+            <app-theme-toggle></app-theme-toggle>
+        </ion-buttons>
     </ion-toolbar>
-
 </ion-header>
 
 <ion-content>
-    <ion-item *ngIf="showSearchBar && shoppingList != null">
+    <ion-item *ngIf="showSearchBar && shoppingList != null" class="search-container">
         <ion-searchbar #ingredientBar
                    showCancelButton="false"
                    animated
                    placeholder="+ New Item"
                    debounce="700"
                    (click)="openIngredientOverlay()"
-                   searchIcon="nutrition">
+                   searchIcon="nutrition"
+                   class="enhanced-searchbar">
         </ion-searchbar>
-        <ion-button fill="clear" size="small" (click)="onOpenItemsList()">
-            <ion-icon name="book"></ion-icon>
+        <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="onOpenItemsList()"
+            class="browse-button"
+            aria-label="Browse all items">
+            <ion-icon name="storefront"></ion-icon>
         </ion-button>
     </ion-item>
 
@@ -36,14 +50,29 @@
         <ion-label id="noShoppingList" text-wrap>You have no shopping lists, please create one first!</ion-label>
     </ion-item>
 
-    <ion-list #ingredientList class="unCollected" [inset]="false" *ngIf="!loading && shoppingList !== null && ingredients !== undefined" lines="inset">
-        <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index">
-            <ion-item class="noPadding" [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" (animationend)="onCollect(ingredient)">
-                <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
-                <ion-label>
-                <h3>{{ ingredient.item.itemName }}</h3>
+    <ion-list #ingredientList class="shopping-list unCollected" [inset]="false" *ngIf="!loading && shoppingList !== null && ingredients !== undefined" lines="inset">
+        <ion-item-sliding *ngFor="let ingredient of ingredients | isCollected : false; let i = index" class="ingredient-sliding">
+            <ion-item 
+                class="ingredient-item noPadding" 
+                [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" 
+                (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" 
+                (animationend)="onCollect(ingredient)"
+                button
+                [attr.aria-label]="'Mark ' + ingredient.item.itemName + ' as collected'">
+                <div 
+                    [class]="getStyleClass(ingredient) + ' category-indicator'" 
+                    [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"
+                    [attr.aria-hidden]="true">
+                </div>
+                <ion-label class="ingredient-label">
+                    <h3 class="ingredient-name">{{ ingredient.item.itemName }}</h3>
                 </ion-label>
-                <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
+                <ion-badge 
+                    *ngIf="ingredient.amount != '0'" 
+                    color="primary" 
+                    class="amount-badge">
+                    {{ ingredient.amount }}
+                </ion-badge>
             </ion-item>
             <ion-item-options side="end">
                 <ion-item-option

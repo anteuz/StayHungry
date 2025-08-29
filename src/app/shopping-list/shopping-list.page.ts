@@ -9,6 +9,7 @@ import {Ingredient} from '../models/ingredient';
 import {ShoppingList} from '../models/shopping-list';
 import {ShoppingListService} from '../services/shopping-list.service';
 import {SimpleStateService} from '../services/simple-state-service';
+import {ThemeService} from '../services/theme.service';
 
 @Component({
     selector: 'app-shopping-list',
@@ -32,7 +33,8 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         public modalCtrl: ModalController,
         public router: Router,
         public route: ActivatedRoute,
-        private stateService: SimpleStateService
+        private stateService: SimpleStateService,
+        private themeService: ThemeService
     ) {
         console.log('Created constructor');
         // If route param is empty, go to last opened shopping list
@@ -178,7 +180,21 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 
     getStyle(ingredientColor: string) {
-        return '5px solid var(' + ingredientColor + ')';
+        // Handle both new category colors and legacy itemColor variables
+        let cssVariable = ingredientColor;
+        
+        // If itemColor doesn't start with --, it might be a legacy format or category name
+        if (!ingredientColor.startsWith('--')) {
+            // Try to get the proper CSS variable from theme service
+            cssVariable = this.themeService.getCategoryVariable(ingredientColor);
+        }
+        
+        // Ensure we have a valid CSS variable format
+        if (!cssVariable.startsWith('--')) {
+            cssVariable = '--ion-color-category-other';
+        }
+        
+        return `5px solid var(${cssVariable})`;
     }
 
     getStyleClass(ingredient: Ingredient) {

@@ -5,6 +5,7 @@ import {Ingredient} from '../models/ingredient';
 import {SimpleItem} from '../models/simple-item';
 import {ShoppingListService} from '../services/shopping-list.service';
 import {SimpleItemService} from '../services/simple-item.service';
+import {ThemeService} from '../services/theme.service';
 
 
 @Component({
@@ -16,9 +17,11 @@ export class IngredientOverlayPage implements OnInit {
 
     @ViewChild('ingredientBar', {static: false}) ingredientBar: IonSearchbar;
     itemColorName = '';
+    selectedCategory = 'other';
     showItemColorSelector = false;
     itemSuggestions: SimpleItem[] = [];
     ingredients: Ingredient[];
+    availableCategories: any[] = [];
 
     mode;
     ingredientToEdit: Ingredient;
@@ -27,7 +30,8 @@ export class IngredientOverlayPage implements OnInit {
         private itemService: SimpleItemService,
         public slService: ShoppingListService,
         private modalCtrl: ModalController,
-        private navParams: NavParams
+        private navParams: NavParams,
+        private themeService: ThemeService
     ) {
         this.mode = this.navParams.get('mode');
 
@@ -37,8 +41,15 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     ngOnInit() {
+        // Initialize available categories from theme service
+        this.availableCategories = this.themeService.getAvailableCategories();
+        
         if (this.mode === 'edit') {
             this.itemColorName = this.ingredientToEdit.item.itemColor;
+            // Convert legacy itemColor to semantic category
+            this.selectedCategory = this.themeService.getCategoryColor(this.itemColorName);
+        } else {
+            this.selectedCategory = 'other';
         }
     }
 
@@ -124,13 +135,11 @@ export class IngredientOverlayPage implements OnInit {
         }
     }
 
-    chooseColor(colorName: string) {
-        if (this.itemColorName === colorName) {
-            this.itemColorName = null;
-        } else {
-            this.itemColorName = colorName;
-        }
-        console.log('Color selected:', colorName);
+    chooseColor(categoryKey: string) {
+        this.selectedCategory = categoryKey;
+        // Convert category to CSS variable for backward compatibility
+        this.itemColorName = this.themeService.getCategoryVariable(categoryKey);
+        console.log('Category selected:', categoryKey, 'CSS Variable:', this.itemColorName);
         this.getActiveSearchBar().setFocus();
     }
 
@@ -163,7 +172,13 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     getButtonColor(ingredientColor: string) {
-        return ingredientColor.substring(ingredientColor.lastIndexOf('-') + 1);
+        // Convert legacy itemColor to semantic category for display
+        const categoryColor = this.themeService.getCategoryColor(ingredientColor);
+        return categoryColor;
+    }
+
+    trackByCategory(index: number, category: any): string {
+        return category.key;
     }
 
     showColorSelector() {
@@ -270,6 +285,9 @@ export class IngredientOverlayPage implements OnInit {
         }
         console.log(ingredientName);
         
+        // Ensure we have a valid color - if empty, use the selected category
+        const finalColor = ingredientColor || this.themeService.getCategoryVariable(this.selectedCategory);
+        
         let simpleItem: SimpleItem;
         
         if (this.mode === 'edit') {
@@ -279,8 +297,8 @@ export class IngredientOverlayPage implements OnInit {
             if (originalItem.itemName.toLowerCase() === ingredientName.toLowerCase()) {
                 // Same item name, just update the color if needed
                 simpleItem = originalItem;
-                if (simpleItem.itemColor !== ingredientColor) {
-                    simpleItem.itemColor = ingredientColor;
+                if (simpleItem.itemColor !== finalColor) {
+                    simpleItem.itemColor = finalColor;
                     this.itemService.updateItem(simpleItem);
                 }
                 // Track usage for the item being edited
@@ -291,15 +309,15 @@ export class IngredientOverlayPage implements OnInit {
                 if (existingItem) {
                     // Use existing item but update color if needed
                     simpleItem = existingItem;
-                    if (simpleItem.itemColor !== ingredientColor) {
-                        simpleItem.itemColor = ingredientColor;
+                    if (simpleItem.itemColor !== finalColor) {
+                        simpleItem.itemColor = finalColor;
                         this.itemService.updateItem(simpleItem);
                     }
                     // Track usage for existing item
                     this.itemService.incrementUsage(simpleItem);
                 } else {
                     // Create new item with new name and color
-                    simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor, 1);
+                    simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, finalColor, 1);
                     this.itemService.addItem(simpleItem);
                 }
             }
@@ -309,20 +327,20 @@ export class IngredientOverlayPage implements OnInit {
             if (existingItem) {
                 // Use existing item but update color if user has chosen a different color
                 simpleItem = existingItem;
-                if (simpleItem.itemColor !== ingredientColor) {
-                    simpleItem.itemColor = ingredientColor;
+                if (simpleItem.itemColor !== finalColor) {
+                    simpleItem.itemColor = finalColor;
                     this.itemService.updateItem(simpleItem);
                 }
                 // Track usage for existing item
                 this.itemService.incrementUsage(simpleItem);
             } else {
                 // Create new item with initial usage count of 1
-                simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor, 1);
+                simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, finalColor, 1);
                 this.itemService.addItem(simpleItem);
             }
         }
         console.log(simpleItem);
-        console.log(ingredientColor);
+        console.log(finalColor);
         // Create full ingredient
         if (this.mode === 'insert') {
             return new Ingredient(Guid.create().toString(), simpleItem, ingredientAmount);
