@@ -28,8 +28,10 @@
   margin-left: var(--space-sm);
   transition: all 0.2s ease-in-out;
   
-  &:hover {
-    transform: scale(1.05);
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      transform: scale(1.05);
+    }
   }
   
   ion-icon {
@@ -54,9 +56,11 @@
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease-in-out;
   
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
   }
 }
 

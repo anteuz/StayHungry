@@ -46,8 +46,8 @@ export class IngredientOverlayPage implements OnInit {
         
         if (this.mode === 'edit') {
             this.itemColorName = this.ingredientToEdit.item.itemColor;
-            // Convert legacy itemColor to semantic category
-            this.selectedCategory = this.themeService.getCategoryColor(this.itemColorName);
+            // Convert legacy itemColor to semantic category key
+            this.selectedCategory = this.themeService.getCategoryKey(this.itemColorName);
         } else {
             this.selectedCategory = 'other';
         }

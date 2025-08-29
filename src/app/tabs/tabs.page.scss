@@ -27,10 +27,13 @@
   
   &.tab-selected {
     --color: var(--ion-color-secondary-contrast);
-    transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    
+    @media (prefers-reduced-motion: no-preference) {
+      transform: translateY(-2px);
+    }
   }
   
   ion-icon {
@@ -51,8 +54,10 @@
     background: rgba(255, 255, 255, 0.1);
   }
   
-  &.tab-selected ion-icon {
-    transform: scale(1.1);
+  @media (prefers-reduced-motion: no-preference) {
+    &.tab-selected ion-icon {
+      transform: scale(1.1);
+    }
   }
 }
 

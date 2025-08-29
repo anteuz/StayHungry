@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ThemeService {
+export class ThemeService implements OnDestroy {
   private currentTheme: 'light' | 'dark' = 'light';
+  private mediaQueryList: MediaQueryList;
+  private mediaQueryListener: (e: MediaQueryListEvent) => void;
 
   constructor() {
     this.initializeTheme();
@@ -19,11 +21,13 @@ export class ThemeService {
     this.applyTheme(this.currentTheme);
 
     // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+    this.mediaQueryListener = (e) => {
       if (!localStorage.getItem('theme')) {
         this.setTheme(e.matches ? 'dark' : 'light');
       }
-    });
+    };
+    this.mediaQueryList.addEventListener('change', this.mediaQueryListener);
   }
 
   getCurrentTheme(): 'light' | 'dark' {
@@ -88,7 +92,21 @@ export class ThemeService {
     return `--ion-color-${cleanCategory}`;
   }
 
+  // Get category key (for UI selection) from itemColor or category
+  getCategoryKey(itemColor: string): string {
+    const fullCategory = this.getCategoryColor(itemColor);
+    // Extract key from 'category-fruits' -> 'fruits'
+    return fullCategory.replace(/^category-/, '');
+  }
+
   // Get available food categories for selection
+  ngOnDestroy() {
+    // Clean up media query listener to prevent memory leaks
+    if (this.mediaQueryList && this.mediaQueryListener) {
+      this.mediaQueryList.removeEventListener('change', this.mediaQueryListener);
+    }
+  }
+
   getAvailableCategories() {
     return [
       { key: 'fruits', name: 'Fruits', color: 'category-fruits', icon: 'nutrition' },

@@ -48,9 +48,11 @@
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease-in-out;
   
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
   }
 }
 
@@ -99,9 +101,11 @@
   opacity: 0.7;
   transition: all 0.2s ease-in-out;
   
-  .item-card:hover & {
-    opacity: 1;
-    transform: scale(1.1);
+  @media (prefers-reduced-motion: no-preference) {
+    .item-card:hover & {
+      opacity: 1;
+      transform: scale(1.1);
+    }
   }
 }
 
