@@ -3,6 +3,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {IonList, ModalController} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
+import {BrowseItemsModalComponent} from '../browse-items-modal/browse-items-modal.component';
 import {AppState} from '../models/app-state';
 import {Ingredient} from '../models/ingredient';
 import {ShoppingList} from '../models/shopping-list';
@@ -264,8 +265,27 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         modal = null;
     }
 
-    onOpenItemsList() {
-        const grouped = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+    async onOpenItemsList() {
+        const modal = await this.modalCtrl.create({
+            component: BrowseItemsModalComponent,
+            animated: true,
+            showBackdrop: true,
+            cssClass: 'browse-items-modal',
+            backdropDismiss: true
+        });
+        
+        await modal.present();
+        
+        const { data } = await modal.onDidDismiss();
+        if (data) {
+            // data is an Ingredient object returned from the modal
+            if (this.shoppingList.items == null) {
+                this.shoppingList.items = [];
+            }
+            this.shoppingList.items.push(data);
+            this.initializeIngredients();
+            this.slService.updateShoppingList(this.shoppingList);
+        }
     }
 
     findIngredientUsingUUID(searchTerm) {

@@ -251,3 +251,13 @@ cartPopover .popover-content{ width: 320px; }
   --padding-bottom: 8px;
   margin: 8px 0 4px 0;
 }
+
+/* Browse Items Modal Styling */
+ion-modal.browse-items-modal {
+  --border-radius: 16px 16px 0 0;
+  --box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  
+  .modal-wrapper {
+    border-radius: 16px 16px 0 0 !important;
+  }
+}

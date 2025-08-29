@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import {SharedModule} from '../shared/shared-module';
 
 import { ShoppingListPage } from './shopping-list.page';
+import { BrowseItemsModalComponent } from '../browse-items-modal/browse-items-modal.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,6 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ShoppingListPage]
+  declarations: [ShoppingListPage, BrowseItemsModalComponent]
 })
 export class ShoppingListPageModule {}
