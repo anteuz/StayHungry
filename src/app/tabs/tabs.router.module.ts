@@ -13,7 +13,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../shopping-list/shopping-list.module#ShoppingListPageModule'
+            loadChildren: () => import('../shopping-list/shopping-list.module').then(m => m.ShoppingListPageModule)
           }
         ]
       },
@@ -22,7 +22,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../recipes/recipes.module#RecipesPageModule'
+            loadChildren: () => import('../recipes/recipes.module').then(m => m.RecipesPageModule)
           }
         ]
       },
@@ -31,7 +31,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../weekly-menu/weekly-menu.module#WeeklyMenuPageModule'
+            loadChildren: () => import('../weekly-menu/weekly-menu.module').then(m => m.WeeklyMenuPageModule)
           }
         ]
       },

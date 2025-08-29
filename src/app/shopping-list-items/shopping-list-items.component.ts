@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {Router} from '@angular/router';
 import {IonList} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
@@ -17,7 +17,7 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   shoppingLists: ShoppingList[] = [];
   inEditMode: string = null;
-  shoppingListName: FormControl = null;
+  shoppingListName: UntypedFormControl = null;
 
   private subscriptions: Subscription = new Subscription();
   @ViewChild('shoppingListsList', {static: false}) shoppingListsList: IonList;
