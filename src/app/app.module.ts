@@ -37,7 +37,6 @@ import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping
         CartPopoverComponent,
         ShoppingListTransferComponent
     ],
-    entryComponents: [IngredientOverlayPage, CartPopoverComponent, ShoppingListTransferComponent],
     imports: [
         BrowserModule,
         FormsModule,
@@ -64,7 +63,7 @@ import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping
         CloudStoreService,
         RecipeServiceService,
         ImageResizer,
-        {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
     ],
     bootstrap: [AppComponent]
 })
