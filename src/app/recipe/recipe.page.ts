@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import * as BrowserCamera from '@ionic-native/camera';
 import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
@@ -28,7 +28,7 @@ export class RecipePage implements OnInit, OnDestroy {
     recipeUUID;
     recipeImageUploadPercentage: number;
     downloadURL: Observable<string>;
-    recipeForm: FormGroup;
+    recipeForm: UntypedFormGroup;
     platformTypeCordova: boolean;
 
     constructor(
@@ -165,9 +165,9 @@ export class RecipePage implements OnInit, OnDestroy {
 
     initializeForm() {
 
-        this.recipeForm = new FormGroup({
-            'recipeName': new FormControl(this.recipe.name, Validators.required),
-            'recipeDescription': new FormControl(this.recipe.description || null)
+        this.recipeForm = new UntypedFormGroup({
+            'recipeName': new UntypedFormControl(this.recipe.name, Validators.required),
+            'recipeDescription': new UntypedFormControl(this.recipe.description || null)
         });
     }
 
