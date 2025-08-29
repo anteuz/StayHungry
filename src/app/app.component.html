@@ -1,31 +1,46 @@
 <ion-app>
     <ion-split-pane contentId="menu-content">
-        <ion-menu #appMenu side="start" contentId="menu-content" style="border-right: 1px solid #dddddd;">
-            <ion-header style="headerStyle">
+        <ion-menu #appMenu side="start" contentId="menu-content" style="border-right: 1px solid #dddddd;" swipeGesture="false">
+            <ion-header class="headerStyle">
                 <ion-toolbar color="secondary">
-                    <ion-title>Shopping lists</ion-title>
+                    <ion-title>
+                        <div class="header-title">
+                            <ion-icon name="basket-outline" class="header-icon"></ion-icon>
+                            <span>Shopping lists</span>
+                        </div>
+                    </ion-title>
                 </ion-toolbar>
             </ion-header>
-            <ion-content style="splitMenu">
+            <ion-content class="splitMenu">
                     <!-- Shopping lists -->
                     <app-shopping-list-items></app-shopping-list-items>
+                
+                <!-- Visual separator -->
+                <div class="menu-separator"></div>
+                
                 <ion-list>
-                    <ion-list-header>
-                        <ion-label>Settings</ion-label>
+                    <ion-list-header lines="none" class="ion-align-items-center" style="display: flex; align-items: center;">
+                        <ion-icon name="settings-outline" slot="start" color="medium" style="font-size: 1.5em; margin-right: 8px;"></ion-icon>
+                        <ion-label>
+                            <h2 style="margin: 0; font-size: 1.1em; font-weight: 600;">Settings</h2>
+                        </ion-label>
                     </ion-list-header>
-                    <!-- End Shopping Lists -->
-                    <ion-button fill="clear" *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-in']">
-                        <ion-icon name="log-in" slot="start"></ion-icon>
-                        <ion-label>Sign in</ion-label>
-                    </ion-button>
-                    <ion-button fill="clear" *ngIf="!isAuthenticated" slot="start" [routerLink]="['/sign-up']">
-                        <ion-icon name="person" slot="start"></ion-icon>
-                        <ion-label>Sign up</ion-label>
-                    </ion-button>
-                    <ion-button fill="clear" id="logout-button" *ngIf="isAuthenticated" slot="start" (click)="onLogout()" lines="none">
-                        <ion-icon name="log-out" slot="start"></ion-icon>
-                        <ion-label>Logout</ion-label>
-                    </ion-button>
+                    <!-- Authentication menu items -->
+                    <ion-item button *ngIf="!isAuthenticated" [routerLink]="['/sign-in']" class="auth-menu-item">
+                        <ion-icon name="log-in-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label color="primary">Sign in</ion-label>
+                        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+                    </ion-item>
+                    <ion-item button *ngIf="!isAuthenticated" [routerLink]="['/sign-up']" class="auth-menu-item">
+                        <ion-icon name="person-add-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label color="primary">Sign up</ion-label>
+                        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+                    </ion-item>
+                    <ion-item button *ngIf="isAuthenticated" (click)="onLogout()" class="auth-menu-item" id="logout-button">
+                        <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+                        <ion-label color="danger">Logout</ion-label>
+                        <ion-icon name="power-outline" slot="end" color="danger"></ion-icon>
+                    </ion-item>
                 </ion-list>
             </ion-content>
         </ion-menu>

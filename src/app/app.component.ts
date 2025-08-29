@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
+import {Auth, onAuthStateChanged, signOut} from '@angular/fire/auth';
 import {Router} from '@angular/router';
-import {SplashScreen} from '@ionic-native/splash-screen/ngx';
-import {StatusBar} from '@ionic-native/status-bar/ngx';
+import {SplashScreen} from '@capacitor/splash-screen';
+import {StatusBar, Style} from '@capacitor/status-bar';
 
 import {Platform} from '@ionic/angular';
 import {RecipeServiceService} from './services/recipe-service.service';
@@ -20,10 +20,8 @@ export class AppComponent {
 
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private router: Router,
-    private fireAuth: AngularFireAuth,
+    private fireAuth: Auth,
     private slService: ShoppingListService,
     private itemService: SimpleItemService,
     private stateService: SimpleStateService,
@@ -35,14 +33,18 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then(() => {
       this.subscribeToAuthState();
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      
+      // Only set StatusBar style on native platforms
+      if (this.platform.is('hybrid')) {
+        StatusBar.setStyle({ style: Style.Default });
+        SplashScreen.hide();
+      }
     }).catch(e => console.log('Could not initialize platform'));
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out
   subscribeToAuthState() {
-    this.fireAuth.auth.onAuthStateChanged(user => {
+    onAuthStateChanged(this.fireAuth, (user) => {
           if (user) {
             console.log('Authed user');
             this.stateService.setupHandlers().then(() => {
@@ -62,6 +64,6 @@ export class AppComponent {
     );
   }
   onLogout() {
-    this.fireAuth.auth.signOut();
+    signOut(this.fireAuth);
   }
 }

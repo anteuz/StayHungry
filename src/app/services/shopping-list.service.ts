@@ -1,7 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {EventEmitter, Injectable} from '@angular/core';
-import {AngularFireDatabase} from '@angular/fire/database';
-import {hasOwnProperty} from 'tslint/lib/utils';
+import {Database, ref, onValue, set} from '@angular/fire/database';
 import {ShoppingList} from '../models/shopping-list';
 import {AuthService} from './auth.service';
 import {Ingredient} from '../models/ingredient';
@@ -23,24 +22,41 @@ export class ShoppingListService {
     constructor(
         private httpClient: HttpClient,
         private authService: AuthService,
-        private fireDatabase: AngularFireDatabase
+        private fireDatabase: Database
     ) {
     }
 
     setupHandlers() {
         console.log('Setting up Shopping-lists service..');
+        
+        if (!this.authService.isAuthenticated()) {
+            console.error('Cannot setup shopping list handlers: user not authenticated');
+            return;
+        }
+
+        const userUID = this.authService.getUserUID();
+        if (!userUID) {
+            console.error('Cannot setup shopping list handlers: no user UID');
+            return;
+        }
+
         // Setup DB PATH
-        this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/shopping-list';
+        this.DATABASE_PATH = 'users/' + userUID + '/shopping-list';
         // Subscribe to value changes
-        this.fireDatabase.list<ShoppingList>(this.DATABASE_PATH).valueChanges().subscribe((payload: ShoppingList[]) => {
-            console.log(payload);
+        onValue(ref(this.fireDatabase, this.DATABASE_PATH), (snapshot) => {
+            const payload = snapshot.val() as ShoppingList[];
+            console.log('Shopping lists loaded from Firebase:', payload);
+            
+            // Handle all cases: null, undefined, empty array, or actual data
             if (payload) {
-                this.shoppingLists = payload;
-                if (this.shoppingLists === null) {
-                    this.shoppingLists = [];
-                }
-                this.shoppingListsEvent.emit(this.shoppingLists.slice());
+                this.shoppingLists = Array.isArray(payload) ? payload : [];
+            } else {
+                // User has no shopping lists in database
+                this.shoppingLists = [];
             }
+            
+            // Always emit the event so the UI knows we've finished loading
+            this.shoppingListsEvent.emit(this.shoppingLists.slice());
         });
         console.log(this.DATABASE_PATH);
     }
@@ -82,7 +98,7 @@ export class ShoppingListService {
     }
 
     getItems() {
-        return this.shoppingLists.slice();
+        return this.shoppingLists ? this.shoppingLists.slice() : [];
     }
 
     removeShoppingList(shoppingList: ShoppingList) {
@@ -91,8 +107,12 @@ export class ShoppingListService {
     }
 
     updateDatabase() {
-        const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.shoppingLists.slice()).catch(e => console.log('Could not update item in DB'));
+        if (!this.DATABASE_PATH || !this.authService.isAuthenticated()) {
+            console.error('Cannot update database: user not authenticated or no database path set');
+            return;
+        }
+        const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
+        set(itemRef, this.shoppingLists.slice()).catch(e => console.log('Could not update item in DB'));
     }
 
     updateShoppingLists(shoppingList: ShoppingList[]) {
@@ -109,7 +129,10 @@ export class ShoppingListService {
     }
 
     findUsingUUID(searchTerm): ShoppingList {
-        return this.shoppingLists.find(shoppingList => shoppingList.uuid === searchTerm);
+        if (!this.shoppingLists || !searchTerm) {
+            return null;
+        }
+        return this.shoppingLists.find(shoppingList => shoppingList && shoppingList.uuid === searchTerm);
     }
 
     findUsingIngredientName(shoppingList: ShoppingList, searchTerm): Ingredient {

@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {EventEmitter, Injectable} from '@angular/core';
-import {AngularFireDatabase} from '@angular/fire/database';
+import {Database, ref, onValue, object, set} from '@angular/fire/database';
 import {Recipe} from '../models/recipe';
 import {AuthService} from './auth.service';
 
@@ -17,16 +17,29 @@ export class RecipeServiceService {
     constructor(
         private httpClient: HttpClient,
         private authService: AuthService,
-        private fireDatabase: AngularFireDatabase
+        private fireDatabase: Database
     ) {
     }
 
     setupHandlers() {
         console.log('Setting up recipe service..');
+        
+        if (!this.authService.isAuthenticated()) {
+            console.error('Cannot setup recipe handlers: user not authenticated');
+            return;
+        }
+
+        const userUID = this.authService.getUserUID();
+        if (!userUID) {
+            console.error('Cannot setup recipe handlers: no user UID');
+            return;
+        }
+
         // Setup DB PATH
-        this.DATABASE_PATH = 'users/' + this.authService.getUserUID() + '/recipes';
+        this.DATABASE_PATH = 'users/' + userUID + '/recipes';
         // Subscribe to value changes
-        this.fireDatabase.list<Recipe>(this.DATABASE_PATH).valueChanges().subscribe((payload) => {
+        onValue(ref(this.fireDatabase, this.DATABASE_PATH), (snapshot) => {
+            const payload = snapshot.val();
             if (payload) {
                 this.recipes = payload;
                 console.log(payload);
@@ -56,8 +69,12 @@ export class RecipeServiceService {
     }
 
     updateDatabase() {
-        const itemRef = this.fireDatabase.object(this.DATABASE_PATH);
-        itemRef.set(this.recipes.slice()).catch(e => console.log('Could not update item in DB'));
+        if (!this.DATABASE_PATH || !this.authService.isAuthenticated()) {
+            console.error('Cannot update database: user not authenticated or no database path set');
+            return;
+        }
+        const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
+        set(itemRef, this.recipes.slice()).catch(e => console.log('Could not update item in DB'));
     }
 
     updateRecipes(recipes: Recipe[]) {

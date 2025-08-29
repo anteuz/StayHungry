@@ -1,63 +1,43 @@
 import { Injectable } from '@angular/core';
-import {AngularFireStorage} from '@angular/fire/storage';
-import {ImageResizer, ImageResizerOptions} from '@ionic-native/image-resizer/ngx';
+import {Storage, ref, uploadBytes, getDownloadURL, deleteObject} from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CloudStoreService {
 
-  constructor(private storage: AngularFireStorage, private imageResizer: ImageResizer) { }
+  constructor(private storage: Storage) { }
 
   storeRecipeImage(file, recipeUUID) {
 
     const filePath = 'recipeImage_' + recipeUUID;
-    const task = this.storage.upload(filePath, file);
-    return task;
+    const storageRef = ref(this.storage, filePath);
+    return uploadBytes(storageRef, file);
   }
 
   getReferenceToUploadedFile(recipeUUID) {
     const filePath = 'recipeImage_' + recipeUUID;
-    const fileRef = this.storage.ref(filePath);
-    return fileRef;
+    const fileRef = ref(this.storage, filePath);
+    return getDownloadURL(fileRef);
   }
 
   removeImage(recipeUUID) {
     const filePath = 'recipeImage_' + recipeUUID;
-    const fileRef = this.storage.ref(filePath).delete();
-    return fileRef;
+    const fileRef = ref(this.storage, filePath);
+    return deleteObject(fileRef);
   }
 
+  // Image resizing functionality can be implemented later with modern web APIs
+  // or by using browser-based image manipulation libraries
   resizeImage(fileURI: string) {
-    let _filePath;
-    const options = {
-      uri: fileURI,
-      quality: 70,
-      width: 1280,
-      height: 1280
-    } as ImageResizerOptions;
-
-    this.imageResizer
-        .resize(options)
-        .then((filePath: string) => _filePath = filePath)
-        .catch(e => console.log(e));
-
-    return _filePath;
+    // TODO: Implement image resizing using modern browser APIs
+    console.log('Image resizing not yet implemented for web');
+    return fileURI;
   }
+  
   createThumbnail(fileURI: string) {
-    let _filePath;
-    const options = {
-      uri: fileURI,
-      quality: 50,
-      width: 240,
-      height: 240
-    } as ImageResizerOptions;
-
-    this.imageResizer
-        .resize(options)
-        .then((filePath: string) => _filePath = filePath)
-        .catch(e => console.log(e));
-
-    return _filePath;
+    // TODO: Implement thumbnail creation using modern browser APIs
+    console.log('Thumbnail creation not yet implemented for web');
+    return fileURI;
   }
 }

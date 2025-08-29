@@ -1,18 +1,16 @@
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
-import {AngularFireModule} from '@angular/fire';
-import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
-import {AngularFireDatabase, AngularFireDatabaseModule} from '@angular/fire/database';
-import {AngularFireStorageModule} from '@angular/fire/storage';
+import {provideFirebaseApp, initializeApp} from '@angular/fire/app';
+import {provideAuth, getAuth} from '@angular/fire/auth';
+import {provideDatabase, getDatabase} from '@angular/fire/database';
+import {provideStorage, getStorage} from '@angular/fire/storage';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
-import {ImageResizer} from '@ionic-native/image-resizer/ngx';
-import {SplashScreen} from '@ionic-native/splash-screen/ngx';
-import {StatusBar} from '@ionic-native/status-bar/ngx';
+
 
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
-import {IonicStorageModule} from '@ionic/storage';
+import {IonicStorageModule} from '@ionic/storage-angular';
 import {environment} from '../environments/environment';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -44,25 +42,22 @@ import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping
         IonicModule.forRoot(),
         IonicStorageModule.forRoot(),
         AppRoutingModule,
-        AngularFireModule.initializeApp(environment.firebase, 'my-recipe-book-anteuz'),
-        AngularFireDatabaseModule,
-        AngularFireAuthModule,
-        AngularFireStorageModule,
+
         HttpClientModule,
         SharedModule,
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
     ],
     providers: [
-        StatusBar,
-        SplashScreen,
-        AngularFireDatabase,
-        AngularFireAuth,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => getAuth()),
+        provideDatabase(() => getDatabase()),
+        provideStorage(() => getStorage()),
         ShoppingListService,
         SimpleItemService,
         SimpleStateService,
         CloudStoreService,
         RecipeServiceService,
-        ImageResizer,
+
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
     ],
     bootstrap: [AppComponent]

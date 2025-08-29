@@ -1,0 +1,92 @@
+<button 
+  *ngIf="!routerLink; else routerLinkButton"
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="disabled || loading"
+  (click)="onClick($event)">
+  
+  <div class="button-content">
+    <!-- Loading spinner -->
+    <ion-spinner 
+      *ngIf="loading" 
+      name="crescent" 
+      class="button-spinner">
+    </ion-spinner>
+    
+    <!-- Start icon -->
+    <ion-icon 
+      *ngIf="icon && iconSlot === 'start' && !loading" 
+      [name]="icon" 
+      class="button-icon button-icon--start">
+    </ion-icon>
+    
+    <!-- Button text content -->
+    <span class="button-text" [class.button-text--hidden]="loading">
+      <span *ngIf="text; else projectedContent">{{ text }}</span>
+      <ng-template #projectedContent>
+        <ng-content></ng-content>
+      </ng-template>
+    </span>
+    
+    <!-- End icon -->
+    <ion-icon 
+      *ngIf="icon && iconSlot === 'end' && !loading" 
+      [name]="icon" 
+      class="button-icon button-icon--end">
+    </ion-icon>
+    
+    <!-- Icon only -->
+    <ion-icon 
+      *ngIf="icon && iconSlot === 'icon-only' && !loading" 
+      [name]="icon" 
+      class="button-icon button-icon--only">
+    </ion-icon>
+  </div>
+</button>
+
+<!-- Router link version -->
+<ng-template #routerLinkButton>
+  <a 
+    [routerLink]="routerLink"
+    [class]="buttonClasses + ' styled-button--link'"
+    [attr.aria-disabled]="disabled || loading">
+    
+    <div class="button-content">
+      <!-- Loading spinner -->
+      <ion-spinner 
+        *ngIf="loading" 
+        name="crescent" 
+        class="button-spinner">
+      </ion-spinner>
+      
+      <!-- Start icon -->
+      <ion-icon 
+        *ngIf="icon && iconSlot === 'start' && !loading" 
+        [name]="icon" 
+        class="button-icon button-icon--start">
+      </ion-icon>
+      
+      <!-- Button text content -->
+      <span class="button-text" [class.button-text--hidden]="loading">
+        <span *ngIf="text; else projectedContentLink">{{ text }}</span>
+        <ng-template #projectedContentLink>
+          <ng-content></ng-content>
+        </ng-template>
+      </span>
+      
+      <!-- End icon -->
+      <ion-icon 
+        *ngIf="icon && iconSlot === 'end' && !loading" 
+        [name]="icon" 
+        class="button-icon button-icon--end">
+      </ion-icon>
+      
+      <!-- Icon only -->
+      <ion-icon 
+        *ngIf="icon && iconSlot === 'icon-only' && !loading" 
+        [name]="icon" 
+        class="button-icon button-icon--only">
+      </ion-icon>
+    </div>
+  </a>
+</ng-template>
