@@ -34,31 +34,27 @@
   </div>
 
   <div *ngIf="showItemColorSelector" class="color-selector-section">
+    <div class="section-header">
+      <ion-text color="medium">
+        <small>Choose Food Category</small>
+      </ion-text>
+    </div>
     <ion-grid>
       <ion-row align-items-start>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor1')" color="itemColor1"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor1'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor2')" color="itemColor2"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor2'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor3')" color="itemColor3"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor3'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor4')" color="itemColor4"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor4'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor5')" color="itemColor5"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor5'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor6')" color="itemColor6"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor6'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor7')" color="itemColor7"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor7'" name="checkmark"></ion-icon></ion-button>
-        </ion-col>
-        <ion-col size="auto">
-          <ion-button class="listButton" (click)="chooseColor('--ion-color-itemColor8')" color="itemColor8"><ion-icon *ngIf="itemColorName === '--ion-color-itemColor8'" name="checkmark"></ion-icon></ion-button>
+        <ion-col size="auto" *ngFor="let category of availableCategories; trackBy: trackByCategory">
+          <ion-button 
+            class="category-button" 
+            [color]="category.color" 
+            fill="solid"
+            size="small"
+            (click)="chooseColor(category.key)"
+            [attr.aria-label]="'Select ' + category.name + ' category'">
+            <ion-icon 
+              [name]="selectedCategory === category.key ? 'checkmark' : category.icon" 
+              slot="icon-only">
+            </ion-icon>
+          </ion-button>
+          <ion-label class="category-label">{{ category.name }}</ion-label>
         </ion-col>
       </ion-row>
     </ion-grid>

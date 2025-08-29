@@ -1,8 +1,14 @@
 <ion-header>
   <ion-toolbar color="secondary">
-    <ion-title>Browse Items</ion-title>
+    <ion-title class="header-title">
+      <ion-icon name="storefront" class="header-icon"></ion-icon>
+      Browse Items
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="dismiss()">
+      <ion-button 
+        fill="clear" 
+        (click)="dismiss()"
+        aria-label="Close browse items modal">
         <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -10,16 +16,19 @@
   
   <!-- Fixed Sort Controls -->
   <ion-toolbar color="light">
-    <ion-segment [(ngModel)]="currentSortMode" (ionChange)="onSortModeChange($event.detail.value)">
-      <ion-segment-button value="color">
-        <ion-label>Color</ion-label>
+    <ion-segment 
+      [(ngModel)]="currentSortMode" 
+      (ionChange)="onSortModeChange($event.detail.value)"
+      class="sort-segment">
+      <ion-segment-button value="color" class="sort-button">
+        <ion-label>Category</ion-label>
         <ion-icon name="color-palette"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="alphabetic">
+      <ion-segment-button value="alphabetic" class="sort-button">
         <ion-label>A-Z</ion-label>
         <ion-icon name="text"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="popularity">
+      <ion-segment-button value="popularity" class="sort-button">
         <ion-label>Popular</ion-label>
         <ion-icon name="trending-up"></ion-icon>
       </ion-segment-button>
@@ -29,18 +38,30 @@
 
 <ion-content>
   <!-- Items List -->
-  <ion-list #itemsList *ngIf="displayedItems.length > 0" lines="inset">
-    <ion-item-sliding *ngFor="let item of displayedItems; trackBy: trackByItemId">
-      <ion-item class="noPadding" (click)="onItemSelected(item)">
-        <div [class]="getStyleClass(item)" [ngStyle]="{'border-left': getStyle(item.itemColor)}"></div>
-        <ion-label>
-          <h3>{{ item.itemName }}</h3>
+  <ion-list #itemsList *ngIf="displayedItems.length > 0" lines="inset" class="items-list">
+    <ion-item-sliding *ngFor="let item of displayedItems; trackBy: trackByItemId" class="item-sliding">
+      <ion-item 
+        class="item-card noPadding" 
+        (click)="onItemSelected(item)"
+        button
+        [attr.aria-label]="'Add ' + item.itemName + ' to shopping list'">
+        <div 
+          [class]="getStyleClass(item) + ' category-indicator'" 
+          [ngStyle]="{'border-left': getStyle(item.itemColor)}"
+          [attr.aria-hidden]="true">
+        </div>
+        <ion-label class="item-label">
+          <h3 class="item-name">{{ item.itemName }}</h3>
+          <p *ngIf="item.usageCount > 0" class="usage-info">
+            Used {{ item.usageCount }} times
+          </p>
         </ion-label>
         <ion-icon 
           name="add-circle" 
           color="success" 
           slot="end"
-          class="add-icon">
+          class="add-icon"
+          [attr.aria-hidden]="true">
         </ion-icon>
       </ion-item>
       <ion-item-options side="end">
@@ -48,14 +69,16 @@
           size="small"
           color="primary"
           (click)="onEditItem(item)"
+          [attr.aria-label]="'Edit ' + item.itemName"
         >
           <ion-icon name="create"></ion-icon>
           Edit
         </ion-item-option>
         <ion-item-option
           size="small"
-          color="secondary"
+          color="danger"
           (click)="onRemoveItem(item)"
+          [attr.aria-label]="'Delete ' + item.itemName"
         >
           <ion-icon name="trash"></ion-icon>
           Delete
@@ -74,8 +97,10 @@
 
   <!-- Empty State -->
   <div *ngIf="displayedItems.length === 0" class="empty-state">
-    <ion-icon name="basket" color="medium"></ion-icon>
-    <h3>No items found</h3>
-    <p>Start adding items to your shopping lists to see them here for easy browsing.</p>
+    <ion-icon name="basket" color="medium" class="empty-icon"></ion-icon>
+    <h3 class="empty-title">No items found</h3>
+    <p class="empty-description">
+      Start adding items to your shopping lists to see them here for easy browsing.
+    </p>
   </div>
 </ion-content>
