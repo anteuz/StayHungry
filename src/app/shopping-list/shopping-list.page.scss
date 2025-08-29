@@ -78,10 +78,18 @@
   }
   
   &.collected {
-    opacity: 0.6;
+    opacity: 0.7;
+    background: var(--ion-color-step-50);
+    transform: scale(0.98);
+    transition: all 0.3s ease-in-out;
     
     .ingredient-name {
       text-decoration: line-through;
+      color: var(--ion-color-medium);
+    }
+    
+    .amount-badge {
+      opacity: 0.7;
     }
   }
 }
@@ -137,6 +145,13 @@ ion-item ion-icon[name="alert"] {
   line-height: 1.5;
 }
 
+// Completed items section styling
+.shopping-list-border {
+  height: 2px;
+  background: linear-gradient(90deg, var(--ion-color-light-shade) 0%, transparent 100%);
+  margin: var(--space-lg) var(--space-md);
+}
+
 // Strike-through animation for collected items
 .collected {
   position: relative;
@@ -149,13 +164,13 @@ ion-item ion-icon[name="alert"] {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(255,255,255);
-  background: linear-gradient(90deg, rgba(255,255,255,0.738532913165266) 0%, rgba(236,236,236,0.738532913165266) 100%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(236,236,236,0.8) 100%);
   animation-name: strike;
   animation-duration: 0.4s;
-  animation-timing-function: linear;
+  animation-timing-function: ease-out;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+  border-radius: var(--radius-lg);
 }
 
 @keyframes strike {
@@ -180,23 +195,64 @@ ion-item-options {
 body.dark-theme {
   .ingredient-item {
     --background: var(--ion-color-step-100);
+    border: 1px solid var(--ion-color-step-200); /* Add subtle border for definition */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
     
     &:hover {
       --background: var(--ion-color-step-150);
+      border-color: var(--ion-color-step-300);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    
+    &.collected {
+      opacity: 0.4; /* Reduced opacity for better contrast */
+      background: var(--ion-color-step-50); /* Even darker for collected items */
     }
   }
   
   .ingredient-name {
     color: var(--ion-text-color);
+    font-weight: 500; /* Slightly bolder for better readability */
   }
   
   .search-container {
     --background: var(--ion-color-step-100);
+    border: 1px solid var(--ion-color-step-200);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
   
   .enhanced-searchbar {
     --color: var(--ion-text-color);
-    --placeholder-color: var(--ion-color-step-400);
+    --placeholder-color: var(--ion-color-step-500); /* Better contrast */
+    --icon-color: var(--ion-color-primary);
+  }
+  
+  .amount-badge {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    border: 1px solid var(--ion-color-step-300); /* Add border for definition */
+  }
+  
+  .category-indicator {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* Subtle inner glow */
+  }
+  
+  // Improve collected items section
+  .isCollected {
+    background: var(--ion-color-step-50);
+    border: 1px solid var(--ion-color-step-150);
+    margin-bottom: var(--space-xs);
+    border-radius: var(--radius-md);
+    
+    ion-label h3 {
+      color: var(--ion-color-step-600); /* Muted color for collected items */
+      text-decoration: line-through;
+    }
+  }
+  
+  // Enhanced strikethrough animation for dark mode
+  .collected:after {
+    background: linear-gradient(90deg, rgba(18, 18, 18, 0.8) 0%, rgba(42, 42, 42, 0.8) 100%);
   }
 }
 

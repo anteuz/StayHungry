@@ -216,13 +216,16 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         ingredient.isCollected = true;
         ingredient.isBeingCollected = false;
         this.shoppingList.items = this.ingredients;
+        // Re-initialize ingredients to trigger re-sorting
+        this.initializeIngredients();
         await this.slService.updateShoppingList(this.shoppingList);
-
     }
 
     async onDeCollect(ingredient: Ingredient) {
         ingredient.isCollected = false;
         this.shoppingList.items = this.ingredients;
+        // Re-initialize ingredients to trigger re-sorting
+        this.initializeIngredients();
         await this.slService.updateShoppingList(this.shoppingList);
     }
 
@@ -356,11 +359,19 @@ export function groupByVanilla2(list, keyGetter) {
 }
 
 export function compare(a: Ingredient, b: Ingredient) {
+    // First sort by collection status - uncollected items first
+    if (a.isCollected !== b.isCollected) {
+        return a.isCollected ? 1 : -1;
+    }
+    
+    // Then sort by item color for visual grouping
     if (a.item.itemColor < b.item.itemColor) {
         return -1;
     }
     if (a.item.itemColor > b.item.itemColor) {
         return 1;
     }
-    return 0;
+    
+    // Finally sort by item name for consistent ordering within same color group
+    return a.item.itemName.localeCompare(b.item.itemName);
 }
