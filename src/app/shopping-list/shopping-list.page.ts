@@ -215,17 +215,15 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     async onCollect(ingredient: Ingredient) {
         ingredient.isCollected = true;
         ingredient.isBeingCollected = false;
-        this.shoppingList.items = this.ingredients;
-        // Re-initialize ingredients to trigger re-sorting
-        this.initializeIngredients();
+        // Efficiently sort ingredients to move collected items to bottom
+        this.sortIngredients();
         await this.slService.updateShoppingList(this.shoppingList);
     }
 
     async onDeCollect(ingredient: Ingredient) {
         ingredient.isCollected = false;
-        this.shoppingList.items = this.ingredients;
-        // Re-initialize ingredients to trigger re-sorting
-        this.initializeIngredients();
+        // Efficiently sort ingredients to move uncollected items to top
+        this.sortIngredients();
         await this.slService.updateShoppingList(this.shoppingList);
     }
 
@@ -322,6 +320,16 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         }
         // Create groups by color for ui magic
         this.loading = false;
+    }
+
+    /**
+     * Efficient method to just sort ingredients without recreating maps or resetting loading state
+     */
+    private sortIngredients() {
+        if (this.ingredients && this.ingredients.length > 0) {
+            this.ingredients.sort(compare);
+            this.shoppingList.items = this.ingredients;
+        }
     }
 
     clearCollected() {
