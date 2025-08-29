@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
 import {Router} from '@angular/router';
 import {IonList} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
@@ -17,7 +16,6 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   shoppingLists: ShoppingList[] = [];
   inEditMode: string = null;
-  shoppingListName: UntypedFormControl = null;
 
   private subscriptions: Subscription = new Subscription();
   @ViewChild('shoppingListsList', {static: false}) shoppingListsList: IonList;
@@ -44,11 +42,15 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
 
   onEdit(shoppingList: ShoppingList) {
     this.inEditMode = shoppingList.uuid;
-
-    // this.shoppingListName = new FormControl('');
-    // this.shoppingListName.setValue(shoppingList.name);
     this.shoppingListsList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
-    console.log(this.shoppingListName);
+    
+    // Use setTimeout to ensure the input is rendered before trying to focus
+    setTimeout(() => {
+      const inputElement = document.getElementById(`${shoppingList.uuid}_inputField`) as HTMLIonInputElement;
+      if (inputElement) {
+        inputElement.setFocus();
+      }
+    }, 100);
   }
 
   onRemoveItem(shoppingList: ShoppingList) {
@@ -61,18 +63,17 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  onChangeShoppingListName(shoppingList: ShoppingList) {
-    // shoppingList.name = this.shoppingListName.value;
-    this.slService.updateShoppingList(shoppingList);
+  onChangeShoppingListName(shoppingList: ShoppingList, event?: Event) {
+    const inputElement = event?.target as HTMLIonInputElement;
+    if (inputElement && inputElement.value) {
+      shoppingList.name = inputElement.value.toString();
+      this.slService.updateShoppingList(shoppingList);
+    }
     this.endEditMode();
   }
 
   endEditMode() {
-  	this.inEditMode = null;
-  	if (this.shoppingListName !== null) {
-		this.shoppingListName.reset(true);
-	}
-  	this.shoppingListName = null;
+    this.inEditMode = null;
   }
 
   ionWillClose() {

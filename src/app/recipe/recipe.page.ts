@@ -1,9 +1,8 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import * as BrowserCamera from '@ionic-native/camera';
-import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
-import {File} from '@ionic-native/file/ngx';
+import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
+import {Filesystem} from '@capacitor/filesystem';
 import {IonList, LoadingController, ModalController, Platform} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Observable} from 'rxjs';
@@ -36,9 +35,9 @@ export class RecipePage implements OnInit, OnDestroy {
         private modalCtrl: ModalController,
         private route: ActivatedRoute,
         private router: Router,
-        private camera: Camera,
+
         private cloudStore: CloudStoreService,
-        private file: File,
+
         private loadingCtrl: LoadingController,
         private recipeService: RecipeServiceService
     ) {
@@ -179,7 +178,6 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     private async uploadFile() {
-
         const loadingDialog = await this.loadingCtrl.create({
             message: 'Uploading image...',
             translucent: false,
@@ -188,28 +186,23 @@ export class RecipePage implements OnInit, OnDestroy {
 
         loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
 
-        const uploadTask = this.cloudStore.storeRecipeImage(this.recipe.imageURI, this.recipe.uuid);
-
-        uploadTask.percentageChanges().subscribe(value => this.recipeImageUploadPercentage = value.valueOf() / 100);
-        uploadTask.snapshotChanges().pipe(
-            finalize
-            (
-                () => {
-                    this.downloadURL = this.cloudStore.getReferenceToUploadedFile(this.recipe.uuid).getDownloadURL();
-                    this.downloadURL.subscribe((value) => {
-                        // save download url as recipe img src
-                        this.recipe.imageURI = value;
-                        // persist
-                        console.log(value);
-                        // navigate away
-                        loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
-                        if (this.platformTypeCordova) {
-                            this.camera.cleanup();
-                        }
-                    });
-                }
-            )).subscribe();
-
+        try {
+            // Upload the image
+            const uploadResult = await this.cloudStore.storeRecipeImage(this.recipe.imageURI, this.recipe.uuid);
+            console.log('Upload completed:', uploadResult);
+            
+            // Get download URL
+            const downloadURL = await this.cloudStore.getReferenceToUploadedFile(this.recipe.uuid);
+            
+            // Save download url as recipe img src
+            this.recipe.imageURI = downloadURL;
+            console.log('Download URL:', downloadURL);
+            
+            loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
+        } catch (error) {
+            console.error('Upload failed:', error);
+            loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
+        }
     }
 
     onSubmit() {
@@ -225,48 +218,32 @@ export class RecipePage implements OnInit, OnDestroy {
         }
     }
 
-    getRecipeImageFromCamera() {
+    async getRecipeImageFromCamera() {
+        try {
+            const image = await Camera.getPhoto({
+                quality: 70,
+                allowEditing: false,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Camera
+            });
 
-        this.platform.ready().then(() => {
-            if (this.platformTypeCordova) {
-                // make your native API calls
-                const options: CameraOptions = {
-                    quality: 70,
-                    destinationType: this.camera.DestinationType.FILE_URI,
-                    encodingType: this.camera.EncodingType.JPEG,
-                    mediaType: this.camera.MediaType.PICTURE
-                };
-
-                this.camera.getPicture(options).then((imageData) => {
-                    const currentName = imageData.replace(/^.*[\\\/]/, '');
-                    const path = imageData.replace(/[^\/]*$/, '');
-                    this.file.readAsArrayBuffer(path, currentName).then((res) => {
-                        this.recipe.imageURI = new Blob([res], {
-                            type: 'image/jpeg'
-                        });
-                        this.uploadFile();
-                    }).catch(e => console.log(e));
-                }, (err) => {
-                    console.log(err);
-                });
-
-            } else {
-                // fallback to browser APIs, actually not implemented
-                BrowserCamera.Camera.getPicture()
-                    .then(data => console.log('Took a picture!', data))
-                    .catch(e => console.log('Error occurred while taking a picture', e));
+            if (image.dataUrl) {
+                // Convert data URL to Blob
+                const response = await fetch(image.dataUrl);
+                const blob = await response.blob();
+                this.recipe.imageURI = blob;
+                this.uploadFile();
             }
-        }).catch(e => console.log('Could not enable camera!' + e));
+        } catch (error) {
+            console.log('Error taking picture:', error);
+        }
     }
     onEditRecipe() {
         this.router.navigate(['/tabs/tab2/recipe', 'edit', this.recipe.uuid], {relativeTo: this.route});
     }
 
     onCancel() {
-        // camera clean up
-        if (this.platformTypeCordova) {
-            this.camera.cleanup().catch(e => console.log('Cordova not available, could not clean'));
-        }
+        // Camera cleanup not needed with Capacitor Camera
 
         if (this.downloadURL != null && this.mode === 'new') {
             // remove picture as this will not be persisted

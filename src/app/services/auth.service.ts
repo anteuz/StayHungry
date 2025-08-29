@@ -1,37 +1,40 @@
 import { Injectable } from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import * as firebase from 'firebase/app';
+import {Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User} from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private fireAuth: AngularFireAuth) {}
+  constructor(private fireAuth: Auth) {}
 
   signup(email: string, password: string) {
-    return this.fireAuth.auth.createUserWithEmailAndPassword(email, password);
+    return createUserWithEmailAndPassword(this.fireAuth, email, password);
   }
 
   signin(email: string, password: string) {
-    return this.fireAuth.auth.signInWithEmailAndPassword(email, password);
+    return signInWithEmailAndPassword(this.fireAuth, email, password);
   }
 
   logout() {
-    this.fireAuth.auth.signOut().catch(e => console.log('Could not logout'));
+    signOut(this.fireAuth).catch(e => console.log('Could not logout'));
   }
 
   getActiveUser() {
-    let activeUser: firebase.User = null;
-    activeUser = this.fireAuth.auth.currentUser;
-    return activeUser;
+    return this.fireAuth.currentUser;
   }
 
   getUserUID() {
-    return this.getActiveUser().uid;
+    const user = this.getActiveUser();
+    return user ? user.uid : null;
   }
 
   getToken() {
-    return this.getActiveUser().getIdToken();
+    const user = this.getActiveUser();
+    return user ? user.getIdToken() : null;
+  }
+
+  isAuthenticated() {
+    return this.getActiveUser() !== null;
   }
 }

@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import {EventEmitter, Injectable} from '@angular/core';
-import {AngularFireDatabase} from '@angular/fire/database';
+import {Database, ref, onValue, set} from '@angular/fire/database';
 import {AppState} from '../models/app-state';
 import {AuthService} from './auth.service';
-import { Storage } from '@ionic/storage';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
     providedIn: 'root'
@@ -17,9 +17,15 @@ export class SimpleStateService {
     constructor(
         private httpClient: HttpClient,
         private authService: AuthService,
-        private fireDatabase: AngularFireDatabase,
+        private fireDatabase: Database,
         private storage: Storage
     ) {
+        // Initialize storage
+        this.initStorage();
+    }
+
+    async initStorage() {
+        await this.storage.create();
     }
 
     async setupHandlers() {
@@ -28,14 +34,28 @@ export class SimpleStateService {
             this.appState = new AppState(null);
         }
     }
-    updateDatabase() {
-        this.storage.set('state', JSON.stringify(this.appState)).catch(e => console.log('Could not store state'));
+    async updateDatabase() {
+        try {
+            if (!this.storage) {
+                await this.initStorage();
+            }
+            await this.storage.set('state', JSON.stringify(this.appState));
+        } catch (e) {
+            console.log('Could not store state:', e);
+        }
     }
 
     async getAppState() {
-        return await this.storage.get('state').then((val) => {
-            return JSON.parse(val);
-        });
+        try {
+            if (!this.storage) {
+                await this.initStorage();
+            }
+            const val = await this.storage.get('state');
+            return val ? JSON.parse(val) : null;
+        } catch (e) {
+            console.log('Could not get app state:', e);
+            return null;
+        }
     }
     updateLastVisitedShoppingList(shoppingListUUID: string) {
         if (this.appState == null) {

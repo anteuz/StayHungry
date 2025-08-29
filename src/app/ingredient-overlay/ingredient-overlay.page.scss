@@ -1,21 +1,108 @@
-*[id^='ion-overlay-'] > div {
-  --background: rgba(255,255,255,0.4)!important;
+.modal-searchbar-item {
+  --background: var(--ion-color-light);
+  --border-style: none;
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--ion-color-medium);
 }
+
+.modal-searchbar-item ion-searchbar {
+  --background: var(--ion-color-light);
+  --border-radius: 0;
+  --box-shadow: none;
+  --color: var(--ion-color-dark);
+  padding: 8px 16px;
+}
+
+.dropdown-content {
+  --background: var(--ion-color-light);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px; /* Ensure minimum height for back button visibility */
+}
+
 .listButton {
   width: 64px;
 }
-ion-content {
-  --background: rgba(0,0,0,.0)!important;
+
+.suggestion-section {
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-color-light-shade);
 }
-.sc-ion-modal-md-h {
-  --background: rgba(0,0,0,.0)!important;
+
+.section-header {
+  margin-bottom: 8px;
+  text-align: left;
+  
+  ion-text {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
-.inner-scroll{
-  background-color: rgba(255,255,255,.0)!important;
+
+.usage-badge {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ion-color-dark);
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 4px;
+  display: inline-block;
+  min-width: 16px;
+  text-align: center;
 }
-.noBackground {
-  background-color: rgba(255,255,255,.0)!important;
+
+.color-selector-section {
+  padding: 16px;
+  background: var(--ion-color-light);
 }
-div {
-  background-color: rgba(255,255,255,.0)!important;
+
+ion-grid {
+  padding: 0;
+}
+
+ion-button {
+  margin: 2px;
+}
+
+.back-button-section {
+  position: sticky;
+  bottom: 0;
+  background: var(--ion-color-light);
+  border-top: 1px solid var(--ion-color-medium);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.back-button {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --color: var(--ion-color-medium);
+  font-size: 16px;
+  font-weight: 500;
+  min-width: 120px;
+  
+  &:hover {
+    --color: var(--ion-color-dark);
+  }
+  
+  &:focus {
+    --color: var(--ion-color-primary);
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+  
+  ion-icon {
+    margin-right: 8px;
+  }
 }

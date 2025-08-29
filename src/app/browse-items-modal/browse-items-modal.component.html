@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Browse Items</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <!-- Fixed Sort Controls -->
+  <ion-toolbar color="light">
+    <ion-segment [(ngModel)]="currentSortMode" (ionChange)="onSortModeChange($event.detail.value)">
+      <ion-segment-button value="color">
+        <ion-label>Color</ion-label>
+        <ion-icon name="color-palette"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="alphabetic">
+        <ion-label>A-Z</ion-label>
+        <ion-icon name="text"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="popularity">
+        <ion-label>Popular</ion-label>
+        <ion-icon name="trending-up"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Items List -->
+  <ion-list #itemsList *ngIf="displayedItems.length > 0" lines="inset">
+    <ion-item-sliding *ngFor="let item of displayedItems; trackBy: trackByItemId">
+      <ion-item class="noPadding" (click)="onItemSelected(item)">
+        <div [class]="getStyleClass(item)" [ngStyle]="{'border-left': getStyle(item.itemColor)}"></div>
+        <ion-label>
+          <h3>{{ item.itemName }}</h3>
+        </ion-label>
+        <ion-icon 
+          name="add-circle" 
+          color="success" 
+          slot="end"
+          class="add-icon">
+        </ion-icon>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option
+          size="small"
+          color="primary"
+          (click)="onEditItem(item)"
+        >
+          <ion-icon name="create"></ion-icon>
+          Edit
+        </ion-item-option>
+        <ion-item-option
+          size="small"
+          color="secondary"
+          (click)="onRemoveItem(item)"
+        >
+          <ion-icon name="trash"></ion-icon>
+          Delete
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreItems($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more items...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <!-- Empty State -->
+  <div *ngIf="displayedItems.length === 0" class="empty-state">
+    <ion-icon name="basket" color="medium"></ion-icon>
+    <h3>No items found</h3>
+    <p>Start adding items to your shopping lists to see them here for easy browsing.</p>
+  </div>
+</ion-content>

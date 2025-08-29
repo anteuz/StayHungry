@@ -1,33 +1,39 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-searchbar #ingredientBar
-                   showCancelButton="false"
-                   animated
-                   (ionChange)="onIngredientNameChanged()"
-                   placeholder="+ New Item"
-                   debounce="700"
-                   (keyup.enter)="onAddFromSearchbar()"
-                   (ionFocus)="onIngredientBarFocus()"
-                   (ionBlur)="onIngredientBarBlur()"
-                   searchIcon="nutrition"
-    >
-    </ion-searchbar>
-  </ion-toolbar>
-</ion-header>
+<!-- Search bar for the modal - styled to look connected -->
+<ion-item lines="none" class="modal-searchbar-item">
+  <ion-searchbar #ingredientBar
+                 showCancelButton="false"
+                 animated
+                 (ionChange)="onIngredientNameChanged()"
+                 placeholder="Type item : amount"
+                 debounce="700"
+                 (keyup.enter)="onAddFromSearchbar()"
+                 (ionFocus)="onIngredientBarFocus()"
+                 (ionBlur)="onIngredientBarBlur()"
+                 searchIcon="nutrition">
+  </ion-searchbar>
+</ion-item>
 
-<ion-content class="noBackground" (click)="onDismiss($event)">
+<ion-content class="dropdown-content" (click)="onDismiss($event)">
 
-  <div padding *ngIf="itemSuggestions.length > 0" class="noBackground">
+  <div *ngIf="itemSuggestions.length > 0" class="suggestion-section">
+    <div class="section-header">
+      <ion-text color="medium">
+        <small>{{ getSuggestionLabel() }}</small>
+      </ion-text>
+    </div>
     <ion-grid>
       <ion-row>
         <ion-col size="auto" *ngFor="let item of itemSuggestions; let j = index">
-          <ion-button size="small" color="{{getButtonColor(item.itemColor)}}" (click)="pickSuggestion(item)">{{ item.itemName }}</ion-button>
+          <ion-button size="small" color="{{getButtonColor(item.itemColor)}}" (click)="pickSuggestion(item)">
+            {{ item.itemName }}
+            <span *ngIf="item.usageCount > 0" class="usage-badge">{{ item.usageCount }}</span>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
   </div>
 
-  <div padding *ngIf="showItemColorSelector" class="noBackground">
+  <div *ngIf="showItemColorSelector" class="color-selector-section">
     <ion-grid>
       <ion-row align-items-start>
         <ion-col size="auto">
@@ -56,5 +62,22 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+  </div>
+  
+  <!-- Back button section -->
+  <div class="back-button-section">
+    <ion-button 
+      fill="clear" 
+      color="medium" 
+      size="large"
+      class="back-button"
+      (click)="onBack()"
+      (keyup.enter)="onBack()"
+      (keyup.space)="onBack()"
+      tabindex="0"
+      aria-label="Go back without adding items">
+      <ion-icon name="arrow-back" slot="start"></ion-icon>
+      Back
+    </ion-button>
   </div>
 </ion-content>

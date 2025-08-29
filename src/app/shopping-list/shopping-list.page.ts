@@ -3,6 +3,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {IonList, ModalController} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
+import {BrowseItemsModalComponent} from '../browse-items-modal/browse-items-modal.component';
 import {AppState} from '../models/app-state';
 import {Ingredient} from '../models/ingredient';
 import {ShoppingList} from '../models/shopping-list';
@@ -48,19 +49,26 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                 this.shoppingListID = this.appState.lastVisited_ShoppingList;
             }
         }
-        // Get shopping List
-        try {
-            this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
-            console.log(this.shoppingList);
-            if (this.shoppingList) {
-                this.loading = false;
-                this.initializeIngredients();
+        
+        // Only try to get shopping list if service has data loaded
+        const existingShoppingLists = this.slService.getItems();
+        if (existingShoppingLists && existingShoppingLists.length > 0) {
+            try {
+                this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
+                console.log(this.shoppingList);
+                if (this.shoppingList) {
+                    this.loading = false;
+                    this.initializeIngredients();
+                } else {
+                    // If specific shopping list not found but lists exist, don't show error yet
+                    // The subscription will handle it when data is fully loaded
+                    console.log('Shopping list not found with ID:', this.shoppingListID);
+                }
+            } catch (e) {
+                console.log('Error finding shopping list:', e);
             }
-        } catch (e) {
-            this.loading = false;
-            this.shoppingList = null;
-            this.ingredients = null;
         }
+        // If no shopping lists loaded yet, let the subscription handle it
     }
 
     async ngOnInit() {
@@ -85,27 +93,38 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             }
         }
 
-        // Subscribe for changes
+        // Subscribe for changes - this will handle the initial load and subsequent updates
         this.subscriptions.add(this.slService.shoppingListsEvent.subscribe(
-            (event) => {
-
+            (shoppingLists: ShoppingList[]) => {
+                this.loading = false; // Set loading to false once we have data from the service
+                
                 if (this.shoppingListID != null) {
                     this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
-                    this.initializeIngredients();
+                    if (this.shoppingList) {
+                        this.initializeIngredients();
+                    }
+                } else {
+                    // If no shopping list ID, try to get the first available shopping list
+                    if (shoppingLists && shoppingLists.length > 0) {
+                        this.shoppingListID = shoppingLists[0].uuid;
+                        this.shoppingList = shoppingLists[0];
+                        this.initializeIngredients();
+                        this.router.navigate(['/tabs/tab1', this.shoppingListID]).catch(e => console.log('Could not navigate to tabs!'));
+                    }
                 }
             }
         ));
 
-        // Get shopping List
-        try {
-            this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
-
-            if (this.shoppingList) {
-                this.loading = false;
-                this.initializeIngredients();
+        // Try to get shopping list immediately if service already has data
+        const existingShoppingLists = this.slService.getItems();
+        if (existingShoppingLists && existingShoppingLists.length > 0) {
+            this.loading = false;
+            if (this.shoppingListID != null) {
+                this.shoppingList = this.slService.findUsingUUID(this.shoppingListID);
+                if (this.shoppingList) {
+                    this.initializeIngredients();
+                }
             }
-        } catch (e) {
-
         }
     }
 
@@ -117,11 +136,17 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 
     async onEdit(ingredient: Ingredient) {
+        // Blur the main search bar to ensure clean focus transition
+        const mainSearchBar = document.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
+        if (mainSearchBar) {
+            mainSearchBar.blur();
+        }
+
         let modal = await this.modalCtrl.create({
             component: IngredientOverlayPage,
             animated: false,
             showBackdrop: true,
-            cssClass: 'noBackground',
+            cssClass: 'searchbar-dropdown',
             backdropDismiss: true,
             componentProps:
                 {
@@ -129,18 +154,21 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                     'ingredient': ingredient
                 }
         });
-        this.showSearchBar = false;
         modal.present().catch(e => console.log('Could not present modal!'));
 
         const {data} = await modal.onDidDismiss();
         // if data is provided, if action is cancelled data is undefined (backdrop tapped)
         if (data !== undefined) {
-            this.ingredients[this.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
-            this.addItemsToShoppingList(data);
+            // Find and replace the existing ingredient
+            const existingIngredientIndex = this.ingredients.findIndex(ing => ing.uuid === data.uuid);
+            if (existingIngredientIndex !== -1) {
+                this.ingredients[existingIngredientIndex] = data;
+            }
+            // Update the shopping list items
+            this.shoppingList.items = this.ingredients;
             this.initializeIngredients();
             this.slService.updateShoppingList(this.shoppingList);
         }
-        this.showSearchBar = true;
         modal = null;
         this.ingredientList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
     }
@@ -199,31 +227,65 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     }
 
     async openIngredientOverlay() {
+        // Blur the main search bar to ensure clean focus transition
+        const mainSearchBar = document.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
+        if (mainSearchBar) {
+            mainSearchBar.blur();
+        }
 
         let modal = await this.modalCtrl.create({
             component: IngredientOverlayPage,
             animated: false,
             showBackdrop: true,
-            cssClass: 'noBackground',
+            cssClass: 'searchbar-dropdown',
             backdropDismiss: true,
             componentProps:
                 {
                     'mode': 'insert'
                 }
         });
-        this.showSearchBar = false;
         modal.present().catch(e => console.log('Could not present modal!'));
 
-        const {data} = await modal.onDidDismiss(); // Maybe later?
-        this.addItemsToShoppingList(data);
-        this.initializeIngredients();
-        this.slService.updateShoppingList(this.shoppingList);
-        this.showSearchBar = true;
+        const {data} = await modal.onDidDismiss();
+        // if data is provided, if action is cancelled data is undefined (backdrop tapped)
+        if (data !== undefined) {
+            // Add new ingredients to the shopping list
+            if (Array.isArray(data)) {
+                this.addItemsToShoppingList(data);
+            } else {
+                // Single ingredient (shouldn't happen in insert mode, but handle it)
+                if (this.shoppingList.items == null) {
+                    this.shoppingList.items = [];
+                }
+                this.shoppingList.items.push(data);
+            }
+            this.initializeIngredients();
+            this.slService.updateShoppingList(this.shoppingList);
+        }
         modal = null;
     }
 
-    onOpenItemsList() {
-        const grouped = groupByVanilla2(this.ingredients, ingredient => ingredient.item.itemColor);
+    async onOpenItemsList() {
+        const modal = await this.modalCtrl.create({
+            component: BrowseItemsModalComponent,
+            animated: true,
+            showBackdrop: true,
+            cssClass: 'browse-items-modal',
+            backdropDismiss: true
+        });
+        
+        await modal.present();
+        
+        const { data } = await modal.onDidDismiss();
+        if (data) {
+            // data is an Ingredient object returned from the modal
+            if (this.shoppingList.items == null) {
+                this.shoppingList.items = [];
+            }
+            this.shoppingList.items.push(data);
+            this.initializeIngredients();
+            this.slService.updateShoppingList(this.shoppingList);
+        }
     }
 
     findIngredientUsingUUID(searchTerm) {

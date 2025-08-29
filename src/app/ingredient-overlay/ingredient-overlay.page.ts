@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {IonSearchbar, ModalController, NavParams} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Ingredient} from '../models/ingredient';
@@ -38,57 +38,81 @@ export class IngredientOverlayPage implements OnInit {
 
     ngOnInit() {
         if (this.mode === 'edit') {
-            this.ingredientBar.value = this.ingredientToEdit.item.itemName + ' : ' + this.ingredientToEdit.amount;
             this.itemColorName = this.ingredientToEdit.item.itemColor;
-            this.showColorSelector();
         }
-        this.ingredientBar.setFocus();
+    }
+
+    ionViewDidEnter() {
+        // Set focus after the modal is fully presented
+        setTimeout(() => {
+            const searchBar = this.getActiveSearchBar();
+            if (this.mode === 'edit') {
+                searchBar.value = this.ingredientToEdit.item.itemName + ' : ' + this.ingredientToEdit.amount;
+                this.showColorSelector();
+            } else {
+                // Show popular items when modal opens for adding new items
+                this.loadPopularItems();
+            }
+            searchBar.setFocus();
+        }, 100);
+    }
+
+    getActiveSearchBar(): IonSearchbar {
+        return this.ingredientBar;
     }
 
     onIngredientBarFocus() {
-        if (this.ingredientBar.value === '') {
-            this.ingredientBar.placeholder = 'Item : amount';
+        const searchBar = this.getActiveSearchBar();
+        if (searchBar.value === '') {
+            searchBar.placeholder = 'Item : amount';
         }
     }
 
     onIngredientBarBlur() {
-        if (this.ingredientBar.value === '') {
-            this.ingredientBar.placeholder = '+ New item';
+        const searchBar = this.getActiveSearchBar();
+        if (searchBar.value === '') {
+            searchBar.placeholder = '+ New item';
             this.showItemColorSelector = false;
         }
     }
 
     onIngredientNameChanged() {
+        const searchBar = this.getActiveSearchBar();
 
         // Trigger search here
-        if (this.ingredientBar.value != null) {
+        if (searchBar.value != null && searchBar.value.trim() !== '') {
             this.showColorSelector();
             // empty previous suggestions
             this.itemSuggestions = [];
-            // Handle suggestions
-            this.itemSuggestions.push(...this.itemService.filterItems(this.ingredientBar.value, false).splice(0, 10));
+            // Handle suggestions - now sorted by popularity
+            this.itemSuggestions.push(...this.itemService.filterItems(searchBar.value, false).splice(0, 10));
             // Check if we need color chooser
             this.showColorSelector();
+        } else {
+            // If search bar is empty, show popular items
+            this.loadPopularItems();
         }
+        
         // Check if we need to store complete ingredient
-        if (this.ingredientBar.value != null) {
-            if (this.ingredientBar.value.includes(',')
-                && (this.ingredientBar.value.endsWith(',') || this.ingredientBar.value.endsWith(', '))) {
+        if (searchBar.value != null) {
+            if (searchBar.value.includes(',')
+                && (searchBar.value.endsWith(',') || searchBar.value.endsWith(', '))) {
                 this.storeIngredients(false);
             }
         }
     }
 
     onAddFromSearchbar() {
+        const searchBar = this.getActiveSearchBar();
         // check if we have un saved changes
-        if (this.ingredientBar.value != null) {
+        if (searchBar.value != null) {
             this.storeIngredients(true);
         }
         // remove all ingredients no longer present in the search bar string
         // if (this.mode === 'insert') {
         //    this.slService.addItems(this.ingredients);
         // }
-        this.ingredientBar.value = null;
+        searchBar.value = null;
         this.showItemColorSelector = false;
 
         console.log(this.ingredients);
@@ -106,22 +130,36 @@ export class IngredientOverlayPage implements OnInit {
         } else {
             this.itemColorName = colorName;
         }
-        // patch color of latest ingredient if color is switched
-        if (this.ingredients != null) {
-            this.ingredients[this.ingredients.length - 1].item.itemColor = colorName;
-            this.itemService.updateItem(this.ingredients[this.ingredients.length - 1].item);
-        }
-        console.log(colorName);
-        this.ingredientBar.setFocus();
+        console.log('Color selected:', colorName);
+        this.getActiveSearchBar().setFocus();
     }
 
     pickSuggestion(item: SimpleItem) {
+        const searchBar = this.getActiveSearchBar();
         this.itemSuggestions = [];
-        this.ingredientBar.value = item.itemName + ' : ';
+        searchBar.value = item.itemName + ' : ';
         this.itemColorName = item.itemColor;
-        this.ingredientBar.setFocus();
+        
+        // Track usage of this item
+        this.itemService.incrementUsage(item);
+        
+        searchBar.setFocus();
         // Check if we need color selector
         this.showColorSelector();
+    }
+
+    loadPopularItems() {
+        // Load most popular items to show as suggestions
+        this.itemSuggestions = this.itemService.getPopularItems(10);
+    }
+
+    getSuggestionLabel(): string {
+        const searchBar = this.getActiveSearchBar();
+        if (searchBar.value && searchBar.value.trim() !== '') {
+            return 'Suggestions';
+        } else {
+            return 'Popular Items';
+        }
     }
 
     getButtonColor(ingredientColor: string) {
@@ -129,7 +167,8 @@ export class IngredientOverlayPage implements OnInit {
     }
 
     showColorSelector() {
-        if (this.ingredientBar.value != null && this.itemSuggestions.length === 0) {
+        const searchBar = this.getActiveSearchBar();
+        if (searchBar.value != null && this.itemSuggestions.length === 0) {
             this.showItemColorSelector = true;
         } else {
             this.showItemColorSelector = false;
@@ -138,9 +177,21 @@ export class IngredientOverlayPage implements OnInit {
 
     onDismiss(event: Event) {
     	console.log(event);
-        if (event.type === 'ion-content') {
+        // Only dismiss if clicking directly on the content area, not on buttons or other elements
+        if (event.target === event.currentTarget) {
             this.modalCtrl.dismiss().catch(e => console.log('Could not close modal'));
         }
+    }
+
+    onBack() {
+        // Dismiss modal without returning any data
+        this.modalCtrl.dismiss().catch(e => console.log('Could not close modal'));
+    }
+
+    @HostListener('document:keydown.escape', ['$event'])
+    onEscapeKey(event: KeyboardEvent) {
+        // Close modal when ESC key is pressed
+        this.onBack();
     }
 
     duplicateIngredients(ingredientName) {
@@ -154,7 +205,7 @@ export class IngredientOverlayPage implements OnInit {
 
     private storeIngredients(finalStore: boolean) {
         // Pick value from ingredient bar to constant
-        const currentIngredientString = this.ingredientBar.value;
+        const currentIngredientString = this.getActiveSearchBar().value;
 
         // if there is colon in the string we assume it has multiple ingredients
         if (currentIngredientString.includes(',') && this.mode === 'insert') {
@@ -218,18 +269,57 @@ export class IngredientOverlayPage implements OnInit {
             ingredientName = ingredientString.trim();
         }
         console.log(ingredientName);
-        // Check if we have already stored this kind of an ingredient into a DB
-        let simpleItem: SimpleItem = this.checkIfItemExists(ingredientName);
-        console.log(simpleItem);
-        // If we are in edit mode and item color is not what we wanted
-        if (this.mode === 'edit' && simpleItem.itemColor !== ingredientColor) {
-            simpleItem.itemColor = ingredientColor;
-            this.itemService.updateItem(simpleItem);
-        }
-        // Check if we found already existing item, if not, create new and store for future re-use
-        if (simpleItem == null) {
-            simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor);
-            this.itemService.addItem(simpleItem);
+        
+        let simpleItem: SimpleItem;
+        
+        if (this.mode === 'edit') {
+            // In edit mode, check if we're changing the item name
+            const originalItem = this.ingredientToEdit.item;
+            
+            if (originalItem.itemName.toLowerCase() === ingredientName.toLowerCase()) {
+                // Same item name, just update the color if needed
+                simpleItem = originalItem;
+                if (simpleItem.itemColor !== ingredientColor) {
+                    simpleItem.itemColor = ingredientColor;
+                    this.itemService.updateItem(simpleItem);
+                }
+                // Track usage for the item being edited
+                this.itemService.incrementUsage(simpleItem);
+            } else {
+                // Item name changed, check if new name exists
+                const existingItem = this.checkIfItemExists(ingredientName);
+                if (existingItem) {
+                    // Use existing item but update color if needed
+                    simpleItem = existingItem;
+                    if (simpleItem.itemColor !== ingredientColor) {
+                        simpleItem.itemColor = ingredientColor;
+                        this.itemService.updateItem(simpleItem);
+                    }
+                    // Track usage for existing item
+                    this.itemService.incrementUsage(simpleItem);
+                } else {
+                    // Create new item with new name and color
+                    simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor, 1);
+                    this.itemService.addItem(simpleItem);
+                }
+            }
+        } else {
+            // Insert mode - check if item exists
+            const existingItem = this.checkIfItemExists(ingredientName);
+            if (existingItem) {
+                // Use existing item but update color if user has chosen a different color
+                simpleItem = existingItem;
+                if (simpleItem.itemColor !== ingredientColor) {
+                    simpleItem.itemColor = ingredientColor;
+                    this.itemService.updateItem(simpleItem);
+                }
+                // Track usage for existing item
+                this.itemService.incrementUsage(simpleItem);
+            } else {
+                // Create new item with initial usage count of 1
+                simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, ingredientColor, 1);
+                this.itemService.addItem(simpleItem);
+            }
         }
         console.log(simpleItem);
         console.log(ingredientColor);

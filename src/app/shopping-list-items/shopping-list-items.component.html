@@ -3,7 +3,7 @@
     <ion-item>
         <ion-label text-wrap (click)="toShoppingList(shoppingList.uuid)">
             <ion-text color="primary">
-                <ion-input id="{{shoppingList.uuid}}_inputField" name="{{shoppingList.uuid}}_input" *ngIf="inEditMode === shoppingList.uuid" autofocus="true" type="text" [value]="shoppingList.name" required (keyup.enter)="onChangeShoppingListName(shoppingList)"></ion-input>
+                <ion-input id="{{shoppingList.uuid}}_inputField" name="{{shoppingList.uuid}}_input" *ngIf="inEditMode === shoppingList.uuid" autofocus="true" type="text" [value]="shoppingList.name" required (keyup.enter)="onChangeShoppingListName(shoppingList, $event)" (blur)="onChangeShoppingListName(shoppingList, $event)"></ion-input>
                 <h3 *ngIf="inEditMode == null || inEditMode !== shoppingList.uuid">{{shoppingList.name}}</h3>
             </ion-text>
             <p *ngIf="shoppingList.items != undefined">{{shoppingList.items | objectName}}</p>
@@ -28,10 +28,16 @@
         </ion-item-option>
     </ion-item-options>
 </ion-item-sliding>
-<ion-item lines="none">
-    <ion-button (click)="onCreateNewList()" fill="clear">
-        <ion-icon name="add" slot="start"></ion-icon>
-        <ion-label>New shopping list</ion-label>
-    </ion-button>
+<ion-item lines="none" class="add-list-item">
+    <app-styled-button 
+        (buttonClick)="onCreateNewList()"
+        color="success"
+        variant="solid"
+        size="default"
+        expand="block"
+        icon="add-circle-outline"
+        iconSlot="start"
+        text="New Shopping List">
+    </app-styled-button>
 </ion-item>
 </ion-list>

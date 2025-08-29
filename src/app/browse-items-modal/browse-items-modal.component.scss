@@ -1,0 +1,186 @@
+ion-header {
+  ion-toolbar:last-child {
+    --border-width: 0 0 1px 0;
+    --border-color: var(--ion-color-light-shade);
+  }
+}
+
+ion-content {
+  --background: var(--ion-color-light);
+}
+
+ion-item.noPadding {
+  --padding-start: 0px;
+}
+
+.browse-item {
+  margin: 4px 16px;
+  border-radius: 8px;
+  --background: white;
+  --border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Ensure proper padding for the custom border styling
+  .item-native {
+    padding-left: 0;
+  }
+}
+
+.add-icon {
+  font-size: 1.2em;
+  margin-left: 8px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 40px;
+  height: 60vh;
+  
+  ion-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    color: var(--ion-color-dark);
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// Reuse the same styling classes from shopping list
+.roundedCornersTop,
+.roundedCornersMiddle,
+.roundedCornersBottom,
+.roundedCornersSingle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  z-index: 1;
+}
+
+.roundedCornersTop {
+  border-radius: 8px 0 0 0;
+}
+
+.roundedCornersMiddle {
+  border-radius: 0;
+}
+
+.roundedCornersBottom {
+  border-radius: 0 0 0 8px;
+}
+
+.roundedCornersSingle {
+  border-radius: 8px 0 0 8px;
+}
+
+// Match shopping list padding and styling
+::shadow div.roundedCornersTop {
+  width: 3px;
+  height: 100%;
+  border-top-right-radius: 25px;
+  margin: 0px;
+  padding-right: 5px;
+  margin-top: 20px;
+}
+
+::shadow div.roundedCornersBottom {
+  width: 3px;
+  height: 100%;
+  border-bottom-right-radius: 25px;
+  margin: 0px;
+  padding-right: 5px;
+  margin-bottom: 20px;
+}
+
+div.roundedCornersMiddle {
+  width: 3px;
+  height: 100%;
+  margin: 0px;
+  padding-right: 5px;
+}
+
+div.roundedCornersSingle {
+  width: 3px;
+  height: 100%;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  margin: 0px;
+  padding-right: 5px;
+}
+
+div.roundedCornersSingle:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  z-index: 100;
+  top: 0%;
+  width: 5px;
+  height: 19%;
+  background: white;
+}
+
+div.roundedCornersSingle:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  z-index: 100;
+  top: 80%;
+  width: 5px;
+  height: 19%;
+  background: white;
+}
+
+// Segment styling
+ion-segment {
+  --background: var(--ion-color-light);
+  margin: 8px 16px;
+  border-radius: 8px;
+}
+
+ion-segment-button {
+  --color: var(--ion-color-medium);
+  --color-checked: var(--ion-color-primary);
+  --background-checked: white;
+  --border-radius: 6px;
+  min-height: 36px;
+  
+  ion-label {
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+  
+  ion-icon {
+    font-size: 1.1em;
+    margin-top: 2px;
+  }
+}
+
+// High performance optimizations
+.browse-item {
+  contain: layout;
+  will-change: transform;
+}
+
+// Infinite scroll loading
+ion-infinite-scroll-content {
+  --color: var(--ion-color-primary);
+}
