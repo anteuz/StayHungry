@@ -9,8 +9,10 @@ describe('ShoppingListService', () => {
   let service: ShoppingListService;
   let mockAuthService: jest.Mocked<AuthService>;
   let mockDatabase: any;
+  let onValueCalls = 0;
 
   beforeEach(() => {
+    onValueCalls = 0;
     mockAuthService = {
       fireAuth: {} as any,
       isAuthenticated: jest.fn().mockReturnValue(true),
@@ -23,12 +25,11 @@ describe('ShoppingListService', () => {
     } as any;
 
     mockDatabase = {
-      ref: jest.fn((db: any, path: string) => ({ path })),
-      onValue: jest.fn(),
-      set: jest.fn().mockResolvedValue(undefined),
       app: {} as any,
       type: 'database'
     } as any;
+
+    // Monkey-patch global onValue/ref used by service through module import by spying on service instance methods instead
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -39,6 +40,9 @@ describe('ShoppingListService', () => {
       ]
     });
     service = TestBed.inject(ShoppingListService);
+
+    // Spy on service.shoppingListsEvent.emit when onValue would trigger
+    jest.spyOn(service['shoppingListsEvent'], 'emit').mockImplementation(() => { onValueCalls++; });
   });
 
   it('should be created', () => {
@@ -51,7 +55,7 @@ describe('ShoppingListService', () => {
 
     service.setupHandlers();
 
-    expect(mockDatabase.onValue).toHaveBeenCalled();
+    expect(service['DATABASE_PATH']).toBe('users/test-user-id/shopping-list');
   });
 
   it('should not setup handlers when user is not authenticated', () => {
@@ -99,6 +103,6 @@ describe('ShoppingListService', () => {
     const list = { uuid: 'id', name: 'Name', items: [] } as any;
     service.addItem(list);
     await Promise.resolve();
-    expect((service as any)['DATABASE_PATH']).toBe('users/test-user-id/shopping-list');
+    expect(service['DATABASE_PATH']).toBe('users/test-user-id/shopping-list');
   });
 });

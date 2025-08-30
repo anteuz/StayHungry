@@ -6,11 +6,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SimpleStateService } from '../services/simple-state-service';
 import { ThemeService } from '../services/theme.service';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Pipe, PipeTransform } from '@angular/core';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
-import { IsCollectedPipe } from '../shared/iscollected.pipe';
 import { ObjectNamePipe } from '../shared/object-name.pipe';
 import { StyledButtonComponent } from '../shared/styled-button.component';
+
+@Pipe({ name: 'isCollected', standalone: true })
+class StubIsCollectedPipe implements PipeTransform {
+  transform(value: any, arg: any): any { return value; }
+}
 
 
 describe('ShoppingListPage', () => {
@@ -59,7 +63,7 @@ describe('ShoppingListPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), ShoppingListPage, ThemeToggleComponent, IsCollectedPipe, ObjectNamePipe, StyledButtonComponent],
+      imports: [IonicModule.forRoot(), ShoppingListPage, ThemeToggleComponent, StubIsCollectedPipe, ObjectNamePipe, StyledButtonComponent],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

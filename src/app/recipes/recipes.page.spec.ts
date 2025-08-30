@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CommonModule } from '@angular/common';
 import { RecipesPage } from './recipes.page';
 import { RecipeServiceService } from '../services/recipe-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
 import { CloudStoreService } from '../services/cloud-store.service';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 describe('RecipesPage', () => {
@@ -51,7 +52,8 @@ describe('RecipesPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), HttpClientTestingModule, RecipesPage],
+      imports: [IonicModule.forRoot(), CommonModule, HttpClientTestingModule, RecipesPage],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: RecipeServiceService, useValue: mockRecipeService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

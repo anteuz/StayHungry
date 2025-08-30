@@ -12,6 +12,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UserStorageService } from './services/user-storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UserProfileService } from './services/user-profile.service';
+import { WeeklyMenuService } from './services/weekly-menu.service';
 
 
 describe('AppComponent', () => {
@@ -84,7 +85,8 @@ describe('AppComponent', () => {
         { provide: Platform, useValue: platformSpy },
         { provide: NavController, useValue: mockNavController },
         { provide: UserStorageService, useValue: { clearUserData: jest.fn(), storeUserData: jest.fn() } },
-        { provide: UserProfileService, useValue: { setupHandlers: jest.fn() } }
+        { provide: UserProfileService, useValue: { setupHandlers: jest.fn() } },
+        { provide: WeeklyMenuService, useValue: { setupHandlers: jest.fn() } }
       ]
     }).compileComponents();
   });
