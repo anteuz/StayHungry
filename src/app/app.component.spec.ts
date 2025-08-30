@@ -1,4 +1,4 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule, Platform, NavController } from '@ionic/angular';
 import { AppComponent } from './app.component';
@@ -23,7 +23,7 @@ describe('AppComponent', () => {
   let mockThemeService: any;
   let mockNavController: any;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     statusBarSpy = {
       styleDefault: jest.fn()
     };
@@ -67,9 +67,8 @@ describe('AppComponent', () => {
       navigateRoot: jest.fn()
     };
 
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, IonicModule.forRoot()],
-      declarations: [AppComponent],
+    await TestBed.configureTestingModule({
+      imports: [RouterTestingModule, IonicModule.forRoot(), AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: Auth, useValue: mockAuth },
@@ -82,7 +81,7 @@ describe('AppComponent', () => {
         { provide: NavController, useValue: mockNavController }
       ]
     }).compileComponents();
-  }));
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ValidationUtils } from '../utils/validation.utils';
 import {Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult} from '@angular/fire/auth';
 import { UserStorageService } from './user-storage.service';
 
@@ -20,11 +22,11 @@ export class AuthService {
       throw new Error('Email and password are required');
     }
     
-    if (!this.validateEmail(email)) {
+    if (!ValidationUtils.validateEmail(email)) {
       throw new Error('Invalid email format');
     }
     
-    if (!this.validatePassword(password)) {
+    if (!ValidationUtils.validatePassword(password)) {
       throw new Error('Password must be at least 8 characters with letters and numbers');
     }
 
@@ -36,7 +38,7 @@ export class AuthService {
       throw new Error('Email and password are required');
     }
     
-    if (!this.validateEmail(email)) {
+    if (!ValidationUtils.validateEmail(email)) {
       throw new Error('Invalid email format');
     }
 
@@ -81,8 +83,7 @@ export class AuthService {
     return user ? user.email : null;
   }
 
-  getToken() {
-
+  async getToken() {
     const user = this.getActiveUser();
     return user ? await user.getIdToken() : null;
   }

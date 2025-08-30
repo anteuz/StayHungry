@@ -71,10 +71,10 @@ export class ShoppingListService {
             this.shoppingLists = [];
         } else {
 
-            const existingIngredient = this.findUsingIngredientName(shoppingList, ingredient.item.itemName);
+            const existingIngredient = this.findUsingIngredientName(shoppingList, (ingredient.item as any).itemName);
 
             if (existingIngredient != null) {
-                existingIngredient.amount += ingredient.amount;
+                existingIngredient.amount = (Number(existingIngredient.amount) || 0) + (Number(ingredient.amount) || 0);
                 shoppingList.items[shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid))] = existingIngredient;
             } else {
                 shoppingList.items.push(ingredient);
@@ -165,7 +165,7 @@ export class ShoppingListService {
     }
 
     findUsingIngredientName(shoppingList: ShoppingList, searchTerm): Ingredient {
-        return shoppingList.items.find(item => item.item.itemName === searchTerm);
+        return shoppingList.items.find(item => (item.item as any).itemName === searchTerm);
     }
 
     findUsingIngredientUUID(shoppingList: ShoppingList, searchTerm): Ingredient {

@@ -8,6 +8,7 @@ import {Auth, authState} from '@angular/fire/auth';
 @Injectable({
     providedIn: 'root'
 })
+export class AuthGuard {
     constructor(
         private authService: AuthService,
         private router: Router,

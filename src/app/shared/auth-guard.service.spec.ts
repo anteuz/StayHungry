@@ -5,28 +5,25 @@ import { AuthService } from '../services/auth.service';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
-  let mockAuthService: jasmine.SpyObj<AuthService>;
-  let mockRouter: jasmine.SpyObj<Router>;
+  let mockAuthService: any;
+  let mockRouter: any;
   let mockRoute: ActivatedRouteSnapshot;
   let mockState: RouterStateSnapshot;
   let mockRouteConfig: Route;
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    mockAuthService = { isAuthenticated: jest.fn() };
+    mockRouter = { navigate: jest.fn() };
 
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
-        { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: Router, useValue: mockRouter }
       ]
     });
 
     guard = TestBed.inject(AuthGuard);
-    mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    
     mockRoute = {} as ActivatedRouteSnapshot;
     mockState = { url: '/tabs/tab1' } as RouterStateSnapshot;
     mockRouteConfig = {} as Route;
@@ -38,7 +35,7 @@ describe('AuthGuard', () => {
 
   describe('Route Protection Security Tests', () => {
     it('should allow access when user is authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(true);
+      mockAuthService.isAuthenticated.mockReturnValue(true);
 
       const result = guard.canActivate(mockRoute, mockState);
 
@@ -47,7 +44,7 @@ describe('AuthGuard', () => {
     });
 
     it('should deny access and redirect when user is not authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
+      mockAuthService.isAuthenticated.mockReturnValue(false);
 
       const result = guard.canActivate(mockRoute, mockState);
 
@@ -56,7 +53,7 @@ describe('AuthGuard', () => {
     });
 
     it('should protect lazy loaded routes when user is not authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
+      mockAuthService.isAuthenticated.mockReturnValue(false);
 
       const result = guard.canLoad(mockRouteConfig);
 
@@ -65,7 +62,7 @@ describe('AuthGuard', () => {
     });
 
     it('should allow lazy loaded routes when user is authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(true);
+      mockAuthService.isAuthenticated.mockReturnValue(true);
 
       const result = guard.canLoad(mockRouteConfig);
 
@@ -76,7 +73,7 @@ describe('AuthGuard', () => {
 
   describe('Security Edge Cases', () => {
     it('should handle authentication service errors gracefully', () => {
-      mockAuthService.isAuthenticated.and.throwError('Service error');
+      mockAuthService.isAuthenticated.mockImplementation(() => { throw new Error('Service error') });
 
       expect(() => guard.canActivate(mockRoute, mockState)).toThrow();
     });
@@ -86,7 +83,7 @@ describe('AuthGuard', () => {
       const falsyValues = [false, 0, '', null, undefined, NaN];
       
       falsyValues.forEach(value => {
-        mockAuthService.isAuthenticated.and.returnValue(value as any);
+        mockAuthService.isAuthenticated.mockReturnValue(value as any);
         const result = guard.canActivate(mockRoute, mockState);
         expect(result).toBeFalse();
         expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
@@ -96,7 +93,7 @@ describe('AuthGuard', () => {
 
   describe('Integration with Router', () => {
     it('should redirect to sign-in page with correct path', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
+      mockAuthService.isAuthenticated.mockReturnValue(false);
 
       guard.canActivate(mockRoute, mockState);
 
@@ -105,8 +102,8 @@ describe('AuthGuard', () => {
     });
 
     it('should handle router navigation failures gracefully', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
-      mockRouter.navigate.and.returnValue(Promise.reject('Navigation failed'));
+      mockAuthService.isAuthenticated.mockReturnValue(false);
+      mockRouter.navigate.mockReturnValue(Promise.reject('Navigation failed'));
 
       expect(() => guard.canActivate(mockRoute, mockState)).not.toThrow();
     });

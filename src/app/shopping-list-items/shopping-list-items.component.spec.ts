@@ -30,8 +30,7 @@ describe('ShoppingListItemsComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      declarations: [ShoppingListItemsComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), ShoppingListItemsComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },

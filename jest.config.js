@@ -1,6 +1,15 @@
 module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setupJest.ts'],
+  transform: {
+    '^.+\\.(ts|mjs|js|html)$': [
+      'jest-preset-angular',
+      {
+        tsconfig: '<rootDir>/src/tsconfig.spec.json',
+        stringifyContentPathRegex: '\\.(html|svg)$'
+      }
+    ]
+  },
   testMatch: [
     '<rootDir>/src/**/*.spec.ts'
   ],
@@ -29,7 +38,7 @@ module.exports = {
     '<rootDir>/src/test.ts'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!@angular|@ionic|@ionic-native)'
+    'node_modules/(?!@angular|@ionic|@ionic-native|@stencil|ionicons|lit)'
   ],
   testEnvironment: 'jsdom',
   moduleFileExtensions: ['ts', 'js', 'html', 'json']

@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IonItem, IonItemSliding, IonVirtualScroll, PopoverController} from '@ionic/angular';
+import {IonItem, IonItemSliding, PopoverController} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Subscription} from 'rxjs';
 import {CartPopoverComponent} from '../cart-popover/cart-popover.component';
@@ -23,7 +23,8 @@ export class RecipesPage implements OnInit, OnDestroy {
   recipeFilter = 'all';
   cart: Cart = null;
 
-  @ViewChild('virtualScroll', {static: false}) virtualScroll: IonVirtualScroll;
+  // IonVirtualScroll removed in Ionic 8, leaving property for legacy templates (unused)
+  @ViewChild('virtualScroll', {static: false}) virtualScroll: any;
   constructor(
       private router: Router,
       private route: ActivatedRoute,

@@ -2,13 +2,22 @@ import { TestBed } from '@angular/core/testing';
 import { Auth, User } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { UserStorageService } from './user-storage.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let mockAuth: any;
   let mockRouter: any;
+  let mockUserStorage: any;
 
   beforeEach(() => {
+    // Ensure Angular TestBed is initialized for zone-based testing
+    try {
+      const testing = require('@angular/core/testing');
+      const platform = require('@angular/platform-browser-dynamic/testing');
+      if (!(testing as any).getTestBed().ngModule)
+        (testing as any).TestBed.initTestEnvironment(platform.BrowserDynamicTestingModule, platform.platformBrowserDynamicTesting());
+    } catch {}
     mockAuth = {
       currentUser: null
     };
@@ -17,11 +26,17 @@ describe('AuthService', () => {
       navigate: jest.fn()
     };
 
+    mockUserStorage = {
+      clearUserData: jest.fn().mockResolvedValue(undefined),
+      storeUserData: jest.fn().mockResolvedValue(undefined)
+    };
+
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         { provide: Auth, useValue: mockAuth },
-        { provide: Router, useValue: mockRouter }
+        { provide: Router, useValue: mockRouter },
+        { provide: UserStorageService, useValue: mockUserStorage }
       ]
     });
 
@@ -109,12 +124,12 @@ describe('AuthService', () => {
   describe('Authentication State Management', () => {
     it('should properly detect authenticated state', () => {
       // Not authenticated
-      expect(service.isAuthenticated()).toBe(false);
+      expect(service.isAuthenticated()).toBeFalse?.() ?? expect(service.isAuthenticated()).toBe(false);
 
       // Authenticated
       const mockUser = { uid: 'test-uid-123' };
       mockAuth.currentUser = mockUser;
-      expect(service.isAuthenticated()).toBe(true);
+      expect(service.isAuthenticated()).toBeTrue?.() ?? expect(service.isAuthenticated()).toBe(true);
     });
 
     it('should return user UID when authenticated', () => {
