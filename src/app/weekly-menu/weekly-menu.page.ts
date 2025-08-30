@@ -11,6 +11,7 @@ export class WeeklyMenuPage implements OnInit {
 
     weeklyMenus: WeeklyMenu[] = [];
     currentWeekMenu: WeeklyMenu | null = null;
+    menu: string[] = [];
 
     constructor(
         private weeklyMenuService: WeeklyMenuService,
@@ -63,6 +64,13 @@ export class WeeklyMenuPage implements OnInit {
             };
             this.weeklyMenuService.addMenu(this.currentWeekMenu);
         }
+        
+        // Prepare array used by the reorder group
+        if (this.currentWeekMenu) {
+            this.menu = Object.keys(this.currentWeekMenu.days || {});
+        } else {
+            this.menu = [];
+        }
     }
 
     doReorder(ev: any) {
@@ -74,7 +82,7 @@ export class WeeklyMenuPage implements OnInit {
         // Finish the reorder and position the item in the DOM based on
         // where the gesture ended. This method can also be called directly
         // by the reorder group
-        ev.detail.complete(this.currentWeekMenu);
+        this.menu = ev.detail.complete(this.menu);
         console.log('After:' + this.currentWeekMenu);
         
         // Update the menu in database

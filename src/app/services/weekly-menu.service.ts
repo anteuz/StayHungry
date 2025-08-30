@@ -23,8 +23,8 @@ export interface WeeklyMenu {
 })
 export class WeeklyMenuService {
 
-    ref = null;
-    DATABASE_PATH = null;
+    ref: ReturnType<typeof ref> | null = null;
+    DATABASE_PATH: string | null = null;
     public weeklyMenuEvent = new EventEmitter<WeeklyMenu[]>();
     private weeklyMenus: WeeklyMenu[] = [];
 
@@ -135,7 +135,7 @@ export class WeeklyMenuService {
         }
     }
 
-    findUsingUUID(searchTerm): WeeklyMenu {
+    findUsingUUID(searchTerm: string): WeeklyMenu {
         if (!this.weeklyMenus || !searchTerm) {
             return null;
         }
