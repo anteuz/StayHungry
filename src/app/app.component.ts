@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Auth, onAuthStateChanged, signOut} from '@angular/fire/auth';
+import {Auth, onAuthStateChanged} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {SplashScreen} from '@capacitor/splash-screen';
 import {StatusBar, Style} from '@capacitor/status-bar';
@@ -8,8 +8,12 @@ import {Platform} from '@ionic/angular';
 import {RecipeServiceService} from './services/recipe-service.service';
 import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
+import {WeeklyMenuService} from './services/weekly-menu.service';
 import {SimpleStateService} from './services/simple-state-service';
 import {ThemeService} from './services/theme.service';
+import {AuthService} from './services/auth.service';
+import {UserStorageService, UserData} from './services/user-storage.service';
+import {UserProfileService} from './services/user-profile.service';
 
 @Component({
   selector: 'app-root',
@@ -23,17 +27,23 @@ export class AppComponent {
     private platform: Platform,
     private router: Router,
     private fireAuth: Auth,
+    private authService: AuthService,
+    private userStorageService: UserStorageService,
     private slService: ShoppingListService,
     private itemService: SimpleItemService,
     private stateService: SimpleStateService,
     private recipeService: RecipeServiceService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private userProfileService: UserProfileService,
+    private weeklyMenuService: WeeklyMenuService
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
+    console.log('Initializing app...');
     this.platform.ready().then(() => {
+      console.log('Platform ready');
       this.subscribeToAuthState();
       
       // Initialize theme service - this will auto-detect system preferences
@@ -44,7 +54,7 @@ export class AppComponent {
         this.updateStatusBarForTheme();
         SplashScreen.hide();
       }
-    }).catch(e => console.log('Could not initialize platform'));
+    }).catch(e => console.log('Could not initialize platform:', e));
   }
 
   private updateStatusBarForTheme() {
@@ -56,14 +66,54 @@ export class AppComponent {
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out
   subscribeToAuthState() {
-    onAuthStateChanged(this.fireAuth, (user) => {
+    onAuthStateChanged(this.fireAuth, async (user) => {
           if (user) {
             console.log('Authed user');
-            this.stateService.setupHandlers().then(() => {
+            
+            // Store user data
+            const userData: UserData = {
+              email: user.email || '',
+              uid: user.uid,
+              displayName: user.displayName || undefined,
+              photoURL: user.photoURL || undefined,
+              providerId: user.providerData[0]?.providerId || undefined,
+              lastLogin: new Date()
+            };
+            await this.userStorageService.storeUserData(userData);
+            
+            // Initialize services one by one to avoid any initialization errors
+            try {
+              await this.stateService.setupHandlers();
+              console.log('State service initialized');
+              
               this.itemService.setupHandlers();
+              console.log('Item service initialized');
+              
               this.slService.setupHandlers();
+              console.log('Shopping list service initialized');
+              
               this.recipeService.setupHandlers();
-            }).catch(e => console.log(e));
+              console.log('Recipe service initialized');
+              
+              // Initialize new services with error handling
+              try {
+                this.userProfileService.setupHandlers();
+                console.log('User profile service initialized');
+              } catch (e) {
+                console.error('Error initializing user profile service:', e);
+              }
+              
+              try {
+                this.weeklyMenuService.setupHandlers();
+                console.log('Weekly menu service initialized');
+              } catch (e) {
+                console.error('Error initializing weekly menu service:', e);
+              }
+              
+            } catch (e) {
+              console.error('Error during service initialization:', e);
+            }
+            
             this.isAuthenticated = true;
             // this.router.navigate(['/']);
 
@@ -75,7 +125,8 @@ export class AppComponent {
         }
     );
   }
+  
   onLogout() {
-    signOut(this.fireAuth);
+    this.authService.logout();
   }
 }

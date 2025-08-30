@@ -13,19 +13,49 @@
 
 </ion-header>
 
-
 <ion-content padding>
-  <form #f="ngForm" (ngSubmit)="onSignin(f)">
-    <ion-list>
-      <ion-item>
-        <ion-label position="fixed">Mail</ion-label>
-        <ion-input id="username" type="email" ngModel name="email" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="fixed">Password</ion-label>
-        <ion-input id="password" type="password" ngModel name="password" required></ion-input>
-      </ion-item>
-    </ion-list>
-    <ion-button id="login-button" expand="block" type="submit" [disabled]="!f.valid">Sign in</ion-button>
-  </form>
+  <div class="login-container">
+    <div class="login-options">
+      <ion-button 
+        expand="block" 
+        color="primary" 
+        (click)="onGoogleSignin()"
+        class="google-login-btn">
+        <ion-icon name="logo-google" slot="start"></ion-icon>
+        Continue with Google
+      </ion-button>
+      
+      <div class="divider">
+        <span>or</span>
+      </div>
+      
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        (click)="showEmailForm = true"
+        class="email-login-btn">
+        <ion-icon name="mail" slot="start"></ion-icon>
+        Sign in with Email
+      </ion-button>
+    </div>
+
+    <div *ngIf="showEmailForm" class="email-form">
+      <form #f="ngForm" (ngSubmit)="onSignin(f)">
+        <ion-list>
+          <ion-item>
+            <ion-label position="fixed">Mail</ion-label>
+            <ion-input id="username" type="email" ngModel name="email" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="fixed">Password</ion-label>
+            <ion-input id="password" type="password" ngModel name="password" required></ion-input>
+          </ion-item>
+        </ion-list>
+        <ion-button id="login-button" expand="block" type="submit" [disabled]="!f.valid">
+          <ion-icon name="log-in" slot="start"></ion-icon>
+          Sign in
+        </ion-button>
+      </form>
+    </div>
+  </div>
 </ion-content>
