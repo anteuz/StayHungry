@@ -87,8 +87,13 @@ export class WeeklyMenuService {
     }
 
     removeMenu(menu: WeeklyMenu) {
-        this.weeklyMenus.splice(this.weeklyMenus.indexOf(menu), 1);
-        this.updateDatabase();
+        const index = this.weeklyMenus.indexOf(menu);
+        if (index !== -1) {
+            this.weeklyMenus.splice(index, 1);
+            this.updateDatabase();
+        } else {
+            console.warn('Menu not found in weeklyMenus, nothing removed.');
+        }
     }
 
     updateDatabase() {
@@ -135,17 +140,17 @@ export class WeeklyMenuService {
         }
     }
 
-    findUsingUUID(searchTerm: string): WeeklyMenu {
+    findUsingUUID(searchTerm: string): WeeklyMenu | null {
         if (!this.weeklyMenus || !searchTerm) {
             return null;
         }
-        return this.weeklyMenus.find(menu => menu && menu.uuid === searchTerm);
+        return this.weeklyMenus.find(menu => menu && menu.uuid === searchTerm) || null;
     }
 
-    findUsingWeekStart(weekStart: string): WeeklyMenu {
+    findUsingWeekStart(weekStart: string): WeeklyMenu | null {
         if (!this.weeklyMenus || !weekStart) {
             return null;
         }
-        return this.weeklyMenus.find(menu => menu && menu.weekStart === weekStart);
+        return this.weeklyMenus.find(menu => menu && menu.weekStart === weekStart) || null;
     }
 }

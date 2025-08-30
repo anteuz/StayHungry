@@ -93,6 +93,16 @@ export class WeeklyMenuPage implements OnInit {
     }
 
     private generateUUID(): string {
+        try {
+            // Prefer built-in crypto UUID if available
+            const w: any = typeof window !== 'undefined' ? window : undefined;
+            if (w && w.crypto && typeof w.crypto.randomUUID === 'function') {
+                return w.crypto.randomUUID();
+            }
+        } catch (e) {
+            // ignore and fallback
+        }
+        // Fallback RFC4122 v4-like generator
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
