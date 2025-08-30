@@ -16,6 +16,18 @@ export class AuthService {
     private userStorageService: UserStorageService
   ) {}
 
+  private validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  private validatePassword(password: string): boolean {
+    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+  }
+
+  private sanitizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
 
   signup(email: string, password: string) {
     if (!email || !password) {
@@ -30,7 +42,7 @@ export class AuthService {
       return Promise.reject(new Error('Password must be at least 8 characters with letters and numbers'));
     }
 
-    return createUserWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
+    return createUserWithEmailAndPassword(this.fireAuth, this.sanitizeEmail(email), password);
   }
 
   signin(email: string, password: string) {
@@ -42,7 +54,7 @@ export class AuthService {
       return Promise.reject(new Error('Invalid email format'));
     }
 
-    return signInWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
+    return signInWithEmailAndPassword(this.fireAuth, this.sanitizeEmail(email), password);
   }
 
   // Expose validators for tests (thin wrappers around ValidationUtils)
@@ -75,7 +87,6 @@ export class AuthService {
     } catch (e) {
       console.log('Could not logout:', e);
     }
-
   }
 
   getActiveUser(): User | null {
@@ -91,6 +102,7 @@ export class AuthService {
     const user = this.getActiveUser();
     return user ? user.email : null;
   }
+
 
   async getToken() {
     const user = this.getActiveUser();

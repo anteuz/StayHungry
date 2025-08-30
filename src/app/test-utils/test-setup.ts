@@ -10,7 +10,14 @@ import { Storage } from '@angular/fire/storage';
  * Common test setup utilities for consistent testing across the application
  */
 
+// Helper function to safely access Jest
+function getJest() {
+  return (typeof window !== 'undefined' && (window as any).jest) || 
+         { fn: () => () => {} };
+}
+
 export function createMockAuth(currentUser: User | null = null) {
+  const jest = getJest();
   return {
     currentUser,
     authStateReady: () => Promise.resolve(),
@@ -19,6 +26,7 @@ export function createMockAuth(currentUser: User | null = null) {
 }
 
 export function createMockRouter() {
+  const jest = getJest();
   return {
     navigate: jest.fn().mockResolvedValue(true),
     navigateByUrl: jest.fn().mockResolvedValue(true)
@@ -26,6 +34,7 @@ export function createMockRouter() {
 }
 
 export function createMockUser(uid: string = 'test-user-123') {
+  const jest = getJest();
   return {
     uid,
     email: 'test@example.com',
@@ -36,6 +45,7 @@ export function createMockUser(uid: string = 'test-user-123') {
 }
 
 export function createMockDatabase() {
+  const jest = getJest();
   return {
     ref: jest.fn(),
     push: jest.fn(),
@@ -46,6 +56,7 @@ export function createMockDatabase() {
 }
 
 export function createMockStorage() {
+  const jest = getJest();
   return {
     ref: jest.fn(),
     uploadBytes: jest.fn(),

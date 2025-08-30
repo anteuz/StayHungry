@@ -12,7 +12,6 @@ export class AuthGuard {
         private authService: AuthService,
         private router: Router,
         private fireAuth: Auth
-
     ) {}
 
     canActivate(

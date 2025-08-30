@@ -85,7 +85,6 @@
     "jsdom": "^26.0.0",
     "typescript": "^5.9.2"
   },
-  
   "devDependencies_removed_temporarily": {
     "comment": "Removed for upgrade process - will be re-added with compatible versions",
     "@angular-builders/jest": "^8.0.2",
