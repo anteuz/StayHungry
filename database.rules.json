@@ -2,11 +2,8 @@
   "rules": {
     "users": {
       "$uid": {
-        // Users can only read and write their own data
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        
-        // Shopping lists - users can only access their own
         "shopping-list": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid",
@@ -16,8 +13,6 @@
             ".validate": "newData.hasChildren(['uuid', 'items'])"
           }
         },
-        
-        // Recipes - users can only access their own
         "recipes": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid",
@@ -27,8 +22,6 @@
             ".validate": "newData.hasChildren(['uuid', 'name'])"
           }
         },
-        
-        // Simple items - users can only access their own
         "items": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid",
@@ -38,8 +31,6 @@
             ".validate": "newData.hasChildren(['uuid', 'itemName'])"
           }
         },
-        
-        // Weekly menu - users can only access their own
         "weekly-menu": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid",
@@ -48,8 +39,6 @@
             ".write": "auth != null && auth.uid == $uid"
           }
         },
-        
-        // User profile data - users can only access their own
         "profile": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid",
@@ -57,8 +46,6 @@
         }
       }
     },
-    
-    // Deny access to all other paths
     "$other": {
       ".read": false,
       ".write": false
