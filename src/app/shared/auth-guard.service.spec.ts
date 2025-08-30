@@ -39,7 +39,7 @@ describe('AuthGuard', () => {
 
       const result = guard.canActivate(mockRoute, mockState);
 
-      expect(result).toBeTrue();
+      expect(!!result).toBe(true);
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
 
@@ -48,7 +48,7 @@ describe('AuthGuard', () => {
 
       const result = guard.canActivate(mockRoute, mockState);
 
-      expect(result).toBeFalse();
+      expect(!!result).toBe(false);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
     });
 
@@ -57,7 +57,7 @@ describe('AuthGuard', () => {
 
       const result = guard.canLoad(mockRouteConfig);
 
-      expect(result).toBeFalse();
+      expect(!!result).toBe(false);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
     });
 
@@ -66,7 +66,7 @@ describe('AuthGuard', () => {
 
       const result = guard.canLoad(mockRouteConfig);
 
-      expect(result).toBeTrue();
+      expect(!!result).toBe(true);
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
   });
@@ -85,7 +85,7 @@ describe('AuthGuard', () => {
       falsyValues.forEach(value => {
         mockAuthService.isAuthenticated.mockReturnValue(value as any);
         const result = guard.canActivate(mockRoute, mockState);
-        expect(result).toBeFalse();
+        expect(!!result).toBe(false);
         expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
       });
     });

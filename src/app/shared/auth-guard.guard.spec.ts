@@ -13,7 +13,7 @@ describe('AuthGuard', () => {
     } catch {}
 
     TestBed.configureTestingModule({
-      providers: [AuthGuard]
+      providers: [AuthGuard, { provide: AuthService, useValue: { isAuthenticated: jest.fn().mockReturnValue(true) } }, { provide: Router, useValue: { navigate: jest.fn() } }]
     });
   });
 

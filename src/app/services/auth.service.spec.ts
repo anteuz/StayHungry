@@ -124,12 +124,12 @@ describe('AuthService', () => {
   describe('Authentication State Management', () => {
     it('should properly detect authenticated state', () => {
       // Not authenticated
-      expect(service.isAuthenticated()).toBeFalse?.() ?? expect(service.isAuthenticated()).toBe(false);
+      expect(service.isAuthenticated()).toBe(false);
 
       // Authenticated
       const mockUser = { uid: 'test-uid-123' };
       mockAuth.currentUser = mockUser;
-      expect(service.isAuthenticated()).toBeTrue?.() ?? expect(service.isAuthenticated()).toBe(true);
+      expect(service.isAuthenticated()).toBe(true);
     });
 
     it('should return user UID when authenticated', () => {

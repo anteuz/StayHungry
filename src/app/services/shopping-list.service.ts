@@ -161,7 +161,7 @@ export class ShoppingListService {
         if (!this.shoppingLists || !searchTerm) {
             return null;
         }
-        return this.shoppingLists.find(shoppingList => shoppingList && shoppingList.uuid === searchTerm);
+        return this.shoppingLists.find(shoppingList => shoppingList && shoppingList.uuid === searchTerm) || null;
     }
 
     findUsingIngredientName(shoppingList: ShoppingList, searchTerm): Ingredient {

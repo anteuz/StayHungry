@@ -8,6 +8,7 @@ import { Platform, ModalController, LoadingController } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Recipe } from '../models/recipe';
 
+
 describe('RecipePage', () => {
   let component: RecipePage;
   let fixture: ComponentFixture<RecipePage>;
@@ -72,8 +73,7 @@ describe('RecipePage', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [RecipePage],
-      imports: [IonicModule.forRoot(), ReactiveFormsModule],
+      imports: [IonicModule.forRoot(), ReactiveFormsModule, RecipePage],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },

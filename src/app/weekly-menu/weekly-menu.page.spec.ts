@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { WeeklyMenuService } from '../services/weekly-menu.service';
 import { EventEmitter } from '@angular/core';
 
+
 describe('WeeklyMenuPage', () => {
   let component: WeeklyMenuPage;
   let fixture: ComponentFixture<WeeklyMenuPage>;
@@ -33,8 +34,7 @@ describe('WeeklyMenuPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [WeeklyMenuPage],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), WeeklyMenuPage],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: WeeklyMenuService, useValue: mockWeeklyMenuService }
