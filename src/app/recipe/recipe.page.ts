@@ -1,9 +1,13 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonImg, IonItem, IonIcon, IonLabel, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonSegment, IonSegmentButton, IonGrid, IonList, IonRow, IonListHeader, IonCol, IonItemSliding, IonItemOptions, IonItemOption, IonBadge, IonToggle, IonButton } from '@ionic/angular/standalone';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import {Filesystem} from '@capacitor/filesystem';
-import {IonList, LoadingController, ModalController, Platform} from '@ionic/angular';
+import {LoadingController, ModalController, Platform} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -16,6 +20,38 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 
 @Component({
     selector: 'app-recipe',
+    standalone: true,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        RouterModule,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonCard,
+        IonImg,
+        IonItem,
+        IonIcon,
+        IonLabel,
+        IonCardHeader,
+        IonCardTitle,
+        IonCardSubtitle,
+        IonCardContent,
+        IonSegment,
+        IonSegmentButton,
+        IonGrid,
+        IonList,
+        IonRow,
+        IonListHeader,
+        IonCol,
+        IonItemSliding,
+        IonItemOptions,
+        IonItemOption,
+        IonBadge,
+        IonToggle,
+        IonButton
+    ],
     templateUrl: './recipe.page.html',
     styleUrls: ['./recipe.page.scss'],
 })

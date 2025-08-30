@@ -1,9 +1,28 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonHeader, IonToolbar, IonButtons, IonMenuToggle, IonButton, IonIcon, IonTitle, IonContent, IonList, IonReorderGroup, IonItem, IonReorder, IonLabel } from '@ionic/angular/standalone';
 import {WeeklyMenuService, WeeklyMenu} from '../services/weekly-menu.service';
 import {AuthService} from '../services/auth.service';
 
 @Component({
     selector: 'app-weekly-menu',
+    standalone: true,
+    imports: [
+        CommonModule,
+        IonHeader,
+        IonToolbar,
+        IonButtons,
+        IonMenuToggle,
+        IonButton,
+        IonIcon,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonReorderGroup,
+        IonItem,
+        IonReorder,
+        IonLabel
+    ],
     templateUrl: './weekly-menu.page.html',
     styleUrls: ['./weekly-menu.page.scss'],
 })

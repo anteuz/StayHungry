@@ -1,6 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuToggle, IonButton, IonIcon, IonContent, IonItem, IonSearchbar, IonBadge, IonList, IonItemSliding, IonItemOptions, IonItemOption, IonLabel, IonSpinner } from '@ionic/angular/standalone';
+import { ThemeToggleComponent } from '../shared/theme-toggle.component';
+import { IsCollectedPipe } from '../shared/iscollected.pipe';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {IonList, ModalController} from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
 import {Subscription} from 'rxjs';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
 import {BrowseItemsModalComponent} from '../browse-items-modal/browse-items-modal.component';
@@ -13,6 +18,30 @@ import {ThemeService} from '../services/theme.service';
 
 @Component({
     selector: 'app-shopping-list',
+    standalone: true,
+    imports: [
+        CommonModule,
+        RouterModule,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonButtons,
+        IonMenuToggle,
+        IonButton,
+        IonIcon,
+        IonContent,
+        IonItem,
+        IonSearchbar,
+        IonBadge,
+        IonList,
+        IonItemSliding,
+        IonItemOptions,
+        IonItemOption,
+        IonLabel,
+        IonSpinner,
+        ThemeToggleComponent,
+        IsCollectedPipe
+    ],
     templateUrl: './shopping-list.page.html',
     styleUrls: ['./shopping-list.page.scss'],
 })

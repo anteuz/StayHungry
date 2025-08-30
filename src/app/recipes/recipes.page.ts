@@ -1,6 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { IonHeader, IonToolbar, IonSegment, IonSegmentButton, IonButtons, IonMenuToggle, IonButton, IonIcon, IonBadge, IonContent, IonItemSliding, IonItem, IonThumbnail, IonImg, IonLabel, IonItemOptions, IonItemOption, IonFab, IonFabButton } from '@ionic/angular/standalone';
+import { ObjectNamePipe } from '../shared/object-name.pipe';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IonItem, IonItemSliding, PopoverController} from '@ionic/angular';
+import {PopoverController} from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Subscription} from 'rxjs';
 import {CartPopoverComponent} from '../cart-popover/cart-popover.component';
@@ -13,6 +17,31 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 
 @Component({
   selector: 'app-recipes',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    ObjectNamePipe,
+    IonHeader,
+    IonToolbar,
+    IonSegment,
+    IonSegmentButton,
+    IonButtons,
+    IonMenuToggle,
+    IonButton,
+    IonIcon,
+    IonBadge,
+    IonContent,
+    IonItemSliding,
+    IonItem,
+    IonThumbnail,
+    IonImg,
+    IonLabel,
+    IonItemOptions,
+    IonItemOption,
+    IonFab,
+    IonFabButton
+  ],
   templateUrl: './recipes.page.html',
   styleUrls: ['./recipes.page.scss'],
 })

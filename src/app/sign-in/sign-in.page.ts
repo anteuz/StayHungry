@@ -1,4 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, IonMenuToggle, IonButton, IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput } from '@ionic/angular/standalone';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
 import {AlertController, LoadingController} from '@ionic/angular';
@@ -7,6 +11,24 @@ import {UserStorageService, UserData} from '../services/user-storage.service';
 
 @Component({
     selector: 'app-sign-in',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        IonHeader,
+        IonToolbar,
+        IonButtons,
+        IonMenuToggle,
+        IonButton,
+        IonIcon,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonItem,
+        IonLabel,
+        IonInput
+    ],
     templateUrl: './sign-in.page.html',
     styleUrls: ['./sign-in.page.scss'],
 })

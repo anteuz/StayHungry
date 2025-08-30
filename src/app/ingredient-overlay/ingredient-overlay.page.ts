@@ -1,5 +1,7 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {IonSearchbar, ModalController, NavParams} from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { IonItem, IonSearchbar, IonContent, IonText, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { ModalController, NavParams } from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Ingredient} from '../models/ingredient';
 import {SimpleItem} from '../models/simple-item';
@@ -10,6 +12,20 @@ import {ThemeService} from '../services/theme.service';
 
 @Component({
     selector: 'app-ingredient-overlay',
+    standalone: true,
+    imports: [
+        CommonModule,
+        IonItem,
+        IonSearchbar,
+        IonContent,
+        IonText,
+        IonGrid,
+        IonRow,
+        IonCol,
+        IonButton,
+        IonIcon,
+        IonLabel
+    ],
     templateUrl: './ingredient-overlay.page.html',
     styleUrls: ['./ingredient-overlay.page.scss'],
 })

@@ -16,14 +16,7 @@ export class AuthService {
     private userStorageService: UserStorageService
   ) {}
 
-  private validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  private validatePassword(password: string): boolean {
-    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
-  }
+  // Use shared validators; keep private helpers removed to avoid duplicate identifiers
 
   private sanitizeEmail(email: string): string {
     return email.trim().toLowerCase();

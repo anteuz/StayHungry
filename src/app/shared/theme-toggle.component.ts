@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
+  standalone: true,
+  imports: [IonButton, IonIcon],
   template: `
     <ion-button 
       fill="clear" 

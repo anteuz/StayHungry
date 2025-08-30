@@ -27,12 +27,12 @@ bootstrapApplication(AppComponent, {
       IonicModule.forRoot(),
       IonicStorageModule.forRoot(),
       HttpClientModule,
-      provideFirebaseApp(() => initializeApp(environment.firebase)),
-      provideAuth(() => getAuth()),
-      provideDatabase(() => getDatabase()),
-      provideStorage(() => getStorage()),
       ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
     ),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideDatabase(() => getDatabase()),
+    provideStorage(() => getStorage()),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ]
 }).catch(err => {

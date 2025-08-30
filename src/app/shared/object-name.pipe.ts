@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {Ingredient} from '../models/ingredient';
 
 @Pipe({
-  name: 'objectName'
+  name: 'objectName',
+  standalone: true
 })
 export class ObjectNamePipe implements PipeTransform {
 
