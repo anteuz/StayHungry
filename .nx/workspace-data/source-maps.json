@@ -44,6 +44,10 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
+    "targets.build.defaultConfiguration": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
     "targets.build.options.outputPath": [
       "angular.json",
       "nx-angular-json-plugin"
@@ -76,6 +80,34 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
+    "targets.build.options.aot": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.vendorChunk": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.extractLicenses": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.buildOptimizer": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.sourceMap": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.optimization": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
+    "targets.build.options.namedChunks": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
     "targets.build.configurations.production": [
       "angular.json",
       "nx-angular-json-plugin"
@@ -93,10 +125,6 @@
       "nx-angular-json-plugin"
     ],
     "targets.build.configurations.production.sourceMap": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.build.configurations.production.extractCss": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
@@ -152,7 +180,7 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
-    "targets.serve.options.browserTarget": [
+    "targets.serve.options.buildTarget": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
@@ -160,15 +188,11 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
-    "targets.serve.configurations.production.browserTarget": [
+    "targets.serve.configurations.production.buildTarget": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
     "targets.serve.configurations.ci": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.serve.configurations.ci.progress": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
@@ -184,7 +208,7 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
-    "targets.extract-i18n.options.browserTarget": [
+    "targets.extract-i18n.options.buildTarget": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
@@ -213,26 +237,6 @@
       "nx-angular-json-plugin"
     ],
     "targets.test.configurations.ci.watch": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.executor": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options.tsConfig": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options.exclude": [
       "angular.json",
       "nx-angular-json-plugin"
     ],
@@ -347,26 +351,6 @@
       "nx-angular-json-plugin"
     ],
     "targets.e2e.configurations.ci.devServerTarget": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.executor": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options.tsConfig": [
-      "angular.json",
-      "nx-angular-json-plugin"
-    ],
-    "targets.lint.options.exclude": [
       "angular.json",
       "nx-angular-json-plugin"
     ]

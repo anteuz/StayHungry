@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { CloudStoreService } from './cloud-store.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { WeeklyMenuService } from './weekly-menu.service';
 import { AuthService } from './auth.service';
-import { Storage } from '@angular/fire/storage';
+import { Database } from '@angular/fire/database';
 
-describe('CloudStoreService', () => {
-  let service: CloudStoreService;
+describe('WeeklyMenuService', () => {
+  let service: WeeklyMenuService;
   let mockAuthService: jest.Mocked<AuthService>;
-  let mockStorage: jest.Mocked<Storage>;
+  let mockDatabase: jest.Mocked<Database>;
 
   beforeEach(() => {
     mockAuthService = {
@@ -20,21 +21,21 @@ describe('CloudStoreService', () => {
       getToken: jest.fn()
     } as any;
 
-    mockStorage = {
+    mockDatabase = {
       ref: jest.fn(),
-      uploadBytes: jest.fn(),
-      getDownloadURL: jest.fn(),
-      deleteObject: jest.fn()
+      onValue: jest.fn(),
+      set: jest.fn()
     } as any;
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
-        CloudStoreService,
+        WeeklyMenuService,
         { provide: AuthService, useValue: mockAuthService },
-        { provide: Storage, useValue: mockStorage }
+        { provide: Database, useValue: mockDatabase }
       ]
     });
-    service = TestBed.inject(CloudStoreService);
+    service = TestBed.inject(WeeklyMenuService);
   });
 
   it('should be created', () => {

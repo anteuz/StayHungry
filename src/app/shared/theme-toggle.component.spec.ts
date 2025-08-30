@@ -6,10 +6,13 @@ import { ThemeService } from '../services/theme.service';
 describe('ThemeToggleComponent', () => {
   let component: ThemeToggleComponent;
   let fixture: ComponentFixture<ThemeToggleComponent>;
-  let mockThemeService: jasmine.SpyObj<ThemeService>;
+  let mockThemeService: any;
 
   beforeEach(async () => {
-    const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getCurrentTheme', 'toggleTheme']);
+    const themeServiceSpy = {
+      getCurrentTheme: jest.fn().mockReturnValue('light'),
+      toggleTheme: jest.fn()
+    };
 
     await TestBed.configureTestingModule({
       declarations: [ThemeToggleComponent],
@@ -21,7 +24,7 @@ describe('ThemeToggleComponent', () => {
 
     fixture = TestBed.createComponent(ThemeToggleComponent);
     component = fixture.componentInstance;
-    mockThemeService = TestBed.inject(ThemeService) as jasmine.SpyObj<ThemeService>;
+    mockThemeService = TestBed.inject(ThemeService);
   });
 
   it('should create', () => {
@@ -29,7 +32,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should initialize with current theme from service', () => {
-    mockThemeService.getCurrentTheme.and.returnValue('dark');
+    mockThemeService.getCurrentTheme.mockReturnValue('dark');
     
     component.ngOnInit();
     
@@ -37,7 +40,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should toggle theme when button is clicked', () => {
-    mockThemeService.getCurrentTheme.and.returnValue('light');
+    mockThemeService.getCurrentTheme.mockReturnValue('light');
     
     component.toggleTheme();
     
@@ -45,7 +48,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should update current theme after toggle', () => {
-    mockThemeService.getCurrentTheme.and.returnValue('dark');
+    mockThemeService.getCurrentTheme.mockReturnValue('dark');
     
     component.toggleTheme();
     
@@ -65,23 +68,26 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should display moon icon for light theme', () => {
-    component.currentTheme = 'light';
+    mockThemeService.getCurrentTheme.mockReturnValue('light');
+    component.ngOnInit();
     fixture.detectChanges();
     
     const iconElement = fixture.nativeElement.querySelector('ion-icon');
-    expect(iconElement.getAttribute('name')).toBe('moon');
+    expect(iconElement.name).toBe('moon');
   });
 
   it('should display sun icon for dark theme', () => {
-    component.currentTheme = 'dark';
+    mockThemeService.getCurrentTheme.mockReturnValue('dark');
+    component.ngOnInit();
     fixture.detectChanges();
     
     const iconElement = fixture.nativeElement.querySelector('ion-icon');
-    expect(iconElement.getAttribute('name')).toBe('sunny');
+    expect(iconElement.name).toBe('sunny');
   });
 
   it('should have proper accessibility attributes', () => {
-    component.currentTheme = 'light';
+    mockThemeService.getCurrentTheme.mockReturnValue('light');
+    component.ngOnInit();
     fixture.detectChanges();
     
     const buttonElement = fixture.nativeElement.querySelector('ion-button');

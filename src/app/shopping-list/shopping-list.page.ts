@@ -131,11 +131,21 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         }
     }
 
-    onRemoveItem(index: Ingredient) {
+    async onRemoveItem(index: Ingredient) {
         this.ingredientList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
         this.ingredients.splice(this.ingredients.indexOf(index), 1);
         this.shoppingList.items = this.ingredients;
-        this.slService.updateShoppingList(this.shoppingList);
+        
+        try {
+            await this.slService.updateShoppingList(this.shoppingList);
+            console.log('Successfully removed item from shopping list');
+        } catch (error) {
+            console.error('Failed to remove item from shopping list:', error);
+            // Revert the change if database update fails
+            this.ingredients.push(index);
+            this.shoppingList.items = this.ingredients;
+            this.initializeIngredients();
+        }
     }
 
     async onEdit(ingredient: Ingredient) {
@@ -170,7 +180,19 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             // Update the shopping list items
             this.shoppingList.items = this.ingredients;
             this.initializeIngredients();
-            this.slService.updateShoppingList(this.shoppingList);
+            
+            try {
+                await this.slService.updateShoppingList(this.shoppingList);
+                console.log('Successfully updated ingredient in shopping list');
+            } catch (error) {
+                console.error('Failed to update ingredient in shopping list:', error);
+                // Revert the change if database update fails
+                if (existingIngredientIndex !== -1) {
+                    this.ingredients[existingIngredientIndex] = ingredient; // Revert to original
+                }
+                this.shoppingList.items = this.ingredients;
+                this.initializeIngredients();
+            }
         }
         modal = null;
         this.ingredientList.closeSlidingItems().catch(e => console.log('Could not close sliding item'));
@@ -363,7 +385,20 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                 this.shoppingList.items.push(data);
             }
             this.initializeIngredients();
-            this.slService.updateShoppingList(this.shoppingList);
+            
+            try {
+                await this.slService.updateShoppingList(this.shoppingList);
+                console.log('Successfully added ingredients to shopping list');
+            } catch (error) {
+                console.error('Failed to add ingredients to shopping list:', error);
+                // Revert the changes if database update fails
+                if (Array.isArray(data)) {
+                    this.shoppingList.items.splice(-data.length);
+                } else {
+                    this.shoppingList.items.pop();
+                }
+                this.initializeIngredients();
+            }
         }
         modal = null;
     }
@@ -387,7 +422,16 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             }
             this.shoppingList.items.push(data);
             this.initializeIngredients();
-            this.slService.updateShoppingList(this.shoppingList);
+            
+            try {
+                await this.slService.updateShoppingList(this.shoppingList);
+                console.log('Successfully added item to shopping list');
+            } catch (error) {
+                console.error('Failed to add item to shopping list:', error);
+                // Revert the change if database update fails
+                this.shoppingList.items.pop();
+                this.initializeIngredients();
+            }
         }
     }
 
@@ -420,14 +464,26 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         }
     }
 
-    clearCollected() {
+    async clearCollected() {
+        const originalIngredients = [...this.ingredients];
+        
         for (let i = this.ingredients.length - 1; i >= 0; --i) {
             if (this.ingredients[i].isCollected === true) {
                 this.ingredients.splice(i, 1);
             }
         }
         this.shoppingList.items = this.ingredients;
-        this.slService.updateShoppingList(this.shoppingList);
+        
+        try {
+            await this.slService.updateShoppingList(this.shoppingList);
+            console.log('Successfully cleared collected items from shopping list');
+        } catch (error) {
+            console.error('Failed to clear collected items from shopping list:', error);
+            // Revert the change if database update fails
+            this.ingredients = originalIngredients;
+            this.shoppingList.items = this.ingredients;
+            this.initializeIngredients();
+        }
     }
 
     private addItemsToShoppingList(data) {

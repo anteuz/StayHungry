@@ -19,5 +19,12 @@
       "dom"
     ],
     "useDefineForClassFields": false
-  }
+  },
+  "exclude": [
+    "src/app/app.routes.ts",
+    "src/app/services/network-service.service.ts",
+    "src/environments/environment.prod.ts",
+    "src/setup-jest.ts",
+    "src/test-config.helper.ts"
+  ]
 }

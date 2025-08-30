@@ -38,6 +38,8 @@ export class ShoppingListService {
 
         // Setup DB PATH
         this.DATABASE_PATH = 'users/' + userUID + '/shopping-list';
+        console.log('Database path set to:', this.DATABASE_PATH);
+        
         // Subscribe to value changes
         onValue(ref(this.fireDatabase, this.DATABASE_PATH), (snapshot) => {
             const payload = snapshot.val() as ShoppingList[];
@@ -101,16 +103,35 @@ export class ShoppingListService {
     }
 
     updateDatabase() {
-        if (!this.DATABASE_PATH || !this.authService.isAuthenticated()) {
-            return Promise.reject(new Error('User not authenticated or no database path'));
+        if (!this.authService.isAuthenticated()) {
+            console.error('Cannot update database: user not authenticated');
+            return Promise.reject('User not authenticated');
         }
+        
+        const userUID = this.authService.getUserUID();
+        if (!userUID) {
+            console.error('Cannot update database: no user UID available');
+            return Promise.reject('No user UID available');
+        }
+        
+        if (!this.DATABASE_PATH) {
+            console.error('Cannot update database: no database path set');
+            return Promise.reject('No database path set');
+        }
+        
+        console.log('Updating database with shopping lists:', this.shoppingLists?.length || 0, 'lists');
+        console.log('Database path:', this.DATABASE_PATH);
+        console.log('User UID:', userUID);
         
         const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
         
         return set(itemRef, this.shoppingLists.slice())
+            .then(() => {
+                console.log('Successfully updated shopping lists in database');
+            })
             .catch(e => {
-                // Only log non-sensitive error information
-                throw new Error('Failed to update shopping lists in database');
+                console.error('Failed to update shopping lists in database:', e);
+                throw e;
             });
     }
 

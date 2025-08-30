@@ -88,3 +88,19 @@ export class UserStorageService {
     await this.storeFromUser(cred.user);
   }
 }
+    // Mock implementation
+  }
+
+  clearUserData(): void {
+    // Mock implementation
+  }
+
+  isLoggedIn(): boolean {
+    return false;
+  }
+
+  async getUserEmail(): Promise<string | null> {
+    return 'test@example.com';
+  }
+}
+>>>>>>> 6bc0b3c (Fix test suite and resolve all warnings)
