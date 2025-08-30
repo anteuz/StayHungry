@@ -1,10 +1,25 @@
 import {Component, OnInit} from '@angular/core';
-import {ModalController, NavParams, PopoverController} from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { IonContent, IonList, IonListHeader, IonLabel, IonItem, IonAvatar, IonImg, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { ModalController, NavParams, PopoverController } from '@ionic/angular';
 import {Cart} from '../models/cart';
 import {ShoppingListTransferComponent} from '../shopping-list-transfer/shopping-list-transfer.component';
 
 @Component({
     selector: 'app-cart-popover',
+    standalone: true,
+    imports: [
+        CommonModule,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItem,
+        IonAvatar,
+        IonImg,
+        IonIcon,
+        IonButton
+    ],
     templateUrl: './cart-popover.component.html',
     styleUrls: ['./cart-popover.component.scss']
 })

@@ -1,4 +1,9 @@
 import {Component} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { IonApp, IonSplitPane, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonMenuToggle, IonButtons } from '@ionic/angular/standalone';
+import { SharedModule } from './shared/shared-module';
+import { ShoppingListItemsComponent } from './shopping-list-items/shopping-list-items.component';
 import {Auth, onAuthStateChanged} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {SplashScreen} from '@capacitor/splash-screen';
@@ -17,6 +22,30 @@ import {UserProfileService} from './services/user-profile.service';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    // Ionic standalone components used in template
+    IonApp,
+    IonSplitPane,
+    IonMenu,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonRouterOutlet,
+    IonMenuToggle,
+    IonButtons,
+    // Shared components/pipes
+    SharedModule,
+    ShoppingListItemsComponent
+  ],
   templateUrl: 'app.component.html'
 })
 export class AppComponent {

@@ -1,6 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { IonList, IonItem, IonLabel, IonText, IonInput, IonItemSliding, IonItemOptions, IonItemOption, IonIcon } from '@ionic/angular/standalone';
+import { StyledButtonComponent } from '../shared/styled-button.component';
+import { ObjectNamePipe } from '../shared/object-name.pipe';
 import {Router} from '@angular/router';
-import {IonList} from '@ionic/angular';
+import { } from '@ionic/angular';
 import {Guid} from 'guid-typescript';
 import {Subscription} from 'rxjs';
 import {ShoppingList} from '../models/shopping-list';
@@ -9,6 +14,22 @@ import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-shopping-list-items',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonText,
+    IonInput,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonIcon,
+    StyledButtonComponent,
+    ObjectNamePipe
+  ],
   templateUrl: './shopping-list-items.component.html',
   styleUrls: ['./shopping-list-items.component.scss']
 })

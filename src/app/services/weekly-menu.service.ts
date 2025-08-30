@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {EventEmitter} from '@angular/core';
 import {Database, ref, onValue, set} from '@angular/fire/database';
 import {AuthService} from './auth.service';
 

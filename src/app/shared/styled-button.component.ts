@@ -1,7 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-styled-button',
+  standalone: true,
+  imports: [RouterModule, IonSpinner, IonIcon],
   templateUrl: './styled-button.component.html',
   styleUrls: ['./styled-button.component.scss']
 })

@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { ModalController, IonContent, IonInfiniteScroll, IonList } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonContent, IonList, IonItemSliding, IonItem, IonBadge, IonItemOptions, IonItemOption, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
+import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { SimpleItem } from '../models/simple-item';
 import { SimpleItemService } from '../services/simple-item.service';
@@ -9,6 +11,28 @@ import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-browse-items-modal',
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonContent,
+    IonList,
+    IonItemSliding,
+    IonItem,
+    IonBadge,
+    IonItemOptions,
+    IonItemOption,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
+  ],
   templateUrl: './browse-items-modal.component.html',
   styleUrls: ['./browse-items-modal.component.scss']
 })

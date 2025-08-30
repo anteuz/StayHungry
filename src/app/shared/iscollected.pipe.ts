@@ -3,7 +3,8 @@ import {Ingredient} from '../models/ingredient';
 
 @Pipe({
   name: 'isCollected',
-  pure: false
+  pure: false,
+  standalone: true
 })
 export class IsCollectedPipe implements PipeTransform {
   transform(items: Ingredient[], filter: boolean): any {

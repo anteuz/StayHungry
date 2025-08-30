@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItemDivider, IonAvatar, IonImg, IonGrid, IonRow, IonCol, IonItem, IonBadge, IonToggle, IonItemSliding, IonItemOptions, IonItemOption, IonFooter, IonButton, IonIcon } from '@ionic/angular/standalone';
 import {Router} from '@angular/router';
 import {ModalController, NavParams} from '@ionic/angular';
 import {AppState} from '../models/app-state';
@@ -11,6 +13,32 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 
 @Component({
     selector: 'app-shopping-list-transfer',
+    standalone: true,
+    imports: [
+        CommonModule,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItemDivider,
+        IonAvatar,
+        IonImg,
+        IonGrid,
+        IonRow,
+        IonCol,
+        IonItem,
+        IonBadge,
+        IonToggle,
+        IonItemSliding,
+        IonItemOptions,
+        IonItemOption,
+        IonFooter,
+        IonButton,
+        IonIcon
+    ],
     templateUrl: './shopping-list-transfer.component.html',
     styleUrls: ['./shopping-list-transfer.component.scss']
 })

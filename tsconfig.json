@@ -18,7 +18,8 @@
       "es2018",
       "dom"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   },
   "exclude": [
     "src/app/app.routes.ts",

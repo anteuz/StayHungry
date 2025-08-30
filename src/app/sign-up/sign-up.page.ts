@@ -1,4 +1,7 @@
 import {Component, OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonHeader, IonToolbar, IonButtons, IonMenuToggle, IonButton, IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput } from '@ionic/angular/standalone';
 import {NgForm} from '@angular/forms';
 import {AlertController, LoadingController} from '@ionic/angular';
 import {AuthService} from '../services/auth.service';
@@ -6,6 +9,23 @@ import {UserStorageService, UserData} from '../services/user-storage.service';
 
 @Component({
     selector: 'app-sign-up',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonHeader,
+        IonToolbar,
+        IonButtons,
+        IonMenuToggle,
+        IonButton,
+        IonIcon,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonItem,
+        IonLabel,
+        IonInput
+    ],
     templateUrl: './sign-up.page.html',
     styleUrls: ['./sign-up.page.scss'],
 })
