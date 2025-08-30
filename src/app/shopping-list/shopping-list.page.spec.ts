@@ -8,7 +8,9 @@ import { SimpleStateService } from '../services/simple-state-service';
 import { ThemeService } from '../services/theme.service';
 import { EventEmitter } from '@angular/core';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
-import { SharedModule } from '../shared/shared-module';
+import { IsCollectedPipe } from '../shared/iscollected.pipe';
+import { ObjectNamePipe } from '../shared/object-name.pipe';
+import { StyledButtonComponent } from '../shared/styled-button.component';
 
 
 describe('ShoppingListPage', () => {
@@ -57,7 +59,7 @@ describe('ShoppingListPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), SharedModule, ShoppingListPage, ThemeToggleComponent],
+      imports: [IonicModule.forRoot(), ShoppingListPage, ThemeToggleComponent, IsCollectedPipe, ObjectNamePipe, StyledButtonComponent],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

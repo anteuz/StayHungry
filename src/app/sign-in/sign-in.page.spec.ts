@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule, LoadingController, AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { SignInPage } from './sign-in.page';
 import { AuthService } from '../services/auth.service';
 import { UserStorageService } from '../services/user-storage.service';
@@ -26,7 +27,7 @@ describe('SignInPage', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), FormsModule, SignInPage],
+      imports: [IonicModule.forRoot(), CommonModule, FormsModule, SignInPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: mockAuthService },

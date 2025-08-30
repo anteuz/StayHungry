@@ -82,7 +82,8 @@ describe('AppComponent', () => {
         { provide: ThemeService, useValue: mockThemeService },
         { provide: Platform, useValue: platformSpy },
         { provide: NavController, useValue: mockNavController },
-        { provide: UserStorageService, useValue: { clearUserData: jest.fn(), storeUserData: jest.fn() } }
+        { provide: UserStorageService, useValue: { clearUserData: jest.fn(), storeUserData: jest.fn() } },
+        { provide: (window as any).UserProfileService || 'UserProfileService', useValue: { get: jest.fn() } }
       ]
     }).compileComponents();
   });

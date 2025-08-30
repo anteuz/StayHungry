@@ -46,6 +46,7 @@ describe('Security Vulnerability Prevention Tests', () => {
   });
 
   it('should prevent access to protected routes without authentication', () => {
+    expect(authService.isAuthenticated()).toBe(false);
     expect(!!authGuard.canActivate(null as any, null as any)).toBe(false);
     expect(!!authGuard.canLoad(null as any)).toBe(false);
   });

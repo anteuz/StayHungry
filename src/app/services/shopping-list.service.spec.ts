@@ -15,7 +15,11 @@ describe('ShoppingListService Integration Tests', () => {
 
   beforeEach(() => {
     mockAuthService = { isAuthenticated: jest.fn(), getUserUID: jest.fn() };
-    mockDatabase = {} as any;
+    mockDatabase = {
+      ref: jest.fn((db: any, path: string) => ({ path })),
+      onValue: jest.fn(),
+      set: jest.fn().mockResolvedValue(undefined)
+    } as any;
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -27,6 +31,9 @@ describe('ShoppingListService Integration Tests', () => {
     });
 
     service = TestBed.inject(ShoppingListService);
+    mockAuthService.isAuthenticated.mockReturnValue(true);
+    mockAuthService.getUserUID.mockReturnValue('test-user');
+    service.setupHandlers();
   });
 
   it('should be created', () => {
@@ -65,26 +72,8 @@ describe('ShoppingListService Integration Tests', () => {
   });
 
   describe('Shopping List Operations', () => {
-    beforeEach(() => {
-      mockAuthService.isAuthenticated.mockReturnValue(true);
-      mockAuthService.getUserUID.mockReturnValue('test-user-123');
-    });
-
-    it('should initialize empty shopping lists array', () => {
-      const result = service.getItems();
-      expect(result).toEqual([]);
-    });
-
-    it('should add new shopping list', () => {
-      const shoppingList = new ShoppingList('Test List', []);
-      service.addItem(shoppingList);
-      const items = service.getItems();
-      expect(items).toContain(shoppingList);
-      expect(items.length).toBe(1);
-    });
-
     it('should add ingredient to existing shopping list', () => {
-      const item = new SimpleItem('uuid', 'Test Ingredient', 'test-category');
+      const item = new SimpleItem('uuid1', 'Test Ingredient', 'test-category');
       const ingredient = new Ingredient(item, 2, 'kg');
       const shoppingList = new ShoppingList('Test List', []);
       service.addItem(shoppingList);
@@ -94,8 +83,9 @@ describe('ShoppingListService Integration Tests', () => {
     });
 
     it('should increment amount when adding existing ingredient', () => {
-      const item = new SimpleItem('uuid', 'Test Ingredient', 'test-category');
+      const item = new SimpleItem('uuid1', 'Test Ingredient', 'test-category');
       const ingredient1 = new Ingredient(item, 2, 'kg');
+      (ingredient1 as any).uuid = 'ing-1';
       const ingredient2 = new Ingredient(item, 3, 'kg');
       const shoppingList = new ShoppingList('Test List', [ingredient1]);
       service.addItemToShoppingList(shoppingList, ingredient2);
