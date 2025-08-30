@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
+import type { User, UserCredential } from 'firebase/auth';
 
 export interface UserData {
   email: string;
@@ -29,14 +30,22 @@ export class UserStorageService {
     if (!this.storage) {
       await this.init();
     }
-    await this.storage!.set(this.USER_DATA_KEY, userData);
+    const storage = this.storage;
+    if (!storage) {
+      throw new Error('UserStorageService: Storage not initialized after init()');
+    }
+    await storage.set(this.USER_DATA_KEY, userData);
   }
 
   async getUserData(): Promise<UserData | null> {
     if (!this.storage) {
       await this.init();
     }
-    return await this.storage!.get(this.USER_DATA_KEY) || null;
+    const storage = this.storage;
+    if (!storage) {
+      throw new Error('UserStorageService: Storage not initialized after init()');
+    }
+    return await storage.get(this.USER_DATA_KEY) || null;
   }
 
   async getUserEmail(): Promise<string | null> {
@@ -48,7 +57,11 @@ export class UserStorageService {
     if (!this.storage) {
       await this.init();
     }
-    await this.storage!.remove(this.USER_DATA_KEY);
+    const storage = this.storage;
+    if (!storage) {
+      throw new Error('UserStorageService: Storage not initialized after init()');
+    }
+    await storage.remove(this.USER_DATA_KEY);
   }
 
   async updateLastLogin(): Promise<void> {
@@ -57,5 +70,21 @@ export class UserStorageService {
       userData.lastLogin = new Date();
       await this.storeUserData(userData);
     }
+  }
+
+  async storeFromUser(user: User): Promise<void> {
+    const userData: UserData = {
+      email: user.email || '',
+      uid: user.uid,
+      displayName: user.displayName || undefined,
+      photoURL: user.photoURL || undefined,
+      providerId: user.providerData[0]?.providerId || undefined,
+      lastLogin: new Date()
+    };
+    await this.storeUserData(userData);
+  }
+
+  async storeFromCredential(cred: UserCredential): Promise<void> {
+    await this.storeFromUser(cred.user);
   }
 }

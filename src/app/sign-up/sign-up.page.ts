@@ -33,7 +33,7 @@ export class SignUpPage implements OnInit {
         this.authService.signup(form.value.email, form.value.password)
             .then(async (data) => {
                 loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
-                await this.storeUserDataFromCredential(data);
+                await this.userStorageService.storeFromCredential(data);
                 
                 // Show success message
                 const alert = this.alertCtrl.create({
@@ -63,7 +63,7 @@ export class SignUpPage implements OnInit {
         this.authService.signUpWithGoogle()
             .then(async (data) => {
                 loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
-                await this.storeUserDataFromCredential(data);
+                await this.userStorageService.storeFromCredential(data);
                 
                 // Show success message
                 const alert = this.alertCtrl.create({
@@ -84,16 +84,4 @@ export class SignUpPage implements OnInit {
             });
     }
 
-    private async storeUserDataFromCredential(data: { user: any }): Promise<void> {
-        const user = data.user;
-        const userData: UserData = {
-            email: user.email || '',
-            uid: user.uid,
-            displayName: user.displayName || undefined,
-            photoURL: user.photoURL || undefined,
-            providerId: user.providerData[0]?.providerId || undefined,
-            lastLogin: new Date()
-        };
-        await this.userStorageService.storeUserData(userData);
-    }
 }

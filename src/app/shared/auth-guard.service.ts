@@ -34,19 +34,21 @@ export class AuthGuard  {
                     return true;
                 } else {
                     console.log('AuthGuard: User is not authenticated, redirecting to sign-in');
-                    this.router.navigate(['/sign-in']).catch(e => {
-                        console.error('AuthGuard: Error navigating to sign-in:', e);
-                    });
+                    this.navigateToSignIn();
                     return false;
                 }
             }),
             catchError(error => {
                 console.error('AuthGuard: Error checking auth state:', error);
-                this.router.navigate(['/sign-in']).catch(e => {
-                    console.error('AuthGuard: Error navigating to sign-in:', e);
-                });
+                this.navigateToSignIn();
                 return of(false);
             })
         );
+    }
+
+    private navigateToSignIn(): void {
+        this.router.navigate(['/sign-in']).catch(e => {
+            console.error('AuthGuard: Error navigating to sign-in:', e);
+        });
     }
 }
