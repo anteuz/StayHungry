@@ -2,6 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule, NavParams, PopoverController, ModalController } from '@ionic/angular';
 import { CartPopoverComponent } from './cart-popover.component';
 import { Cart } from '../models/cart';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 
 describe('CartPopoverComponent', () => {
   let component: CartPopoverComponent;
@@ -32,8 +35,8 @@ describe('CartPopoverComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [CartPopoverComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [CommonModule, IonicModule.forRoot(), CartPopoverComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: NavParams, useValue: mockNavParams },
         { provide: PopoverController, useValue: mockPopoverController },

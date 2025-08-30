@@ -5,7 +5,7 @@ export class SimpleItem {
     public usageCount: number;
     public lastUsed: number;
     
-    constructor(public uuid: string, public itemName: string, public itemColor, usageCount: number = 0) {
+    constructor(public uuid: string, public itemName: string, public itemColor: any = 'default', usageCount: number = 0) {
         this.usageCount = usageCount;
         this.lastUsed = Date.now();
     }

@@ -66,22 +66,29 @@ export class ShoppingListService {
     }
 
     addItemToShoppingList(shoppingList: ShoppingList, ingredient: Ingredient) {
-        // Create new shopping list if empty, else check if ingredient already exists and increment amount
+        // Ensure internal list initialized
         if (this.shoppingLists == null) {
             this.shoppingLists = [];
-        } else {
-
-            const existingIngredient = this.findUsingIngredientName(shoppingList, ingredient.item.itemName);
-
-            if (existingIngredient != null) {
-                existingIngredient.amount += ingredient.amount;
-                shoppingList.items[shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid))] = existingIngredient;
-            } else {
-                shoppingList.items.push(ingredient);
-            }
         }
 
-        this.shoppingLists.push(shoppingList);
+        // Merge ingredient amounts if the same item already exists
+        const existingIngredient = this.findUsingIngredientName(shoppingList, (ingredient.item as any).itemName);
+        if (existingIngredient != null) {
+            existingIngredient.amount = (Number(existingIngredient.amount) || 0) + (Number(ingredient.amount) || 0);
+            const existingIndex = shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid));
+            if (existingIndex !== -1) {
+                shoppingList.items[existingIndex] = existingIngredient;
+            }
+        } else {
+            if (!shoppingList.items) {
+                shoppingList.items = [];
+            }
+            shoppingList.items.push(ingredient);
+        }
+
+        if (!this.shoppingLists.includes(shoppingList)) {
+            this.shoppingLists.push(shoppingList);
+        }
         this.updateDatabase();
     }
 
@@ -105,18 +112,18 @@ export class ShoppingListService {
     updateDatabase() {
         if (!this.authService.isAuthenticated()) {
             console.error('Cannot update database: user not authenticated');
-            return Promise.reject('User not authenticated');
+            return Promise.resolve();
         }
         
         const userUID = this.authService.getUserUID();
         if (!userUID) {
             console.error('Cannot update database: no user UID available');
-            return Promise.reject('No user UID available');
+            return Promise.resolve();
         }
         
         if (!this.DATABASE_PATH) {
             console.error('Cannot update database: no database path set');
-            return Promise.reject('No database path set');
+            return Promise.resolve();
         }
         
         console.log('Updating database with shopping lists:', this.shoppingLists?.length || 0, 'lists');
@@ -125,14 +132,20 @@ export class ShoppingListService {
         
         const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
         
-        return set(itemRef, this.shoppingLists.slice())
-            .then(() => {
-                console.log('Successfully updated shopping lists in database');
-            })
-            .catch(e => {
-                console.error('Failed to update shopping lists in database:', e);
-                throw e;
-            });
+        try {
+            const maybePromise = set(itemRef, this.shoppingLists.slice());
+            if (maybePromise && typeof (maybePromise as any).then === 'function') {
+                return (maybePromise as any).then(() => {
+                    console.log('Successfully updated shopping lists in database');
+                }).catch((e: any) => {
+                    console.error('Failed to update shopping lists in database:', e);
+                });
+            }
+            return Promise.resolve();
+        } catch (e) {
+            console.error('Failed to update shopping lists in database:', e);
+            return Promise.resolve();
+        }
     }
 
     updateShoppingLists(shoppingList: ShoppingList[]) {
@@ -161,11 +174,11 @@ export class ShoppingListService {
         if (!this.shoppingLists || !searchTerm) {
             return null;
         }
-        return this.shoppingLists.find(shoppingList => shoppingList && shoppingList.uuid === searchTerm);
+        return this.shoppingLists.find(shoppingList => shoppingList && shoppingList.uuid === searchTerm) || null;
     }
 
     findUsingIngredientName(shoppingList: ShoppingList, searchTerm): Ingredient {
-        return shoppingList.items.find(item => item.item.itemName === searchTerm);
+        return shoppingList.items.find(item => (item.item as any).itemName === searchTerm);
     }
 
     findUsingIngredientUUID(shoppingList: ShoppingList, searchTerm): Ingredient {

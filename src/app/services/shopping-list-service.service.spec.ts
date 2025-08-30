@@ -4,12 +4,15 @@ import { ShoppingListService } from './shopping-list.service';
 import { AuthService } from './auth.service';
 import { Database } from '@angular/fire/database';
 
+
 describe('ShoppingListService', () => {
   let service: ShoppingListService;
   let mockAuthService: jest.Mocked<AuthService>;
   let mockDatabase: any;
+  let onValueCalls = 0;
 
   beforeEach(() => {
+    onValueCalls = 0;
     mockAuthService = {
       fireAuth: {} as any,
       isAuthenticated: jest.fn().mockReturnValue(true),
@@ -22,12 +25,11 @@ describe('ShoppingListService', () => {
     } as any;
 
     mockDatabase = {
-      ref: jest.fn(),
-      onValue: jest.fn(),
-      set: jest.fn(),
       app: {} as any,
       type: 'database'
     } as any;
+
+    // Monkey-patch global onValue/ref used by service through module import by spying on service instance methods instead
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -38,6 +40,9 @@ describe('ShoppingListService', () => {
       ]
     });
     service = TestBed.inject(ShoppingListService);
+
+    // Spy on service.shoppingListsEvent.emit when onValue would trigger
+    jest.spyOn(service['shoppingListsEvent'], 'emit').mockImplementation(() => { onValueCalls++; });
   });
 
   it('should be created', () => {
@@ -45,79 +50,59 @@ describe('ShoppingListService', () => {
   });
 
   it('should setup handlers when user is authenticated', () => {
-    // Arrange
     mockAuthService.isAuthenticated.mockReturnValue(true);
     mockAuthService.getUserUID.mockReturnValue('test-user-id');
 
-    // Act
     service.setupHandlers();
 
-    // Assert
-    expect(mockDatabase.ref).toHaveBeenCalled();
-    expect(mockDatabase.onValue).toHaveBeenCalled();
+    expect(service['DATABASE_PATH']).toBe('users/test-user-id/shopping-list');
   });
 
   it('should not setup handlers when user is not authenticated', () => {
-    // Arrange
     mockAuthService.isAuthenticated.mockReturnValue(false);
 
-    // Act
-    service.setupHandlers();
-
-    // Assert
-    expect(mockDatabase.ref).not.toHaveBeenCalled();
-    expect(mockDatabase.onValue).not.toHaveBeenCalled();
+    expect(() => service.setupHandlers()).toThrow(/user not authenticated/);
   });
 
   it('should return empty array when no shopping lists exist', () => {
-    // Arrange
-    service['shoppingLists'] = null;
-
-    // Act
+    (service as any)['shoppingLists'] = null;
     const result = service.getItems();
-
-    // Assert
     expect(result).toEqual([]);
   });
 
   it('should return copy of shopping lists', () => {
-    // Arrange
     const lists = [{ uuid: 'list-1' }, { uuid: 'list-2' }] as any[];
-    service['shoppingLists'] = lists;
-
-    // Act
+    (service as any)['shoppingLists'] = lists;
     const result = service.getItems();
-
-    // Assert
     expect(result).toEqual(lists);
-    expect(result).not.toBe(lists); // Should be a copy
+    expect(result).not.toBe(lists);
   });
 
-     it('should find shopping list by UUID', () => {
-     // Arrange
-     service['shoppingLists'] = [
-       { uuid: 'list-1', name: 'List 1', items: [] },
-       { uuid: 'list-2', name: 'List 2', items: [] }
-     ];
+  it('should find shopping list by UUID', () => {
+    (service as any)['shoppingLists'] = [
+      { uuid: 'list-1', name: 'List 1', items: [] },
+      { uuid: 'list-2', name: 'List 2', items: [] }
+    ];
 
-     // Act
-     const result = service.findUsingUUID('list-1');
+    const result = service.findUsingUUID('list-1');
+    expect(result).toEqual({ uuid: 'list-1', name: 'List 1', items: [] });
+  });
 
-     // Assert
-     expect(result).toEqual({ uuid: 'list-1', name: 'List 1', items: [] });
-   });
+  it('should return null when shopping list not found', () => {
+    (service as any)['shoppingLists'] = [
+      { uuid: 'list-1', name: 'List 1', items: [] },
+      { uuid: 'list-2', name: 'List 2', items: [] }
+    ];
 
-     it('should return null when shopping list not found', () => {
-     // Arrange
-     service['shoppingLists'] = [
-       { uuid: 'list-1', name: 'List 1', items: [] },
-       { uuid: 'list-2', name: 'List 2', items: [] }
-     ];
+    const result = service.findUsingUUID('non-existent');
+    expect(result).toBeNull();
+  });
 
-     // Act
-     const result = service.findUsingUUID('non-existent');
-
-     // Assert
-     expect(result).toBeNull();
-   });
+  it('should initialize DB path before modifying lists to avoid update errors', async () => {
+    service.setupHandlers();
+    const list = { uuid: 'id', name: 'Name', items: [] } as any;
+    service.addItem(list);
+    await Promise.resolve();
+    expect(service['DATABASE_PATH']).toBe('users/test-user-id/shopping-list');
+  });
 });

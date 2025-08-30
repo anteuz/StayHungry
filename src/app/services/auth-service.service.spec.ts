@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
+import { UserStorageService } from './user-storage.service';
 import { Auth } from '@angular/fire/auth';
 
 describe('AuthService', () => {
@@ -18,7 +19,8 @@ describe('AuthService', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthService,
-        { provide: Auth, useValue: mockFireAuth }
+        { provide: Auth, useValue: mockFireAuth },
+        { provide: UserStorageService, useValue: { clearUserData: jest.fn().mockResolvedValue(undefined) } }
       ]
     });
     service = TestBed.inject(AuthService);

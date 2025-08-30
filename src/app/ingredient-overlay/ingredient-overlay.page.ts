@@ -58,7 +58,8 @@ export class IngredientOverlayPage implements OnInit {
         setTimeout(() => {
             const searchBar = this.getActiveSearchBar();
             if (this.mode === 'edit') {
-                searchBar.value = this.ingredientToEdit.item.itemName + ' : ' + this.ingredientToEdit.amount;
+                const simple: any = this.ingredientToEdit.item as any;
+                searchBar.value = (simple?.itemName ?? String(simple)) + ' : ' + this.ingredientToEdit.amount;
                 this.showColorSelector();
             } else {
                 // Show popular items when modal opens for adding new items
@@ -343,10 +344,11 @@ export class IngredientOverlayPage implements OnInit {
         console.log('Final color for item:', finalColor);
         console.log('Selected category:', this.selectedCategory);
         // Create full ingredient
+        const amountNumber = parseFloat(ingredientAmount) || 0;
         if (this.mode === 'insert') {
-            return new Ingredient(Guid.create().toString(), simpleItem, ingredientAmount);
+            return new Ingredient(simpleItem, amountNumber);
         } else if (this.mode === 'edit') {
-            return new Ingredient(this.ingredientToEdit.uuid, simpleItem, ingredientAmount);
+            return new Ingredient(simpleItem, amountNumber);
         }
     }
 

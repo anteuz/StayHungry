@@ -46,8 +46,9 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
     
     // Use setTimeout to ensure the input is rendered before trying to focus
     setTimeout(() => {
-      const inputElement = document.getElementById(`${shoppingList.uuid}_inputField`) as HTMLIonInputElement;
-      if (inputElement) {
+      const el = document.getElementById(`${shoppingList.uuid}_inputField`);
+      const inputElement = el && (el as any).setFocus ? (el as any) : null;
+      if (inputElement && typeof inputElement.setFocus === 'function') {
         inputElement.setFocus();
       }
     }, 100);
@@ -64,9 +65,10 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   }
 
   onChangeShoppingListName(shoppingList: ShoppingList, event?: Event) {
-    const inputElement = event?.target as HTMLIonInputElement;
-    if (inputElement && inputElement.value) {
-      shoppingList.name = inputElement.value.toString();
+    const target: any = event?.target as any;
+    const value = target?.value ?? '';
+    if (value) {
+      shoppingList.name = String(value);
       this.slService.updateShoppingList(shoppingList);
     }
     this.endEditMode();

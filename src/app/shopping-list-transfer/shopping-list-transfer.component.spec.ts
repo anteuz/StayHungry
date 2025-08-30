@@ -6,6 +6,7 @@ import { ShoppingListService } from '../services/shopping-list.service';
 import { Router } from '@angular/router';
 import { Cart } from '../models/cart';
 
+
 describe('ShoppingListTransferComponent', () => {
   let component: ShoppingListTransferComponent;
   let fixture: ComponentFixture<ShoppingListTransferComponent>;
@@ -44,8 +45,7 @@ describe('ShoppingListTransferComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [ShoppingListTransferComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), ShoppingListTransferComponent],
       providers: [
         { provide: NavParams, useValue: mockNavParams },
         { provide: ModalController, useValue: mockModalController },

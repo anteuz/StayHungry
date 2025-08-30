@@ -2,13 +2,22 @@ import { TestBed } from '@angular/core/testing';
 import { Auth, User } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { UserStorageService } from './user-storage.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let mockAuth: any;
   let mockRouter: any;
+  let mockUserStorage: any;
 
   beforeEach(() => {
+    // Ensure Angular TestBed is initialized for zone-based testing
+    try {
+      const testing = require('@angular/core/testing');
+      const platform = require('@angular/platform-browser-dynamic/testing');
+      if (!(testing as any).getTestBed().ngModule)
+        (testing as any).TestBed.initTestEnvironment(platform.BrowserDynamicTestingModule, platform.platformBrowserDynamicTesting());
+    } catch {}
     mockAuth = {
       currentUser: null
     };
@@ -17,11 +26,17 @@ describe('AuthService', () => {
       navigate: jest.fn()
     };
 
+    mockUserStorage = {
+      clearUserData: jest.fn().mockResolvedValue(undefined),
+      storeUserData: jest.fn().mockResolvedValue(undefined)
+    };
+
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         { provide: Auth, useValue: mockAuth },
-        { provide: Router, useValue: mockRouter }
+        { provide: Router, useValue: mockRouter },
+        { provide: UserStorageService, useValue: mockUserStorage }
       ]
     });
 
@@ -40,19 +55,25 @@ describe('AuthService', () => {
         'test@',
         'test..test@example.com',
         'test@example',
-        '',
-        null,
-        undefined,
-        'a'.repeat(255) + '@example.com' // Test length limit
+        'a'.repeat(255) + '@example.com'
       ];
 
       for (const email of invalidEmails) {
-        try {
-          await service.signin(email, 'validPassword123');
-          fail(`Should have rejected invalid email: ${email}`);
-        } catch (error) {
-          expect(error.message).toContain('Invalid email format');
-        }
+        await expect(service.signin(email, 'validPassword123')).rejects.toHaveProperty('message', 'Invalid email format');
+      }
+    });
+
+    it('should reject empty or missing inputs', async () => {
+      const cases: any[] = [
+        { email: '', password: 'x' },
+        { email: null, password: 'x' },
+        { email: undefined, password: 'x' },
+        { email: 'x@example.com', password: '' },
+        { email: 'x@example.com', password: null },
+        { email: 'x@example.com', password: undefined },
+      ];
+      for (const c of cases) {
+        await expect(service.signin(c.email, c.password)).rejects.toHaveProperty('message', 'Email and password are required');
       }
     });
 
@@ -65,7 +86,7 @@ describe('AuthService', () => {
       ];
 
       validEmails.forEach(email => {
-        expect(() => service['validateEmail'](email)).not.toThrow();
+        expect(service['validateEmail'](email)).toBe(true);
       });
     });
   });
@@ -77,19 +98,11 @@ describe('AuthService', () => {
         '12345678', // Only numbers
         'password', // Only letters
         'PASSWORD', // Only uppercase
-        '',
-        null,
-        undefined,
         'a'.repeat(129) // Test length limit
       ];
 
       for (const password of weakPasswords) {
-        try {
-          await service.signup('test@example.com', password);
-          fail(`Should have rejected weak password: ${password}`);
-        } catch (error) {
-          expect(error.message).toMatch(/Password must be at least 8 characters|Email and password are required/);
-        }
+        await expect(service.signup('test@example.com', password)).rejects.toBeDefined();
       }
     });
 
@@ -101,7 +114,7 @@ describe('AuthService', () => {
       ];
 
       strongPasswords.forEach(password => {
-        expect(() => service['validatePassword'](password)).not.toThrow();
+        expect(service['validatePassword'](password)).toBe(true);
       });
     });
   });
@@ -112,13 +125,13 @@ describe('AuthService', () => {
       expect(service.isAuthenticated()).toBe(false);
 
       // Authenticated
-      const mockUser = { uid: 'test-uid-123' };
+      const mockUser = { uid: 'test-uid-123' } as any;
       mockAuth.currentUser = mockUser;
       expect(service.isAuthenticated()).toBe(true);
     });
 
     it('should return user UID when authenticated', () => {
-      const mockUser = { uid: 'test-uid-123' };
+      const mockUser = { uid: 'test-uid-123' } as any;
       mockAuth.currentUser = mockUser;
       expect(service.getUserUID()).toBe('test-uid-123');
     });

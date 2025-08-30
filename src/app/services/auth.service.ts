@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ValidationUtils } from '../utils/validation.utils';
 import {Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult} from '@angular/fire/auth';
 import { UserStorageService } from './user-storage.service';
 
@@ -30,15 +31,15 @@ export class AuthService {
 
   signup(email: string, password: string) {
     if (!email || !password) {
-      throw new Error('Email and password are required');
+      return Promise.reject(new Error('Email and password are required'));
     }
     
-    if (!this.validateEmail(email)) {
-      throw new Error('Invalid email format');
+    if (!ValidationUtils.validateEmail(email)) {
+      return Promise.reject(new Error('Invalid email format'));
     }
     
-    if (!this.validatePassword(password)) {
-      throw new Error('Password must be at least 8 characters with letters and numbers');
+    if (!ValidationUtils.validatePassword(password)) {
+      return Promise.reject(new Error('Password must be at least 8 characters with letters and numbers'));
     }
 
     return createUserWithEmailAndPassword(this.fireAuth, this.sanitizeEmail(email), password);
@@ -46,14 +47,23 @@ export class AuthService {
 
   signin(email: string, password: string) {
     if (!email || !password) {
-      throw new Error('Email and password are required');
+      return Promise.reject(new Error('Email and password are required'));
     }
     
-    if (!this.validateEmail(email)) {
-      throw new Error('Invalid email format');
+    if (!ValidationUtils.validateEmail(email)) {
+      return Promise.reject(new Error('Invalid email format'));
     }
 
     return signInWithEmailAndPassword(this.fireAuth, this.sanitizeEmail(email), password);
+  }
+
+  // Expose validators for tests (thin wrappers around ValidationUtils)
+  validateEmail(email: string): boolean {
+    return ValidationUtils.validateEmail(email);
+  }
+
+  validatePassword(password: string): boolean {
+    return ValidationUtils.validatePassword(password);
   }
 
   signInWithGoogle() {
@@ -93,7 +103,8 @@ export class AuthService {
     return user ? user.email : null;
   }
 
-  async getToken(): Promise<string | null> {
+
+  async getToken() {
     const user = this.getActiveUser();
     return user ? await user.getIdToken() : null;
   }

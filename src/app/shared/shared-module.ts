@@ -11,13 +11,13 @@ import {ThemeToggleComponent} from './theme-toggle.component';
 	imports: [
 		CommonModule,
 		RouterModule,
-		IonicModule
+		IonicModule,
+		IsCollectedPipe,
+		ObjectNamePipe,
+		StyledButtonComponent,
+		ThemeToggleComponent
 	],
     declarations: [
-        IsCollectedPipe,
-        ObjectNamePipe,
-        StyledButtonComponent,
-        ThemeToggleComponent
     ],
     exports: [
         CommonModule,

@@ -13,7 +13,8 @@ export class ObjectNamePipe implements PipeTransform {
     }
     for (let i = 0; i < value.length; i++) {
       if (value != null) {
-        names.push(value[i].item.itemName);
+        const simple: any = value[i].item as any;
+        names.push(simple?.itemName ?? String(simple));
       }
       // cut back
       if (i > 10) {

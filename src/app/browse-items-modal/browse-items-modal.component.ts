@@ -64,11 +64,7 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
 
   onItemSelected(item: SimpleItem) {
     // Create ingredient from simple item and return it
-    const ingredient = new Ingredient(
-      Guid.create().toString(),
-      item,
-      '1' // Default amount
-    );
+    const ingredient = new Ingredient(item, 1);
     
     // Update usage statistics - ensure values are properly initialized
     if (typeof item.usageCount !== 'number' || isNaN(item.usageCount)) {
