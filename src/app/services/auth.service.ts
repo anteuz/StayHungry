@@ -6,18 +6,41 @@ import { UserStorageService } from './user-storage.service';
   providedIn: 'root'
 })
 export class AuthService {
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
   constructor(
     private fireAuth: Auth,
     private userStorageService: UserStorageService
   ) {}
 
+
   signup(email: string, password: string) {
-    return createUserWithEmailAndPassword(this.fireAuth, email, password);
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+    
+    if (!this.validateEmail(email)) {
+      throw new Error('Invalid email format');
+    }
+    
+    if (!this.validatePassword(password)) {
+      throw new Error('Password must be at least 8 characters with letters and numbers');
+    }
+
+    return createUserWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
   }
 
   signin(email: string, password: string) {
-    return signInWithEmailAndPassword(this.fireAuth, email, password);
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+    
+    if (!this.validateEmail(email)) {
+      throw new Error('Invalid email format');
+    }
+
+    return signInWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
   }
 
   signInWithGoogle() {
@@ -41,13 +64,14 @@ export class AuthService {
     } catch (e) {
       console.log('Could not logout:', e);
     }
+
   }
 
-  getActiveUser() {
+  getActiveUser(): User | null {
     return this.fireAuth.currentUser;
   }
 
-  getUserUID() {
+  getUserUID(): string | null {
     const user = this.getActiveUser();
     return user ? user.uid : null;
   }
@@ -58,11 +82,12 @@ export class AuthService {
   }
 
   getToken() {
+
     const user = this.getActiveUser();
-    return user ? user.getIdToken() : null;
+    return user ? await user.getIdToken() : null;
   }
 
-  isAuthenticated() {
+  isAuthenticated(): boolean {
     return this.getActiveUser() !== null;
   }
 }

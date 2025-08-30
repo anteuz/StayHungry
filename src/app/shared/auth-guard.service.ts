@@ -8,16 +8,17 @@ import {Auth, authState} from '@angular/fire/auth';
 @Injectable({
     providedIn: 'root'
 })
-export class AuthGuard  {
     constructor(
         private authService: AuthService,
         private router: Router,
         private fireAuth: Auth
+
     ) {}
 
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
         return this.checkAuth();
     }
 
