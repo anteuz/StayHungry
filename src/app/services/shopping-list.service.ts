@@ -66,22 +66,29 @@ export class ShoppingListService {
     }
 
     addItemToShoppingList(shoppingList: ShoppingList, ingredient: Ingredient) {
-        // Create new shopping list if empty, else check if ingredient already exists and increment amount
+        // Ensure internal list initialized
         if (this.shoppingLists == null) {
             this.shoppingLists = [];
-        } else {
-
-            const existingIngredient = this.findUsingIngredientName(shoppingList, (ingredient.item as any).itemName);
-
-            if (existingIngredient != null) {
-                existingIngredient.amount = (Number(existingIngredient.amount) || 0) + (Number(ingredient.amount) || 0);
-                shoppingList.items[shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid))] = existingIngredient;
-            } else {
-                shoppingList.items.push(ingredient);
-            }
         }
 
-        this.shoppingLists.push(shoppingList);
+        // Merge ingredient amounts if the same item already exists
+        const existingIngredient = this.findUsingIngredientName(shoppingList, (ingredient.item as any).itemName);
+        if (existingIngredient != null) {
+            existingIngredient.amount = (Number(existingIngredient.amount) || 0) + (Number(ingredient.amount) || 0);
+            const existingIndex = shoppingList.items.indexOf(this.findUsingIngredientUUID(shoppingList, existingIngredient.uuid));
+            if (existingIndex !== -1) {
+                shoppingList.items[existingIndex] = existingIngredient;
+            }
+        } else {
+            if (!shoppingList.items) {
+                shoppingList.items = [];
+            }
+            shoppingList.items.push(ingredient);
+        }
+
+        if (!this.shoppingLists.includes(shoppingList)) {
+            this.shoppingLists.push(shoppingList);
+        }
         this.updateDatabase();
     }
 

@@ -19,15 +19,15 @@ export class AuthService {
 
   signup(email: string, password: string) {
     if (!email || !password) {
-      throw new Error('Email and password are required');
+      return Promise.reject(new Error('Email and password are required'));
     }
     
     if (!ValidationUtils.validateEmail(email)) {
-      throw new Error('Invalid email format');
+      return Promise.reject(new Error('Invalid email format'));
     }
     
     if (!ValidationUtils.validatePassword(password)) {
-      throw new Error('Password must be at least 8 characters with letters and numbers');
+      return Promise.reject(new Error('Password must be at least 8 characters with letters and numbers'));
     }
 
     return createUserWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
@@ -35,11 +35,11 @@ export class AuthService {
 
   signin(email: string, password: string) {
     if (!email || !password) {
-      throw new Error('Email and password are required');
+      return Promise.reject(new Error('Email and password are required'));
     }
     
     if (!ValidationUtils.validateEmail(email)) {
-      throw new Error('Invalid email format');
+      return Promise.reject(new Error('Invalid email format'));
     }
 
     return signInWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);

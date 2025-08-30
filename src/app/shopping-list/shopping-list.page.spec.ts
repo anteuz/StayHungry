@@ -6,14 +6,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SimpleStateService } from '../services/simple-state-service';
 import { ThemeService } from '../services/theme.service';
-import { EventEmitter, Pipe, PipeTransform } from '@angular/core';
-import { ThemeToggleComponent } from '../shared/theme-toggle.component';
-import { ObjectNamePipe } from '../shared/object-name.pipe';
-import { StyledButtonComponent } from '../shared/styled-button.component';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Pipe, PipeTransform } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Pipe({ name: 'isCollected', standalone: true })
-class StubIsCollectedPipe implements PipeTransform {
-  transform(value: any, arg: any): any { return value; }
+class IsCollectedPipeStub implements PipeTransform {
+  transform(value: any, arg: any): any { return value || []; }
 }
 
 
@@ -62,8 +60,10 @@ describe('ShoppingListPage', () => {
       getCurrentTheme: jest.fn().mockReturnValue('light')
     };
 
-    await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), ShoppingListPage, ThemeToggleComponent, StubIsCollectedPipe, ObjectNamePipe, StyledButtonComponent],
+    TestBed.configureTestingModule({
+      imports: [IonicModule.forRoot(), CommonModule, ShoppingListPage],
+      declarations: [],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
@@ -72,7 +72,13 @@ describe('ShoppingListPage', () => {
         { provide: SimpleStateService, useValue: mockSimpleStateService },
         { provide: ThemeService, useValue: mockThemeService }
       ]
-    }).compileComponents();
+    });
+
+    TestBed.overrideComponent(ShoppingListPage, {
+      set: { imports: [IsCollectedPipeStub] }
+    });
+
+    await TestBed.compileComponents();
 
     fixture = TestBed.createComponent(ShoppingListPage);
     component = fixture.componentInstance;

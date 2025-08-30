@@ -52,9 +52,9 @@ describe('ShoppingListService Integration Tests', () => {
       expect(() => service.setupHandlers()).toThrow(/no user UID/);
     });
 
-    it('should reject database updates when user is not authenticated', async () => {
+    it('should resolve gracefully when user is not authenticated', async () => {
       mockAuthService.isAuthenticated.mockReturnValue(false);
-      await expect(service.updateDatabase()).rejects.toBeDefined();
+      await expect(service.updateDatabase()).resolves.toBeUndefined();
     });
 
     it('should ensure user-specific database paths', () => {

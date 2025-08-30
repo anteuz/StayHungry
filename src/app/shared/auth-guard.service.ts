@@ -17,25 +17,24 @@ export class AuthGuard {
 
     canActivate(
         next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-
+        state: RouterStateSnapshot): boolean {
         return this.checkAuth();
     }
 
-    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean {
+    canLoad(route: Route): boolean {
         return this.checkAuth();
     }
 
-    private checkAuth(): Observable<boolean> {
+    private checkAuth(): boolean {
         try {
             if (this.authService.isAuthenticated()) {
-                return of(true);
+                return true;
             }
             this.navigateToSignIn();
-            return of(false);
+            return false;
         } catch (error) {
             this.navigateToSignIn();
-            return of(false);
+            return false;
         }
     }
 

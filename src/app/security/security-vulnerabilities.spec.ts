@@ -27,7 +27,7 @@ describe('Security Vulnerability Prevention Tests', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: AuthService, useValue: { isAuthenticated: jest.fn().mockReturnValue(false) } },
+        AuthService,
         ShoppingListService,
         CloudStoreService,
         AuthGuard,
@@ -39,14 +39,14 @@ describe('Security Vulnerability Prevention Tests', () => {
       ]
     });
 
-    authService = TestBed.inject(AuthService) as any;
+    authService = TestBed.inject(AuthService);
     shoppingListService = TestBed.inject(ShoppingListService);
     cloudStoreService = TestBed.inject(CloudStoreService);
     authGuard = TestBed.inject(AuthGuard);
   });
 
   it('should prevent access to protected routes without authentication', () => {
-    expect((authService as any).isAuthenticated()).toBe(false);
+    expect(authService.isAuthenticated()).toBe(false);
     expect(!!authGuard.canActivate(null as any, null as any)).toBe(false);
     expect(!!authGuard.canLoad(null as any)).toBe(false);
   });
