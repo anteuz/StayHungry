@@ -72,6 +72,12 @@
             <ion-list #ingredientList class="shopping-list unCollected" [inset]="false" lines="inset">
                 <ion-item-sliding *ngFor="let ingredient of categoryGroup.items; let i = index" 
                                   [class]="'ingredient-sliding ' + getStyleClass(ingredient)">
+                    <!-- Category indicator outside the ion-item -->
+                    <div 
+                        [class]="getStyleClass(ingredient) + ' category-indicator'" 
+                        [ngStyle]="getCategoryStyle(ingredient)"
+                        [attr.aria-hidden]="true">
+                    </div>
                     <ion-item 
                         class="ingredient-item noPadding" 
                         [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" 
@@ -79,11 +85,6 @@
                         (transitionend)="onTransitionEnd($event, ingredient)"
                         button
                         [attr.aria-label]="'Mark ' + ingredient.item.itemName + ' as collected'">
-                        <div 
-                            [class]="getStyleClass(ingredient) + ' category-indicator'" 
-                            [ngStyle]="getCategoryStyle(ingredient)"
-                            [attr.aria-hidden]="true">
-                        </div>
                         <ion-label class="ingredient-label">
                             <h3 class="ingredient-name">{{ ingredient.item.itemName }}</h3>
                         </ion-label>

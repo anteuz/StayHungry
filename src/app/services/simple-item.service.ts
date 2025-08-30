@@ -3,6 +3,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {Database, ref, onValue, set} from '@angular/fire/database';
 import {SimpleItem} from '../models/simple-item';
 import {AuthService} from './auth.service';
+import {UserStorageService} from './user-storage.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,7 @@ export class SimpleItemService {
     constructor(
         private httpClient: HttpClient,
         private authService: AuthService,
+        private userStorageService: UserStorageService,
         private fireDatabase: Database
     ) {
     }
@@ -60,6 +62,18 @@ export class SimpleItemService {
 
     getItems() {
         return this.items.slice();
+    }
+
+    async getCurrentUserEmail(): Promise<string | null> {
+        return await this.userStorageService.getUserEmail();
+    }
+
+    async logUserActivity(activity: string): Promise<void> {
+        const userEmail = await this.userStorageService.getUserEmail();
+        if (userEmail) {
+            console.log(`User ${userEmail} performed activity: ${activity}`);
+            // Here you could log to analytics, database, etc.
+        }
     }
 
     removeItem(item: SimpleItem) {

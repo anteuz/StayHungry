@@ -1,0 +1,91 @@
+.login-container {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-options {
+  margin-bottom: 20px;
+}
+
+.google-login-btn {
+  margin-bottom: 16px;
+  --background: #4285f4;
+  --color: white;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    --background: #3367d6;
+  }
+}
+
+.email-login-btn {
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--ion-color-medium);
+  }
+  
+  span {
+    background: var(--ion-background-color);
+    padding: 0 16px;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+.email-form {
+  animation: slideDown 0.3s ease-out;
+  
+  ion-list {
+    background: transparent;
+    margin-bottom: 16px;
+  }
+  
+  ion-item {
+    --border-radius: 8px;
+    --background: var(--ion-color-light);
+    margin-bottom: 12px;
+  }
+  
+  ion-button {
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dark theme adjustments
+@media (prefers-color-scheme: dark) {
+  .divider span {
+    background: var(--ion-background-color);
+  }
+  
+  .email-form ion-item {
+    --background: var(--ion-color-dark);
+  }
+}

@@ -3,6 +3,7 @@ import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
 import {AlertController, LoadingController} from '@ionic/angular';
 import {AuthService} from '../services/auth.service';
+import {UserStorageService, UserData} from '../services/user-storage.service';
 
 @Component({
     selector: 'app-sign-in',
@@ -11,8 +12,11 @@ import {AuthService} from '../services/auth.service';
 })
 export class SignInPage implements OnInit {
 
+    showEmailForm = false;
+
     constructor(
         private authService: AuthService,
+        private userStorageService: UserStorageService,
         private loadingCtrl: LoadingController,
         private alertCtrl: AlertController,
         private router: Router
@@ -57,9 +61,36 @@ export class SignInPage implements OnInit {
                 header: 'Sign In Failed',
                 message: userMessage,
                 buttons: ['OK']
+
             });
             await alert.present();
         }
+    }
+
+    async onGoogleSignin() {
+        const loadingDialog = await this.loadingCtrl.create({
+            message: 'Signing in with Google...'
+        });
+
+        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
+
+        this.authService.signInWithGoogle()
+            .then(async (data) => {
+                loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
+                await this.userStorageService.storeFromCredential(data);
+                
+                console.log('Navigating to shopping list..');
+                this.router.navigate(['/']).catch(e => console.log('Could not navigate'));
+            })
+            .catch(error => {
+                loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
+                const alert = this.alertCtrl.create({
+                    header: 'Google Sign-in failed!',
+                    message: error.message,
+                    buttons: ['Ok']
+                });
+                alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
+            });
     }
 
 }

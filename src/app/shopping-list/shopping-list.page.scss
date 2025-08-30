@@ -51,10 +51,10 @@
 
 .ingredient-sliding {
   margin-bottom: 1px; // Minimal gap between categories
-  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease-in-out;
+  position: relative; // Add relative positioning for absolute category indicator
   
   @media (prefers-reduced-motion: no-preference) {
     &:hover {
@@ -63,24 +63,20 @@
     }
   }
   
-  // Visual grouping for category items
+  // Visual grouping for category items - only affect margins, not border-radius
   &.roundedCornersTop {
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     margin-bottom: 0;
   }
   
   &.roundedCornersMiddle {
-    border-radius: 0;
     margin-bottom: 0;
   }
   
   &.roundedCornersBottom {
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     margin-bottom: var(--space-xs);
   }
   
   &.roundedCornersSingle {
-    border-radius: var(--radius-lg);
     margin-bottom: var(--space-xs);
   }
 }
@@ -88,7 +84,7 @@
 .ingredient-item {
   --background: var(--ion-color-light);
   --border-radius: var(--radius-lg);
-  --padding-start: 0;
+  --padding-start: calc(7px + var(--space-md)); // Account for category indicator width + 2px offset
   --padding-end: var(--space-md);
   --padding-top: 0;
   --padding-bottom: 0;
@@ -103,6 +99,9 @@
     --inner-padding-bottom: 0 !important;
     min-height: 32px !important;
   }
+  
+  // Always ensure rounded corners on all sides
+  border-radius: var(--radius-lg) !important;
   
   &:hover {
     --background: var(--ion-color-light-tint);
@@ -126,8 +125,12 @@
 }
 
 .category-indicator {
+  position: absolute;
+  left: 7px; // Move 2px to the right to ensure it's on top of the item
+  top: 0;
+  bottom: 0;
   width: 5px;
-  margin-right: var(--space-md);
+  z-index: 2; // Increase z-index to ensure it's on top of the item
   transition: all 0.2s ease-in-out;
   
   // Default styling - only apply if not specifically styled by class
@@ -159,12 +162,69 @@
   }
   
   &.roundedCornersSingle {
-    // Single items are completely flat like middle items
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+    border-top-left-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-lg);
   }
+}
+
+// Apply border-radius rules to category indicator based on parent container
+.ingredient-sliding.roundedCornersTop .category-indicator {
+  border-top-right-radius: var(--radius-lg) !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: var(--radius-lg) !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.ingredient-sliding.roundedCornersMiddle .category-indicator {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.ingredient-sliding.roundedCornersBottom .category-indicator {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: var(--radius-lg) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: var(--radius-lg) !important;
+}
+
+.ingredient-sliding.roundedCornersSingle .category-indicator {
+  border-top-right-radius: var(--radius-lg) !important;
+  border-bottom-right-radius: var(--radius-lg) !important;
+  border-top-left-radius: var(--radius-lg) !important;
+  border-bottom-left-radius: var(--radius-lg) !important;
+}
+
+// Direct override for category indicator classes to ensure they follow parent rules
+.category-indicator.roundedCornersTop {
+  border-top-right-radius: var(--radius-lg) !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: var(--radius-lg) !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.category-indicator.roundedCornersMiddle {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.category-indicator.roundedCornersBottom {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: var(--radius-lg) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: var(--radius-lg) !important;
+}
+
+.category-indicator.roundedCornersSingle {
+  border-top-right-radius: var(--radius-lg) !important;
+  border-bottom-right-radius: var(--radius-lg) !important;
+  border-top-left-radius: var(--radius-lg) !important;
+  border-bottom-left-radius: var(--radius-lg) !important;
 }
 
 .ingredient-label {
@@ -210,6 +270,56 @@ ion-item ion-icon[name="alert"] {
   line-height: 1.5;
 }
 
+// Dark theme improvements for better contrast
+body.dark-theme {
+  #noShoppingList {
+    color: var(--ion-color-step-400);
+    font-weight: 500;
+  }
+  
+  // Improve contrast for success messages
+  ion-item ion-icon[name="checkmark-circle"] {
+    color: var(--ion-color-success);
+  }
+  
+  ion-item ion-label {
+    color: var(--ion-text-color);
+    font-weight: 500;
+  }
+  
+  // Improve collected items section in dark mode
+  ion-list[position="bottom"] {
+    --background: var(--ion-color-step-100);
+    border: 1px solid var(--ion-color-step-200);
+    
+    ion-item:first-child {
+      --background: var(--ion-color-primary);
+      --color: var(--ion-color-primary-contrast);
+      
+      ion-label h3 {
+        color: var(--ion-color-primary-contrast);
+        font-weight: 700;
+      }
+    }
+    
+    .isCollected {
+      --background: var(--ion-color-step-150);
+      border: 1px solid var(--ion-color-step-250);
+      
+      ion-label h3 {
+        color: var(--ion-color-step-400);
+        font-weight: 500;
+      }
+      
+      ion-badge {
+        --background: var(--ion-color-step-300);
+        --color: var(--ion-color-step-50);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
 // Completed items section styling
 .shopping-list-border {
   height: 2px;
@@ -238,6 +348,23 @@ ion-item ion-icon[name="alert"] {
   border-radius: var(--radius-lg);
 }
 
+// Apply border-radius rules to strikethrough animation based on item position
+.ingredient-sliding.roundedCornersTop .collected:after {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.ingredient-sliding.roundedCornersMiddle .collected:after {
+  border-radius: 0;
+}
+
+.ingredient-sliding.roundedCornersBottom .collected:after {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.ingredient-sliding.roundedCornersSingle .collected:after {
+  border-radius: var(--radius-lg);
+}
+
 @keyframes strike {
   0%   { width : 0; }
   100% { width: 100%; }
@@ -256,70 +383,267 @@ ion-item-options {
   }
 }
 
-// Dark theme support
+// Comprehensive Dark theme support - all dark mode styles in one place
 body.dark-theme {
-  .ingredient-item {
-    --background: var(--ion-color-step-100);
-    border: 1px solid var(--ion-color-step-200); /* Add subtle border for definition */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
+  // Search container
+  .search-container {
+    --background: var(--ion-color-step-150) !important;
+    border: 1px solid var(--ion-color-step-300) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  // Search bar
+  .enhanced-searchbar {
+    --color: var(--ion-color-step-950) !important;
+    --placeholder-color: var(--ion-color-step-600) !important;
+    --icon-color: var(--ion-color-primary) !important;
+    --background: var(--ion-color-step-100) !important;
+    
+    .searchbar-input-container {
+      background: var(--ion-color-step-100) !important;
+    }
+    
+    .searchbar-input {
+      background: var(--ion-color-step-100) !important;
+      color: var(--ion-color-step-950) !important;
+      
+      &::placeholder {
+        color: var(--ion-color-step-600) !important;
+      }
+    }
+    
+    .searchbar-search-icon {
+      color: var(--ion-color-primary) !important;
+    }
+    
+    .searchbar-clear-icon {
+      color: var(--ion-color-step-600) !important;
+    }
+  }
+  
+  // Browse button styling
+  .browse-button {
+    --color: var(--ion-color-primary) !important;
+    --background: transparent !important;
+    
+    ion-icon {
+      color: var(--ion-color-primary) !important;
+    }
+  }
+
+  // Ingredient items - comprehensive styling
+  .ingredient-item,
+  ion-item.ingredient-item {
+    --background: var(--ion-color-step-150) !important;
+    background: var(--ion-color-step-150) !important;
+    border: 1px solid var(--ion-color-step-200) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
     
     &:hover {
-      --background: var(--ion-color-step-150);
-      border-color: var(--ion-color-step-300);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      --background: var(--ion-color-step-200) !important;
+      background: var(--ion-color-step-200) !important;
+      border-color: var(--ion-color-step-300) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
     }
     
     &.collected {
-      opacity: 0.4; /* Reduced opacity for better contrast */
-      background: var(--ion-color-step-50); /* Even darker for collected items */
+      opacity: 0.5 !important;
+      background: var(--ion-color-step-100) !important;
     }
   }
   
-  .ingredient-name {
-    color: var(--ion-text-color);
-    font-weight: 500; /* Slightly bolder for better readability */
+  // Target ingredient items within sliding containers
+  .ingredient-sliding .ingredient-item,
+  ion-item-sliding .ingredient-item {
+    --background: var(--ion-color-step-150) !important;
+    background: var(--ion-color-step-150) !important;
+    border: 1px solid var(--ion-color-step-200) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
   }
   
-  .search-container {
-    --background: var(--ion-color-step-100);
-    border: 1px solid var(--ion-color-step-200);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  // Special styling for single items
+  .ingredient-sliding.roundedCornersSingle .ingredient-item {
+    border: 1px solid var(--ion-color-step-150) !important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;
   }
   
-  .enhanced-searchbar {
-    --color: var(--ion-text-color);
-    --placeholder-color: var(--ion-color-step-500); /* Better contrast */
-    --icon-color: var(--ion-color-primary);
+  // Ingredient names - comprehensive targeting
+  .ingredient-name,
+  h3.ingredient-name {
+    color: var(--ion-color-step-950) !important;
+    font-weight: 600 !important;
   }
   
+  // Target ingredient names within labels
+  .ingredient-label .ingredient-name,
+  ion-label .ingredient-name {
+    color: var(--ion-color-step-950) !important;
+    font-weight: 600 !important;
+  }
+  
+  // Category headers
+  .category-header {
+    --background: var(--ion-color-step-100) !important;
+    border-color: var(--ion-color-step-200) !important;
+    
+    .category-title,
+    h2.category-title {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+    
+    ion-label {
+      .category-title,
+      h2.category-title {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+      }
+    }
+    
+    ion-badge {
+      --background: var(--ion-color-step-400) !important;
+      --color: var(--ion-color-step-50) !important;
+      font-weight: 700 !important;
+    }
+  }
+  
+  // Additional specific selectors for category titles - maximum specificity
+  ion-item.category-header ion-label h2.category-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  .categorized-shopping-list .category-header ion-label h2.category-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  // Ultra-specific selectors to override Angular ViewEncapsulation
+  .categorized-shopping-list .category-group ion-item.category-header ion-label h2.category-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  // Global override for any h2 with category-title class inside category headers
+  .category-header ion-label h2 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  // Final fallback - target any h2 inside an ion-item with category-header class
+  ion-item.category-header h2 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  // Amount badges
   .amount-badge {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-primary-contrast);
-    border: 1px solid var(--ion-color-step-300); /* Add border for definition */
+    --background: var(--ion-color-primary) !important;
+    --color: var(--ion-color-primary-contrast) !important;
+    border: 1px solid var(--ion-color-step-300) !important;
   }
   
+  // Category indicators
   .category-indicator {
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* Subtle inner glow */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
   }
   
-  // Improve collected items section
+  // Collected items section
   .isCollected {
-    background: var(--ion-color-step-50);
-    border: 1px solid var(--ion-color-step-150);
-    margin-bottom: var(--space-xs);
-    border-radius: var(--radius-md);
+    background: var(--ion-color-step-100) !important;
+    border: 1px solid var(--ion-color-step-250) !important;
+    margin-bottom: var(--space-xs) !important;
+    border-radius: var(--radius-md) !important;
     
     ion-label h3 {
-      color: var(--ion-color-step-600); /* Muted color for collected items */
-      text-decoration: line-through;
+      color: var(--ion-color-step-600) !important;
+      text-decoration: line-through !important;
+      font-weight: 500 !important;
     }
   }
   
   // Enhanced strikethrough animation for dark mode
   .collected:after {
-    background: linear-gradient(90deg, rgba(18, 18, 18, 0.8) 0%, rgba(42, 42, 42, 0.8) 100%);
+    background: linear-gradient(90deg, rgba(18, 18, 18, 0.8) 0%, rgba(42, 42, 42, 0.8) 100%) !important;
+  }
+  
+  // Apply border-radius rules to dark mode strikethrough animation
+  .ingredient-sliding.roundedCornersTop .collected:after {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  }
+  
+  .ingredient-sliding.roundedCornersMiddle .collected:after {
+    border-radius: 0 !important;
+  }
+  
+  .ingredient-sliding.roundedCornersBottom .collected:after {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+  }
+  
+  .ingredient-sliding.roundedCornersSingle .collected:after {
+    border-radius: var(--radius-lg) !important;
+  }
+  
+  // Improve contrast for success messages
+  ion-item ion-icon[name="checkmark-circle"] {
+    color: var(--ion-color-success) !important;
+  }
+  
+  ion-item ion-label {
+    color: var(--ion-text-color) !important;
+    font-weight: 500 !important;
+  }
+  
+  // Collected items section - consolidated styling
+  ion-list[position="bottom"] {
+    --background: var(--ion-color-step-100) !important;
+    border-radius: var(--radius-lg) !important;
+    margin: var(--space-sm) !important;
+    border: none !important;
+    box-shadow: var(--shadow-sm) !important;
+    
+    // Header item (Collected items: X)
+    ion-item:first-child {
+      --background: var(--ion-color-primary) !important;
+      --color: var(--ion-color-primary-contrast) !important;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+      border: none !important;
+      
+      ion-label h3 {
+        color: var(--ion-color-primary-contrast) !important;
+        font-weight: 700 !important;
+        font-size: var(--font-size-sm) !important;
+      }
+    }
+    
+    // Individual collected items
+    .isCollected {
+      --background: var(--ion-color-step-150) !important;
+      --color: var(--ion-color-step-400) !important;
+      border: none !important;
+      margin: 0 !important;
+      
+      &:last-child {
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+      }
+      
+      ion-label h3 {
+        color: var(--ion-color-step-400) !important;
+        text-decoration: line-through !important;
+        font-weight: 500 !important;
+        font-size: var(--font-size-sm) !important;
+      }
+      
+      ion-badge {
+        --background: var(--ion-color-step-300) !important;
+        --color: var(--ion-color-step-50) !important;
+        font-weight: 600 !important;
+      }
+    }
   }
 }
+
+// This section has been consolidated into the main dark theme section above
 
 // Accessibility improvements
 @media (prefers-reduced-motion: reduce) {
@@ -442,11 +766,7 @@ ion-list[position="bottom"] {
     }
     
     .category-title {
-      font-size: var(--font-size-lg);
-      font-weight: 600;
-      color: var(--ion-color-dark);
-      margin: 0;
-      text-transform: capitalize;
+      // Styling moved to global category-header section for better theme handling
     }
     
     ion-badge {
@@ -473,14 +793,102 @@ ion-list[position="bottom"] {
   }
 }
 
-// Dark theme adjustments for category headers
-.dark-theme {
+// Light theme category header styling
+.category-header {
+  .category-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0;
+    text-transform: capitalize;
+  }
+}
+
+// These dark theme sections have been consolidated into the main dark theme section above
+
+// Global dark theme overrides that bypass Angular ViewEncapsulation
+:host-context(body.dark-theme) {
+  // Category headers
   .category-header {
-    --background: var(--ion-color-step-100);
-    border-color: var(--ion-color-step-200);
+    .category-title,
+    h2.category-title {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
     
-    .category-title {
-      color: var(--ion-color-light);
+    ion-label h2 {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+  }
+  
+  ion-item.category-header ion-label h2 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  
+  // Ingredient items
+  .ingredient-item,
+  ion-item.ingredient-item {
+    --background: var(--ion-color-step-150) !important;
+    background: var(--ion-color-step-150) !important;
+    border: 1px solid var(--ion-color-step-200) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .ingredient-sliding .ingredient-item {
+    --background: var(--ion-color-step-150) !important;
+    background: var(--ion-color-step-150) !important;
+    border: 1px solid var(--ion-color-step-200) !important;
+  }
+  
+  // Ingredient names
+  .ingredient-name,
+  h3.ingredient-name,
+  .ingredient-label .ingredient-name,
+  ion-label .ingredient-name {
+    color: var(--ion-color-step-950) !important;
+    font-weight: 600 !important;
+  }
+  
+  // Collected items section - clean styling
+  ion-list[position="bottom"] {
+    --background: var(--ion-color-step-100) !important;
+    border-radius: var(--radius-lg) !important;
+    margin: var(--space-sm) !important;
+    border: none !important;
+    box-shadow: var(--shadow-sm) !important;
+    
+    ion-item:first-child {
+      --background: var(--ion-color-primary) !important;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+      border: none !important;
+      
+      ion-label h3 {
+        color: var(--ion-color-primary-contrast) !important;
+        font-weight: 700 !important;
+      }
+    }
+    
+    .isCollected {
+      --background: var(--ion-color-step-150) !important;
+      border: none !important;
+      margin: 0 !important;
+      
+      &:last-child {
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+      }
+      
+      ion-label h3 {
+        color: var(--ion-color-step-400) !important;
+        text-decoration: line-through !important;
+        font-weight: 500 !important;
+      }
+      
+      ion-badge {
+        --background: var(--ion-color-step-300) !important;
+        --color: var(--ion-color-step-50) !important;
+      }
     }
   }
 }
