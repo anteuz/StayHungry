@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "shopping-list": {
+          ".validate": "newData.isObject()",
+          "$list_item": {
+            ".validate": "newData.hasChildren(['guid', 'listName']) && newData.child('guid').isString() && newData.child('listName').isString()"
+          }
+        },
+        "recipes": {
+          ".validate": "newData.isObject()",
+          "$recipe_item": {
+            ".validate": "newData.hasChildren(['name', 'guid']) && newData.child('name').isString() && newData.child('guid').isString()"
+          }
+        },
+        "weekly-menu": {
+          ".validate": "newData.isObject()"
+        }
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}

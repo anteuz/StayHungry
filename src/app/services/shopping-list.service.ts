@@ -27,17 +27,13 @@ export class ShoppingListService {
     }
 
     setupHandlers() {
-        console.log('Setting up Shopping-lists service..');
-        
         if (!this.authService.isAuthenticated()) {
-            console.error('Cannot setup shopping list handlers: user not authenticated');
-            return;
+            throw new Error('Cannot setup shopping list handlers: user not authenticated');
         }
 
         const userUID = this.authService.getUserUID();
         if (!userUID) {
-            console.error('Cannot setup shopping list handlers: no user UID');
-            return;
+            throw new Error('Cannot setup shopping list handlers: no user UID');
         }
 
         // Setup DB PATH
@@ -45,7 +41,6 @@ export class ShoppingListService {
         // Subscribe to value changes
         onValue(ref(this.fireDatabase, this.DATABASE_PATH), (snapshot) => {
             const payload = snapshot.val() as ShoppingList[];
-            console.log('Shopping lists loaded from Firebase:', payload);
             
             // Handle all cases: null, undefined, empty array, or actual data
             if (payload) {
@@ -58,7 +53,6 @@ export class ShoppingListService {
             // Always emit the event so the UI knows we've finished loading
             this.shoppingListsEvent.emit(this.shoppingLists.slice());
         });
-        console.log(this.DATABASE_PATH);
     }
 
     addItem(shoppingList: ShoppingList) {
@@ -108,20 +102,15 @@ export class ShoppingListService {
 
     updateDatabase() {
         if (!this.DATABASE_PATH || !this.authService.isAuthenticated()) {
-            console.error('Cannot update database: user not authenticated or no database path set');
-            return Promise.reject('User not authenticated or no database path');
+            return Promise.reject(new Error('User not authenticated or no database path'));
         }
         
-        console.log('Updating database with shopping lists:', this.shoppingLists?.length || 0, 'lists');
         const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
         
         return set(itemRef, this.shoppingLists.slice())
-            .then(() => {
-                console.log('Successfully updated shopping lists in database');
-            })
             .catch(e => {
-                console.error('Failed to update shopping lists in database:', e);
-                throw e;
+                // Only log non-sensitive error information
+                throw new Error('Failed to update shopping lists in database');
             });
     }
 
@@ -135,18 +124,15 @@ export class ShoppingListService {
 
     updateShoppingList(data: ShoppingList) {
         if (!this.shoppingLists || !data || !data.uuid) {
-            console.error('Cannot update shopping list: invalid data or no shopping lists loaded');
-            return Promise.reject('Invalid data or no shopping lists loaded');
+            return Promise.reject(new Error('Invalid data or no shopping lists loaded'));
         }
         
         const index = this.shoppingLists.findIndex(sl => sl && sl.uuid === data.uuid);
         if (index !== -1) {
             this.shoppingLists[index] = data;
-            console.log('Shopping list updated locally, saving to database:', data.uuid);
             return this.updateDatabase();
         } else {
-            console.error('Shopping list not found for update:', data.uuid);
-            return Promise.reject('Shopping list not found');
+            return Promise.reject(new Error('Shopping list not found'));
         }
     }
 
