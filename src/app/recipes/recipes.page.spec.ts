@@ -8,6 +8,7 @@ import { PopoverController } from '@ionic/angular';
 import { CloudStoreService } from '../services/cloud-store.service';
 import { EventEmitter } from '@angular/core';
 
+
 describe('RecipesPage', () => {
   let component: RecipesPage;
   let fixture: ComponentFixture<RecipesPage>;
@@ -50,8 +51,7 @@ describe('RecipesPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [RecipesPage],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: [IonicModule.forRoot(), HttpClientTestingModule, RecipesPage],
       providers: [
         { provide: RecipeServiceService, useValue: mockRecipeService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

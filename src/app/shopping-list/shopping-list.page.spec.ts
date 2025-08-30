@@ -10,6 +10,7 @@ import { EventEmitter } from '@angular/core';
 import { IsCollectedPipe } from '../shared/iscollected.pipe';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
 
+
 describe('ShoppingListPage', () => {
   let component: ShoppingListPage;
   let fixture: ComponentFixture<ShoppingListPage>;
@@ -56,12 +57,11 @@ describe('ShoppingListPage', () => {
     };
 
     await TestBed.configureTestingModule({
+      imports: [IonicModule.forRoot(), ShoppingListPage],
       declarations: [
-        ShoppingListPage,
         IsCollectedPipe,
         ThemeToggleComponent
       ],
-      imports: [IonicModule.forRoot()],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

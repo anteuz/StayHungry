@@ -7,6 +7,7 @@ import { SimpleItemService } from '../services/simple-item.service';
 import { ModalController, NavParams } from '@ionic/angular';
 import { ThemeService } from '../services/theme.service';
 
+
 describe('IngredientOverlayPage', () => {
   let component: IngredientOverlayPage;
   let fixture: ComponentFixture<IngredientOverlayPage>;
@@ -43,8 +44,7 @@ describe('IngredientOverlayPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [IngredientOverlayPage],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: [IonicModule.forRoot(), HttpClientTestingModule, IngredientOverlayPage],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: SimpleItemService, useValue: mockSimpleItemService },

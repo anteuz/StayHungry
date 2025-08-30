@@ -3,6 +3,7 @@ import { IonicModule, NavParams, PopoverController, ModalController } from '@ion
 import { CartPopoverComponent } from './cart-popover.component';
 import { Cart } from '../models/cart';
 
+
 describe('CartPopoverComponent', () => {
   let component: CartPopoverComponent;
   let fixture: ComponentFixture<CartPopoverComponent>;
@@ -32,8 +33,7 @@ describe('CartPopoverComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [CartPopoverComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), CartPopoverComponent],
       providers: [
         { provide: NavParams, useValue: mockNavParams },
         { provide: PopoverController, useValue: mockPopoverController },
