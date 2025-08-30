@@ -81,7 +81,7 @@ describe('SignInPage Integration Tests', () => {
         value: { email: 'test@example.com', password: 'wrongPassword' }
       } as NgForm;
 
-      mockAuthService.signin.and.returnValue(Promise.reject({ message: 'auth/wrong-password' }));
+      mockAuthService.signin.and.returnValue(Promise.reject({ code: 'auth/wrong-password' }));
 
       await component.onSignin(mockForm);
 
@@ -115,15 +115,17 @@ describe('SignInPage Integration Tests', () => {
       } as NgForm;
 
       const testCases = [
-        { firebaseError: 'auth/user-not-found', expectedMessage: 'Invalid email or password.' },
-        { firebaseError: 'auth/wrong-password', expectedMessage: 'Invalid email or password.' },
-        { firebaseError: 'auth/too-many-requests', expectedMessage: 'Too many failed attempts. Please try again later.' },
-        { firebaseError: 'Invalid email format', expectedMessage: 'Invalid email format' },
-        { firebaseError: 'Some internal server error', expectedMessage: 'Sign in failed. Please check your credentials.' }
+        { firebaseError: { code: 'auth/user-not-found' }, expectedMessage: 'Invalid email or password.' },
+        { firebaseError: { code: 'auth/wrong-password' }, expectedMessage: 'Invalid email or password.' },
+        { firebaseError: { code: 'auth/invalid-credential' }, expectedMessage: 'Invalid email or password.' },
+        { firebaseError: { code: 'auth/too-many-requests' }, expectedMessage: 'Too many failed attempts. Please try again later.' },
+        { firebaseError: { code: 'auth/invalid-email' }, expectedMessage: 'Invalid email format.' },
+        { firebaseError: { message: 'Invalid email format' }, expectedMessage: 'Invalid email format' },
+        { firebaseError: { message: 'Some internal server error' }, expectedMessage: 'Sign in failed. Please check your credentials.' }
       ];
 
       for (const testCase of testCases) {
-        mockAuthService.signin.and.returnValue(Promise.reject({ message: testCase.firebaseError }));
+        mockAuthService.signin.and.returnValue(Promise.reject(testCase.firebaseError));
 
         await component.onSignin(mockForm);
 
@@ -172,9 +174,9 @@ describe('SignInPage Integration Tests', () => {
         value: { email: 'test@example.com', password: 'wrongPassword' }
       } as NgForm;
 
-      mockAuthService.signin.and.returnValue(Promise.reject({ message: 'auth/wrong-password' }));
+              mockAuthService.signin.and.returnValue(Promise.reject(testCase.firebaseError));
 
-      await component.onSignin(mockForm);
+        await component.onSignin(mockForm);
 
       expect(mockLoading.dismiss).toHaveBeenCalled();
     });

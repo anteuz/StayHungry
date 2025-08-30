@@ -43,11 +43,13 @@ export class SignInPage implements OnInit {
             
             // Sanitize error message to prevent information disclosure
             let userMessage = 'Sign in failed. Please check your credentials.';
-            if (error.message?.includes('user-not-found') || error.message?.includes('wrong-password')) {
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                 userMessage = 'Invalid email or password.';
-            } else if (error.message?.includes('too-many-requests')) {
+            } else if (error.code === 'auth/too-many-requests') {
                 userMessage = 'Too many failed attempts. Please try again later.';
-            } else if (error.message?.includes('Invalid email format')) {
+            } else if (error.code === 'auth/invalid-email') {
+                userMessage = 'Invalid email format.';
+            } else if (typeof error.message === 'string' && error.message.includes('Invalid email format')) {
                 userMessage = error.message;
             }
             

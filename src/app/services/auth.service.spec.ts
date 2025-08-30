@@ -132,6 +132,7 @@ describe('AuthService', () => {
   describe('Security Input Sanitization', () => {
     it('should sanitize email input', async () => {
       const emailWithSpaces = '  Test@EXAMPLE.COM  ';
+      const mockUser = { uid: 'test-uid-123', getIdToken: jest.fn().mockResolvedValue('token') };
       mockAuth.currentUser = mockUser;
       
       try {

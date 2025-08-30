@@ -46,12 +46,15 @@ export class SignUpPage implements OnInit {
             
             // Sanitize error message to prevent information disclosure
             let userMessage = 'Account creation failed. Please try again.';
-            if (error.message?.includes('email-already-in-use')) {
+            if (error.code === 'auth/email-already-in-use') {
                 userMessage = 'An account with this email already exists.';
-            } else if (error.message?.includes('weak-password')) {
+            } else if (error.code === 'auth/weak-password') {
                 userMessage = 'Password is too weak. Please choose a stronger password.';
-            } else if (error.message?.includes('Invalid email format') || 
-                     error.message?.includes('Password must be at least 8 characters')) {
+            } else if (error.code === 'auth/invalid-email') {
+                userMessage = 'Invalid email format.';
+            } else if (error.code === 'auth/password-too-short') {
+                userMessage = 'Password must be at least 8 characters.';
+            } else if (typeof error.message === 'string' && (error.message.includes('Invalid email format') || error.message.includes('Password must be at least 8 characters'))) {
                 userMessage = error.message;
             }
             

@@ -77,7 +77,7 @@ describe('SignUpPage Integration Tests', () => {
         value: { email: 'existing@example.com', password: 'SecurePass123' }
       } as NgForm;
 
-      mockAuthService.signup.and.returnValue(Promise.reject({ message: 'auth/email-already-in-use' }));
+      mockAuthService.signup.and.returnValue(Promise.reject({ code: 'auth/email-already-in-use' }));
 
       await component.onSignup(mockForm);
 
@@ -109,15 +109,16 @@ describe('SignUpPage Integration Tests', () => {
       } as NgForm;
 
       const testCases = [
-        { firebaseError: 'auth/email-already-in-use', expectedMessage: 'An account with this email already exists.' },
-        { firebaseError: 'auth/weak-password', expectedMessage: 'Password is too weak. Please choose a stronger password.' },
-        { firebaseError: 'Invalid email format', expectedMessage: 'Invalid email format' },
-        { firebaseError: 'Password must be at least 8 characters with letters and numbers', expectedMessage: 'Password must be at least 8 characters with letters and numbers' },
-        { firebaseError: 'Internal server error with sensitive details', expectedMessage: 'Account creation failed. Please try again.' }
+        { firebaseError: { code: 'auth/email-already-in-use' }, expectedMessage: 'An account with this email already exists.' },
+        { firebaseError: { code: 'auth/weak-password' }, expectedMessage: 'Password is too weak. Please choose a stronger password.' },
+        { firebaseError: { code: 'auth/invalid-email' }, expectedMessage: 'Invalid email format.' },
+        { firebaseError: { message: 'Invalid email format' }, expectedMessage: 'Invalid email format' },
+        { firebaseError: { message: 'Password must be at least 8 characters with letters and numbers' }, expectedMessage: 'Password must be at least 8 characters with letters and numbers' },
+        { firebaseError: { message: 'Internal server error with sensitive details' }, expectedMessage: 'Account creation failed. Please try again.' }
       ];
 
       for (const testCase of testCases) {
-        mockAuthService.signup.and.returnValue(Promise.reject({ message: testCase.firebaseError }));
+        mockAuthService.signup.and.returnValue(Promise.reject(testCase.firebaseError));
 
         await component.onSignup(mockForm);
 
