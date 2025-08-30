@@ -29,14 +29,14 @@ export class UserStorageService {
     if (!this.storage) {
       await this.init();
     }
-    await this.storage?.set(this.USER_DATA_KEY, userData);
+    await this.storage!.set(this.USER_DATA_KEY, userData);
   }
 
   async getUserData(): Promise<UserData | null> {
     if (!this.storage) {
       await this.init();
     }
-    return await this.storage?.get(this.USER_DATA_KEY) || null;
+    return await this.storage!.get(this.USER_DATA_KEY) || null;
   }
 
   async getUserEmail(): Promise<string | null> {
@@ -48,7 +48,7 @@ export class UserStorageService {
     if (!this.storage) {
       await this.init();
     }
-    await this.storage?.remove(this.USER_DATA_KEY);
+    await this.storage!.remove(this.USER_DATA_KEY);
   }
 
   async updateLastLogin(): Promise<void> {

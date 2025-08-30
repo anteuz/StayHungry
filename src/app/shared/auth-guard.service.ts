@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import { ActivatedRouteSnapshot, Route, RouterStateSnapshot, Router } from '@angular/router';
-import {Observable, from} from 'rxjs';
-import {map, catchError} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {first, map, catchError} from 'rxjs/operators';
 import {AuthService} from '../services/auth.service';
-import {Auth, onAuthStateChanged} from '@angular/fire/auth';
+import {Auth, authState} from '@angular/fire/auth';
 
 @Injectable({
     providedIn: 'root'
@@ -26,37 +26,27 @@ export class AuthGuard  {
     }
 
     private checkAuth(): Observable<boolean> {
-        return from(new Promise<boolean>((resolve) => {
-            try {
-                // Use onAuthStateChanged to wait for Firebase to initialize
-                const unsubscribe = onAuthStateChanged(this.fireAuth, (user) => {
-                    unsubscribe(); // Unsubscribe after first check
-                    if (user) {
-                        console.log('AuthGuard: User is authenticated');
-                        resolve(true);
-                    } else {
-                        console.log('AuthGuard: User is not authenticated, redirecting to sign-in');
-                        this.router.navigate(['/sign-in']).catch(e => {
-                            console.error('AuthGuard: Error navigating to sign-in:', e);
-                        });
-                        resolve(false);
-                    }
-                }, (error) => {
-                    console.error('AuthGuard: Error checking auth state:', error);
-                    // On error, redirect to sign-in as a fallback
+        return authState(this.fireAuth).pipe(
+            first(),
+            map(user => {
+                if (user) {
+                    console.log('AuthGuard: User is authenticated');
+                    return true;
+                } else {
+                    console.log('AuthGuard: User is not authenticated, redirecting to sign-in');
                     this.router.navigate(['/sign-in']).catch(e => {
                         console.error('AuthGuard: Error navigating to sign-in:', e);
                     });
-                    resolve(false);
-                });
-            } catch (error) {
-                console.error('AuthGuard: Unexpected error:', error);
-                // On unexpected error, redirect to sign-in as a fallback
+                    return false;
+                }
+            }),
+            catchError(error => {
+                console.error('AuthGuard: Error checking auth state:', error);
                 this.router.navigate(['/sign-in']).catch(e => {
                     console.error('AuthGuard: Error navigating to sign-in:', e);
                 });
-                resolve(false);
-            }
-        }));
+                return of(false);
+            })
+        );
     }
 }

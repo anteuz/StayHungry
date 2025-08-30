@@ -36,17 +36,7 @@ export class SignInPage implements OnInit {
         this.authService.signin(form.value.email, form.value.password)
             .then(async (data) => {
                 loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
-                
-                // Store user data
-                const userData: UserData = {
-                    email: data.user.email || '',
-                    uid: data.user.uid,
-                    displayName: data.user.displayName || undefined,
-                    photoURL: data.user.photoURL || undefined,
-                    providerId: data.user.providerData[0]?.providerId || undefined,
-                    lastLogin: new Date()
-                };
-                await this.userStorageService.storeUserData(userData);
+                await this.storeUserDataFromCredential(data);
                 
                 console.log('Navigating to shopping list..');
                 this.router.navigate(['/']).catch(e => console.log('Could not navigate'));
@@ -72,17 +62,7 @@ export class SignInPage implements OnInit {
         this.authService.signInWithGoogle()
             .then(async (data) => {
                 loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
-                
-                // Store user data
-                const userData: UserData = {
-                    email: data.user.email || '',
-                    uid: data.user.uid,
-                    displayName: data.user.displayName || undefined,
-                    photoURL: data.user.photoURL || undefined,
-                    providerId: data.user.providerData[0]?.providerId || undefined,
-                    lastLogin: new Date()
-                };
-                await this.userStorageService.storeUserData(userData);
+                await this.storeUserDataFromCredential(data);
                 
                 console.log('Navigating to shopping list..');
                 this.router.navigate(['/']).catch(e => console.log('Could not navigate'));
@@ -96,5 +76,18 @@ export class SignInPage implements OnInit {
                 });
                 alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
             });
+    }
+
+    private async storeUserDataFromCredential(data: { user: any }): Promise<void> {
+        const user = data.user;
+        const userData: UserData = {
+            email: user.email || '',
+            uid: user.uid,
+            displayName: user.displayName || undefined,
+            photoURL: user.photoURL || undefined,
+            providerId: user.providerData[0]?.providerId || undefined,
+            lastLogin: new Date()
+        };
+        await this.userStorageService.storeUserData(userData);
     }
 }
