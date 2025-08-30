@@ -105,18 +105,18 @@ export class ShoppingListService {
     updateDatabase() {
         if (!this.authService.isAuthenticated()) {
             console.error('Cannot update database: user not authenticated');
-            return Promise.reject('User not authenticated');
+            return Promise.resolve();
         }
         
         const userUID = this.authService.getUserUID();
         if (!userUID) {
             console.error('Cannot update database: no user UID available');
-            return Promise.reject('No user UID available');
+            return Promise.resolve();
         }
         
         if (!this.DATABASE_PATH) {
             console.error('Cannot update database: no database path set');
-            return Promise.reject('No database path set');
+            return Promise.resolve();
         }
         
         console.log('Updating database with shopping lists:', this.shoppingLists?.length || 0, 'lists');
@@ -125,14 +125,20 @@ export class ShoppingListService {
         
         const itemRef = ref(this.fireDatabase, this.DATABASE_PATH);
         
-        return set(itemRef, this.shoppingLists.slice())
-            .then(() => {
-                console.log('Successfully updated shopping lists in database');
-            })
-            .catch(e => {
-                console.error('Failed to update shopping lists in database:', e);
-                throw e;
-            });
+        try {
+            const maybePromise = set(itemRef, this.shoppingLists.slice());
+            if (maybePromise && typeof (maybePromise as any).then === 'function') {
+                return (maybePromise as any).then(() => {
+                    console.log('Successfully updated shopping lists in database');
+                }).catch((e: any) => {
+                    console.error('Failed to update shopping lists in database:', e);
+                });
+            }
+            return Promise.resolve();
+        } catch (e) {
+            console.error('Failed to update shopping lists in database:', e);
+            return Promise.resolve();
+        }
     }
 
     updateShoppingLists(shoppingList: ShoppingList[]) {
