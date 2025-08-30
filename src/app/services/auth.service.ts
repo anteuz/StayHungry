@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
-import {Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User} from '@angular/fire/auth';
+import {Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult} from '@angular/fire/auth';
+import { UserStorageService } from './user-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private fireAuth: Auth) {}
+  constructor(
+    private fireAuth: Auth,
+    private userStorageService: UserStorageService
+  ) {}
 
   signup(email: string, password: string) {
     return createUserWithEmailAndPassword(this.fireAuth, email, password);
@@ -16,8 +20,27 @@ export class AuthService {
     return signInWithEmailAndPassword(this.fireAuth, email, password);
   }
 
-  logout() {
-    signOut(this.fireAuth).catch(e => console.log('Could not logout'));
+  signInWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(this.fireAuth, provider);
+  }
+
+  signUpWithGoogle() {
+    // Google sign-in handles both sign-in and sign-up automatically
+    return this.signInWithGoogle();
+  }
+
+  getRedirectResult() {
+    return getRedirectResult(this.fireAuth);
+  }
+
+  async logout() {
+    try {
+      await signOut(this.fireAuth);
+      await this.userStorageService.clearUserData();
+    } catch (e) {
+      console.log('Could not logout:', e);
+    }
   }
 
   getActiveUser() {
@@ -27,6 +50,11 @@ export class AuthService {
   getUserUID() {
     const user = this.getActiveUser();
     return user ? user.uid : null;
+  }
+
+  getUserEmail() {
+    const user = this.getActiveUser();
+    return user ? user.email : null;
   }
 
   getToken() {

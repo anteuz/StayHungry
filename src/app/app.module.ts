@@ -22,6 +22,8 @@ import {SimpleStateService} from './services/simple-state-service';
 import {SharedModule} from './shared/shared-module';
 import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
+import {WeeklyMenuService} from './services/weekly-menu.service';
+import {UserProfileService} from './services/user-profile.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ShoppingListItemsComponent } from './shopping-list-items/shopping-list-items.component';
 import { CartPopoverComponent } from './cart-popover/cart-popover.component';
@@ -57,6 +59,8 @@ import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping
         SimpleStateService,
         CloudStoreService,
         RecipeServiceService,
+        WeeklyMenuService,
+        UserProfileService,
 
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
     ],
