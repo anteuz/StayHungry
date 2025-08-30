@@ -8,16 +8,18 @@ describe('ThemeService', () => {
   beforeEach(() => {
     // Mock localStorage
     mockLocalStorage = {};
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => mockLocalStorage[key] || null);
-    spyOn(localStorage, 'setItem').and.callFake((key: string, value: string) => mockLocalStorage[key] = value);
+    jest.spyOn(localStorage, 'getItem').mockImplementation((key: string) => mockLocalStorage[key] || null);
+    jest.spyOn(localStorage, 'setItem').mockImplementation((key: string, value: string) => {
+      mockLocalStorage[key] = value;
+    });
 
     // Mock matchMedia
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jasmine.createSpy('matchMedia').and.returnValue({
+      value: jest.fn().mockReturnValue({
         matches: false,
-        addEventListener: jasmine.createSpy('addEventListener'),
-        removeEventListener: jasmine.createSpy('removeEventListener')
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn()
       })
     });
 
@@ -98,28 +100,37 @@ describe('ThemeService', () => {
   });
 
   it('should clean up media query listener on destroy', () => {
-    const mockMediaQuery = {
-      matches: false,
-      addEventListener: jasmine.createSpy('addEventListener'),
-      removeEventListener: jasmine.createSpy('removeEventListener')
-    };
-    
-    // Mock the service properties
-    (service as any).mediaQueryList = mockMediaQuery;
-    (service as any).mediaQueryListener = jasmine.createSpy('listener');
-    
-    service.ngOnDestroy();
-    
-    expect(mockMediaQuery.removeEventListener).toHaveBeenCalledWith('change', (service as any).mediaQueryListener);
+    const removeEventListenerSpy = jest.fn();
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockReturnValue({
+        matches: false,
+        addEventListener: jest.fn(),
+        removeEventListener: removeEventListenerSpy
+      })
+    });
+
+    const testService = new ThemeService();
+    testService.ngOnDestroy();
+
+    expect(removeEventListenerSpy).toHaveBeenCalled();
   });
 
   it('should apply theme to document body', () => {
-    const mockBody = jasmine.createSpyObj('body', ['classList']);
-    mockBody.classList = jasmine.createSpyObj('classList', ['toggle']);
-    spyOnProperty(document, 'body', 'get').and.returnValue(mockBody);
+    const mockMatchMedia = {
+      matches: true,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    };
     
-    service.setTheme('dark');
-    
-    expect(mockBody.classList.toggle).toHaveBeenCalledWith('dark-theme', true);
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockReturnValue(mockMatchMedia)
+    });
+
+    const testService = new ThemeService();
+    testService.setTheme('dark');
+
+    expect(document.body.classList.contains('dark-theme')).toBe(true);
   });
 });

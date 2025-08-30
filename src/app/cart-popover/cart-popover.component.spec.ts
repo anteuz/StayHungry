@@ -1,19 +1,46 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IonicModule, NavParams, PopoverController, ModalController } from '@ionic/angular';
 import { CartPopoverComponent } from './cart-popover.component';
+import { Cart } from '../models/cart';
 
 describe('CartPopoverComponent', () => {
   let component: CartPopoverComponent;
   let fixture: ComponentFixture<CartPopoverComponent>;
+  let mockNavParams: any;
+  let mockPopoverController: any;
+  let mockModalController: any;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CartPopoverComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    const mockCart: Cart = {
+      uuid: 'test-cart-uuid',
+      recipes: []
+    };
 
-  beforeEach(() => {
+    mockNavParams = {
+      get: jest.fn().mockReturnValue(mockCart)
+    };
+
+    mockPopoverController = {
+      dismiss: jest.fn()
+    };
+
+    mockModalController = {
+      create: jest.fn().mockResolvedValue({
+        present: jest.fn(),
+        onDidDismiss: jest.fn().mockResolvedValue({ data: undefined })
+      })
+    };
+
+    await TestBed.configureTestingModule({
+      declarations: [CartPopoverComponent],
+      imports: [IonicModule.forRoot()],
+      providers: [
+        { provide: NavParams, useValue: mockNavParams },
+        { provide: PopoverController, useValue: mockPopoverController },
+        { provide: ModalController, useValue: mockModalController }
+      ]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CartPopoverComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

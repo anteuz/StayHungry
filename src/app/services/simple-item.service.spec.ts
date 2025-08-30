@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ShoppingListService } from './shopping-list.service';
+import { SimpleItemService } from './simple-item.service';
 import { AuthService } from './auth.service';
+import { UserStorageService } from './user-storage.service';
 import { Database } from '@angular/fire/database';
 
-describe('ShoppingListService', () => {
-  let service: ShoppingListService;
+describe('SimpleItemService', () => {
+  let service: SimpleItemService;
   let mockAuthService: jest.Mocked<AuthService>;
+  let mockUserStorageService: jest.Mocked<UserStorageService>;
   let mockDatabase: jest.Mocked<Database>;
 
   beforeEach(() => {
@@ -21,6 +23,14 @@ describe('ShoppingListService', () => {
       getToken: jest.fn()
     } as any;
 
+    mockUserStorageService = {
+      getUserData: jest.fn(),
+      setUserData: jest.fn(),
+      clearUserData: jest.fn(),
+      isLoggedIn: jest.fn(),
+      getUserEmail: jest.fn().mockResolvedValue('test@example.com')
+    } as any;
+
     mockDatabase = {
       ref: jest.fn(),
       onValue: jest.fn(),
@@ -30,12 +40,13 @@ describe('ShoppingListService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        ShoppingListService,
+        SimpleItemService,
         { provide: AuthService, useValue: mockAuthService },
+        { provide: UserStorageService, useValue: mockUserStorageService },
         { provide: Database, useValue: mockDatabase }
       ]
     });
-    service = TestBed.inject(ShoppingListService);
+    service = TestBed.inject(SimpleItemService);
   });
 
   it('should be created', () => {

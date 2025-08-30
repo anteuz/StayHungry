@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ShoppingListService } from './shopping-list.service';
+import { WeeklyMenuService } from './weekly-menu.service';
 import { AuthService } from './auth.service';
 import { Database } from '@angular/fire/database';
 
-describe('ShoppingListService', () => {
-  let service: ShoppingListService;
+describe('WeeklyMenuService', () => {
+  let service: WeeklyMenuService;
   let mockAuthService: jest.Mocked<AuthService>;
   let mockDatabase: jest.Mocked<Database>;
 
@@ -30,12 +30,12 @@ describe('ShoppingListService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        ShoppingListService,
+        WeeklyMenuService,
         { provide: AuthService, useValue: mockAuthService },
         { provide: Database, useValue: mockDatabase }
       ]
     });
-    service = TestBed.inject(ShoppingListService);
+    service = TestBed.inject(WeeklyMenuService);
   });
 
   it('should be created', () => {
