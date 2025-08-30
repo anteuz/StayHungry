@@ -9,6 +9,9 @@ import { SimpleStateService } from './services/simple-state-service';
 import { RecipeServiceService } from './services/recipe-service.service';
 import { ThemeService } from './services/theme.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { UserStorageService } from './services/user-storage.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
 
 describe('AppComponent', () => {
   let statusBarSpy: any;
@@ -68,7 +71,7 @@ describe('AppComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, IonicModule.forRoot(), AppComponent],
+      imports: [RouterTestingModule, HttpClientTestingModule, IonicModule.forRoot(), AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: Auth, useValue: mockAuth },
@@ -78,7 +81,8 @@ describe('AppComponent', () => {
         { provide: RecipeServiceService, useValue: mockRecipeService },
         { provide: ThemeService, useValue: mockThemeService },
         { provide: Platform, useValue: platformSpy },
-        { provide: NavController, useValue: mockNavController }
+        { provide: NavController, useValue: mockNavController },
+        { provide: UserStorageService, useValue: { clearUserData: jest.fn(), storeUserData: jest.fn() } }
       ]
     }).compileComponents();
   });

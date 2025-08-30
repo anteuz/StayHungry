@@ -15,8 +15,7 @@ describe('ThemeToggleComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [ThemeToggleComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), ThemeToggleComponent],
       providers: [
         { provide: ThemeService, useValue: themeServiceSpy }
       ]

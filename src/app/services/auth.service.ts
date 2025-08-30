@@ -45,6 +45,15 @@ export class AuthService {
     return signInWithEmailAndPassword(this.fireAuth, ValidationUtils.sanitizeEmail(email), password);
   }
 
+  // Expose validators for tests (thin wrappers around ValidationUtils)
+  validateEmail(email: string): boolean {
+    return ValidationUtils.validateEmail(email);
+  }
+
+  validatePassword(password: string): boolean {
+    return ValidationUtils.validatePassword(password);
+  }
+
   signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(this.fireAuth, provider);

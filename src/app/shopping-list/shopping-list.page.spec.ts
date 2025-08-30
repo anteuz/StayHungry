@@ -7,8 +7,8 @@ import { ModalController } from '@ionic/angular';
 import { SimpleStateService } from '../services/simple-state-service';
 import { ThemeService } from '../services/theme.service';
 import { EventEmitter } from '@angular/core';
-import { IsCollectedPipe } from '../shared/iscollected.pipe';
 import { ThemeToggleComponent } from '../shared/theme-toggle.component';
+import { SharedModule } from '../shared/shared-module';
 
 
 describe('ShoppingListPage', () => {
@@ -57,11 +57,7 @@ describe('ShoppingListPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), ShoppingListPage],
-      declarations: [
-        IsCollectedPipe,
-        ThemeToggleComponent
-      ],
+      imports: [IonicModule.forRoot(), SharedModule, ShoppingListPage, ThemeToggleComponent],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

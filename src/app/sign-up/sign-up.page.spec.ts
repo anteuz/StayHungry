@@ -1,8 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, LoadingController, AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { SignUpPage } from './sign-up.page';
 import { AuthService } from '../services/auth.service';
+import { UserStorageService } from '../services/user-storage.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 
 describe('SignUpPage', () => {
   let component: SignUpPage;
@@ -22,10 +25,13 @@ describe('SignUpPage', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      declarations: [SignUpPage],
-      imports: [IonicModule.forRoot(), FormsModule],
+      imports: [IonicModule.forRoot(), FormsModule, SignUpPage],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        { provide: AuthService, useValue: mockAuthService }
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: UserStorageService, useValue: { storeFromCredential: jest.fn(), clearUserData: jest.fn() } },
+        { provide: LoadingController, useValue: { create: jest.fn().mockResolvedValue({ present: jest.fn().mockResolvedValue(undefined), dismiss: jest.fn().mockResolvedValue(undefined) }) } },
+        { provide: AlertController, useValue: { create: jest.fn().mockResolvedValue({ present: jest.fn().mockResolvedValue(undefined) }) } }
       ]
     }).compileComponents();
 
