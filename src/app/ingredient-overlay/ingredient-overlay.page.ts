@@ -1,6 +1,6 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {IonSearchbar, ModalController, NavParams} from '@ionic/angular';
-import {Guid} from 'guid-typescript';
+import {v4 as uuidv4} from 'uuid';
 import {Ingredient} from '../models/ingredient';
 import {SimpleItem} from '../models/simple-item';
 import {ShoppingListService} from '../services/shopping-list.service';
@@ -317,7 +317,7 @@ export class IngredientOverlayPage implements OnInit {
                     this.itemService.incrementUsage(simpleItem);
                 } else {
                     // Create new item with new name and color
-                    simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, finalColor, 1);
+                    simpleItem = new SimpleItem(uuidv4(), ingredientName, finalColor, 1);
                     this.itemService.addItem(simpleItem);
                 }
             }
@@ -335,7 +335,7 @@ export class IngredientOverlayPage implements OnInit {
                 this.itemService.incrementUsage(simpleItem);
             } else {
                 // Create new item with initial usage count of 1
-                simpleItem = new SimpleItem(Guid.create().toString(), ingredientName, finalColor, 1);
+                simpleItem = new SimpleItem(uuidv4(), ingredientName, finalColor, 1);
                 this.itemService.addItem(simpleItem);
             }
         }
@@ -344,7 +344,7 @@ export class IngredientOverlayPage implements OnInit {
         console.log('Selected category:', this.selectedCategory);
         // Create full ingredient
         if (this.mode === 'insert') {
-            return new Ingredient(Guid.create().toString(), simpleItem, ingredientAmount);
+            return new Ingredient(uuidv4(), simpleItem, ingredientAmount);
         } else if (this.mode === 'edit') {
             return new Ingredient(this.ingredientToEdit.uuid, simpleItem, ingredientAmount);
         }

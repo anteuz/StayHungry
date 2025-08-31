@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IonItem, IonItemSliding, IonVirtualScroll, PopoverController} from '@ionic/angular';
-import {Guid} from 'guid-typescript';
+import {v4 as uuidv4} from 'uuid';
 import {Subscription} from 'rxjs';
 import {CartPopoverComponent} from '../cart-popover/cart-popover.component';
 import {Cart} from '../models/cart';
@@ -85,7 +85,7 @@ export class RecipesPage implements OnInit, OnDestroy {
 
     addToCart(recipe: Recipe) {
       if (this.cart === null) {
-        this.cart = new Cart(Guid.create().toString(), []);
+        this.cart = new Cart(uuidv4(), []);
       }
       this.cart.recipes.push(recipe);
     }

@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { SimpleItem } from '../models/simple-item';
 import { SimpleItemService } from '../services/simple-item.service';
 import { Ingredient } from '../models/ingredient';
-import { Guid } from 'guid-typescript';
+import { v4 as uuidv4 } from 'uuid';
 import { ThemeService } from '../services/theme.service';
 
 @Component({
@@ -65,7 +65,7 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
   onItemSelected(item: SimpleItem) {
     // Create ingredient from simple item and return it
     const ingredient = new Ingredient(
-      Guid.create().toString(),
+      uuidv4(),
       item,
       '1' // Default amount
     );

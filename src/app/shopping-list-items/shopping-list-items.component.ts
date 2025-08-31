@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {IonList} from '@ionic/angular';
-import {Guid} from 'guid-typescript';
+import {v4 as uuidv4} from 'uuid';
 import {Subscription} from 'rxjs';
 import {ShoppingList} from '../models/shopping-list';
 import {ShoppingListService} from '../services/shopping-list.service';
@@ -35,7 +35,7 @@ export class ShoppingListItemsComponent implements OnInit, OnDestroy {
   }
 
   onCreateNewList() {
-    const shoppingList: ShoppingList = new ShoppingList(Guid.create().toString(), 'Shopping List', []);
+    const shoppingList: ShoppingList = new ShoppingList(uuidv4(), 'Shopping List', []);
     this.slService.addItem(shoppingList);
     this.router.navigate(['/tabs/tab1', shoppingList.uuid]).catch(e => console.log('Could not navigate to shopping list'));
   }

@@ -4,7 +4,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import {Filesystem} from '@capacitor/filesystem';
 import {IonList, LoadingController, ModalController, Platform} from '@ionic/angular';
-import {Guid} from 'guid-typescript';
+import {v4 as uuidv4} from 'uuid';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
@@ -58,7 +58,7 @@ export class RecipePage implements OnInit, OnDestroy {
 
         console.log(this.mode);
         if (this.mode === 'new') {
-           this.recipe = new Recipe(Guid.create().toString(), null, null, null, [], null);
+           this.recipe = new Recipe(uuidv4(), null, null, null, [], null);
             this.initializeForm();
         }
         if (this.mode === 'view' || this.mode === 'edit') {
