@@ -10,7 +10,23 @@ export const environment = {
     databaseURL: 'https://my-recipe-book-anteuz.firebaseio.com',
     projectId: 'my-recipe-book-anteuz',
     storageBucket: 'my-recipe-book-anteuz.appspot.com',
-    messagingSenderId: '943220346016'
+    messagingSenderId: '943220346016',
+    appId: '1:943220346016:web:your-app-id-here' // Add your actual app ID
+  },
+  auth: {
+    // Development settings
+    useEmulator: false, // Set to true to use Firebase Auth Emulator
+    emulatorUrl: 'http://localhost:9099',
+    enableDebugMode: true,
+    // Google OAuth settings
+    googleAuth: {
+      clientId: '943220346016-your-google-client-id.apps.googleusercontent.com', // Add your actual client ID
+      scopes: ['email', 'profile']
+    }
+  },
+  api: {
+    baseUrl: 'http://localhost:4200',
+    timeout: 30000
   }
 };
 

@@ -1,114 +1,261 @@
 import { TestBed } from '@angular/core/testing';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, Route } from '@angular/router';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
 import { AuthGuard } from './auth-guard.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService, AuthState } from '../services/auth.service';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
-  let mockAuthService: jasmine.SpyObj<AuthService>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockRoute: ActivatedRouteSnapshot;
-  let mockState: RouterStateSnapshot;
-  let mockRouteConfig: Route;
+  let authService: AuthService;
+  let router: Router;
+
+  const mockAuthenticatedState: AuthState = {
+    user: { uid: 'test-uid', email: 'test@example.com' } as any,
+    isAuthenticated: true,
+    isLoading: false
+  };
+
+  const mockUnauthenticatedState: AuthState = {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false
+  };
+
+  const mockLoadingState: AuthState = {
+    user: null,
+    isAuthenticated: false,
+    isLoading: true
+  };
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const authServiceMock = {
+      authState$: of(mockUnauthenticatedState)
+    };
+    const routerMock = {
+      navigate: jest.fn().mockResolvedValue(true)
+    };
 
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
-        { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: Router, useValue: routerMock }
       ]
     });
 
     guard = TestBed.inject(AuthGuard);
-    mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    
-    mockRoute = {} as ActivatedRouteSnapshot;
-    mockState = { url: '/tabs/tab1' } as RouterStateSnapshot;
-    mockRouteConfig = {} as Route;
+    authService = TestBed.inject(AuthService);
+    router = TestBed.inject(Router);
   });
 
   it('should be created', () => {
     expect(guard).toBeTruthy();
   });
 
-  describe('Route Protection Security Tests', () => {
-    it('should allow access when user is authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(true);
+  describe('canActivate', () => {
+    it('should allow access when user is authenticated', (done) => {
+      // Override the authState$ observable for this test
+      (authService as any).authState$ = of(mockAuthenticatedState);
 
-      const result = guard.canActivate(mockRoute, mockState);
+      const route = {} as any;
+      const state = { url: '/test' } as any;
 
-      expect(result).toBeTrue();
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
-    });
-
-    it('should deny access and redirect when user is not authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
-
-      const result = guard.canActivate(mockRoute, mockState);
-
-      expect(result).toBeFalse();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
-    });
-
-    it('should protect lazy loaded routes when user is not authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
-
-      const result = guard.canLoad(mockRouteConfig);
-
-      expect(result).toBeFalse();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
-    });
-
-    it('should allow lazy loaded routes when user is authenticated', () => {
-      mockAuthService.isAuthenticated.and.returnValue(true);
-
-      const result = guard.canLoad(mockRouteConfig);
-
-      expect(result).toBeTrue();
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Security Edge Cases', () => {
-    it('should handle authentication service errors gracefully', () => {
-      mockAuthService.isAuthenticated.and.throwError('Service error');
-
-      expect(() => guard.canActivate(mockRoute, mockState)).toThrow();
-    });
-
-    it('should not bypass security with falsy values', () => {
-      // Test that the guard doesn't accidentally allow access with falsy values
-      const falsyValues = [false, 0, '', null, undefined, NaN];
+      const result = guard.canActivate(route, state);
       
-      falsyValues.forEach(value => {
-        mockAuthService.isAuthenticated.and.returnValue(value as any);
-        const result = guard.canActivate(mockRoute, mockState);
-        expect(result).toBeFalse();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
-      });
+      if (result instanceof Promise) {
+        result.then(canActivate => {
+          expect(canActivate).toBe(true);
+          expect(router.navigate).not.toHaveBeenCalled();
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canActivate => {
+            expect(canActivate).toBe(true);
+            expect(router.navigate).not.toHaveBeenCalled();
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(true);
+        expect(router.navigate).not.toHaveBeenCalled();
+        done();
+      }
+    });
+
+    it('should deny access and redirect when user is not authenticated', (done) => {
+      (authService as any).authState$ = of(mockUnauthenticatedState);
+
+      const route = {} as any;
+      const state = { url: '/protected' } as any;
+
+      const result = guard.canActivate(route, state);
+      
+      if (result instanceof Promise) {
+        result.then(canActivate => {
+          expect(canActivate).toBe(false);
+          expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], { queryParams: { returnUrl: '/protected' } });
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canActivate => {
+            expect(canActivate).toBe(false);
+            expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], { queryParams: { returnUrl: '/protected' } });
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], { queryParams: { returnUrl: '/protected' } });
+        done();
+      }
+    });
+
+    it('should deny access when auth is still loading', (done) => {
+      (authService as any).authState$ = of(mockLoadingState);
+
+      const route = {} as any;
+      const state = { url: '/test' } as any;
+
+      const result = guard.canActivate(route, state);
+      
+      if (result instanceof Promise) {
+        result.then(canActivate => {
+          expect(canActivate).toBe(false);
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canActivate => {
+            expect(canActivate).toBe(false);
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(false);
+        done();
+      }
     });
   });
 
-  describe('Integration with Router', () => {
-    it('should redirect to sign-in page with correct path', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
+  describe('canLoad', () => {
+    it('should allow loading when user is authenticated', (done) => {
+      (authService as any).authState$ = of(mockAuthenticatedState);
 
-      guard.canActivate(mockRoute, mockState);
-
-      expect(mockRouter.navigate).toHaveBeenCalledTimes(1);
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/sign-in']);
+      const route = {} as any;
+      const result = guard.canLoad(route);
+      
+      if (result instanceof Promise) {
+        result.then(canLoad => {
+          expect(canLoad).toBe(true);
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canLoad => {
+            expect(canLoad).toBe(true);
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(true);
+        done();
+      }
     });
 
-    it('should handle router navigation failures gracefully', () => {
-      mockAuthService.isAuthenticated.and.returnValue(false);
-      mockRouter.navigate.and.returnValue(Promise.reject('Navigation failed'));
+    it('should deny loading when user is not authenticated', (done) => {
+      (authService as any).authState$ = of(mockUnauthenticatedState);
 
-      expect(() => guard.canActivate(mockRoute, mockState)).not.toThrow();
+      const route = {} as any;
+      const result = guard.canLoad(route);
+      
+      if (result instanceof Promise) {
+        result.then(canLoad => {
+          expect(canLoad).toBe(false);
+          expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], {});
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canLoad => {
+            expect(canLoad).toBe(false);
+            expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], {});
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/sign-in'], {});
+        done();
+      }
+    });
+  });
+
+  describe('canActivateChild', () => {
+    it('should allow child activation when user is authenticated', (done) => {
+      (authService as any).authState$ = of(mockAuthenticatedState);
+
+      const route = {} as any;
+      const state = { url: '/test' } as any;
+
+      const result = guard.canActivateChild(route, state);
+      
+      if (result instanceof Promise) {
+        result.then(canActivate => {
+          expect(canActivate).toBe(true);
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canActivate => {
+            expect(canActivate).toBe(true);
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(true);
+        done();
+      }
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle router navigation errors gracefully', (done) => {
+      (authService as any).authState$ = of(mockUnauthenticatedState);
+      (router.navigate as jest.Mock).mockRejectedValue(new Error('Navigation failed'));
+      
+      const route = {} as any;
+      const state = { url: '/test' } as any;
+
+      const result = guard.canActivate(route, state);
+      
+      if (result instanceof Promise) {
+        result.then(canActivate => {
+          expect(canActivate).toBe(false);
+          expect(router.navigate).toHaveBeenCalled();
+          done();
+        }).catch(done.fail);
+      } else if (typeof result === 'object' && result.subscribe) {
+        result.subscribe({
+          next: canActivate => {
+            expect(canActivate).toBe(false);
+            expect(router.navigate).toHaveBeenCalled();
+            done();
+          },
+          error: done.fail
+        });
+      } else {
+        expect(result).toBe(false);
+        expect(router.navigate).toHaveBeenCalled();
+        done();
+      }
     });
   });
 });

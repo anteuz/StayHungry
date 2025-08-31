@@ -1,106 +1,128 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {AlertController, LoadingController} from '@ionic/angular';
-import {AuthService} from '../services/auth.service';
-import {UserStorageService, UserData} from '../services/user-storage.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
-    selector: 'app-sign-up',
-    templateUrl: './sign-up.page.html',
-    styleUrls: ['./sign-up.page.scss'],
+  selector: 'app-sign-up',
+  templateUrl: './sign-up.page.html',
+  styleUrls: ['./sign-up.page.scss'],
 })
-export class SignUpPage implements OnInit {
+export class SignUpPage implements OnInit, OnDestroy {
+  private authSubscription?: Subscription;
+  
+  constructor(
+    private authService: AuthService,
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
+    private router: Router,
+    private platform: Platform
+  ) {}
 
-    showEmailForm = false;
+  ngOnInit() {
+    // Check if already authenticated
+    this.authSubscription = this.authService.authState$.subscribe(authState => {
+      if (authState.isAuthenticated && !authState.isLoading) {
+        this.navigateToHome();
+      }
+    });
 
-    constructor(
-        private authService: AuthService,
-        private userStorageService: UserStorageService,
-        private loadingCtrl: LoadingController,
-        private alertCtrl: AlertController
-    ) {
+    // Check for redirect result on page load
+    this.checkRedirectResult();
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
     }
+  }
 
-    ngOnInit() {
+  /**
+   * Handle Google sign-up (same as sign-in for Google)
+   */
+  async onGoogleSignUp(): Promise<void> {
+    const loading = await this.loadingCtrl.create({
+      message: 'Creating account with Google...',
+      spinner: 'circular'
+    });
+
+    try {
+      await loading.present();
+
+      // Use popup for web, redirect for mobile
+      if (this.platform.is('capacitor') || this.platform.is('cordova')) {
+        await this.authService.signInWithGoogleRedirect();
+        // Don't dismiss loading here - redirect will handle it
+      } else {
+        await this.authService.signInWithGooglePopup();
+        await loading.dismiss();
+        await this.showSuccessAlert();
+        // Navigation will be handled by auth state subscription
+      }
+    } catch (error) {
+      await loading.dismiss();
+      await this.showErrorAlert('Google Sign-Up Failed', error.message);
     }
+  }
 
-    async onSignup(form: NgForm) {
-        if (!form.valid) {
-            return;
-        }
-
-        const loadingDialog = await this.loadingCtrl.create({
-            message: 'Creating your account...'
-        });
-
-      try {
-            await loadingDialog.present();
-            
-            await this.authService.signup(form.value.email, form.value.password);
-            await loadingDialog.dismiss();
-            
-            const successAlert = await this.alertCtrl.create({
-                header: 'Account Created',
-                message: 'Your account has been created successfully. You can now sign in.',
-                buttons: ['OK']
-            });
-            await successAlert.present();
-            
-        } catch (error) {
-            await loadingDialog.dismiss();
-            
-            // Sanitize error message to prevent information disclosure
-            let userMessage = 'Account creation failed. Please try again.';
-            if (error.code === 'auth/email-already-in-use') {
-                userMessage = 'An account with this email already exists.';
-            } else if (error.code === 'auth/weak-password') {
-                userMessage = 'Password is too weak. Please choose a stronger password.';
-            } else if (error.code === 'auth/invalid-email') {
-                userMessage = 'Invalid email format.';
-            } else if (error.code === 'auth/password-too-short') {
-                userMessage = 'Password must be at least 8 characters.';
-            } else if (typeof error.message === 'string' && (error.message.includes('Invalid email format') || error.message.includes('Password must be at least 8 characters'))) {
-                userMessage = error.message;
-            }
-            
-            const alert = await this.alertCtrl.create({
-                header: 'Sign Up Failed',
-                message: userMessage,
-                buttons: ['OK']
-            });
-            await alert.present();
-        }
-
+  /**
+   * Check for redirect result after Google redirect sign-up
+   */
+  private async checkRedirectResult(): Promise<void> {
+    try {
+      const result = await this.authService.getRedirectResult();
+      if (result && result.user) {
+        // User signed up via redirect
+        console.log('Google redirect sign-up successful');
+        await this.showSuccessAlert();
+        // Navigation will be handled by auth state subscription
+      }
+    } catch (error) {
+      console.error('Redirect result error:', error);
+      await this.showErrorAlert('Sign-Up Error', error.message);
     }
+  }
 
-    async onGoogleSignup() {
-        const loadingDialog = await this.loadingCtrl.create({
-            message: 'Signing up with Google...'
-        });
-        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
-        
-        this.authService.signUpWithGoogle()
-            .then(async (data) => {
-                loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
-                await this.userStorageService.storeFromCredential(data);
-                
-                // Show success message
-                const alert = this.alertCtrl.create({
-                    header: 'Google Sign up successful!',
-                    message: 'Your account has been created successfully with Google.',
-                    buttons: ['Ok']
-                });
-                alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
-            })
-            .catch(error => {
-                loadingDialog.dismiss().catch(e => console.log('Could not dismiss dialog'));
-                const alert = this.alertCtrl.create({
-                    header: 'Google Signup failed!',
-                    message: error.message,
-                    buttons: ['Ok']
-                });
-                alert.then(alertWindows => alertWindows.present()).catch(e => console.log('Could not alert'));
-            });
-    }
+  /**
+   * Navigate to home page
+   */
+  private navigateToHome(): void {
+    this.router.navigate(['/']).catch(error => {
+      console.error('Navigation error:', error);
+    });
+  }
 
+  /**
+   * Show success alert
+   */
+  private async showSuccessAlert(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Welcome!',
+      message: 'Your account has been created successfully.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  /**
+   * Show error alert
+   */
+  private async showErrorAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  /**
+   * Navigate to sign-in page
+   */
+  goToSignIn(): void {
+    this.router.navigate(['/sign-in']).catch(error => {
+      console.error('Navigation to sign-in error:', error);
+    });
+  }
 }

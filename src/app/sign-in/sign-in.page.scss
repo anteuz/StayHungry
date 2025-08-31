@@ -1,91 +1,101 @@
-.login-container {
-  padding: 20px;
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
   max-width: 400px;
   margin: 0 auto;
+  padding: 20px;
 }
 
-.login-options {
-  margin-bottom: 20px;
-}
-
-.google-login-btn {
-  margin-bottom: 16px;
-  --background: #4285f4;
-  --color: white;
-  --border-radius: 8px;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    --background: #3367d6;
-  }
-}
-
-.email-login-btn {
-  --border-radius: 8px;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.divider {
+.auth-header {
   text-align: center;
-  margin: 20px 0;
-  position: relative;
+  margin-bottom: 40px;
   
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--ion-color-medium);
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--ion-color-primary);
   }
   
-  span {
-    background: var(--ion-background-color);
-    padding: 0 16px;
+  p {
     color: var(--ion-color-medium);
-    font-size: 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+    margin: 0;
   }
 }
 
-.email-form {
-  animation: slideDown 0.3s ease-out;
-  
-  ion-list {
-    background: transparent;
-    margin-bottom: 16px;
+.auth-content {
+  .google-auth-btn {
+    --background: #4285f4;
+    --background-hover: #3367d6;
+    --background-activated: #2851a3;
+    --color: white;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 32px;
+    
+    ion-icon {
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+    
+    &:hover {
+      --box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
+    }
   }
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
   
-  ion-item {
-    --border-radius: 8px;
-    --background: var(--ion-color-light);
-    margin-bottom: 12px;
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
   }
   
   ion-button {
-    --border-radius: 8px;
-    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --color: var(--ion-color-primary);
+    --padding-start: 4px;
+    --padding-end: 4px;
+    font-weight: 500;
+    text-decoration: underline;
   }
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+// Loading state styles
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 // Dark theme adjustments
 @media (prefers-color-scheme: dark) {
-  .divider span {
-    background: var(--ion-background-color);
+  .loading-overlay {
+    background: rgba(0, 0, 0, 0.8);
   }
   
-  .email-form ion-item {
-    --background: var(--ion-color-dark);
+  .auth-header h1 {
+    color: var(--ion-color-primary-tint);
   }
 }

@@ -1,96 +1,122 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {Router} from '@angular/router';
-import {AlertController, LoadingController} from '@ionic/angular';
-import {AuthService} from '../services/auth.service';
-import {UserStorageService, UserData} from '../services/user-storage.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
-    selector: 'app-sign-in',
-    templateUrl: './sign-in.page.html',
-    styleUrls: ['./sign-in.page.scss'],
+  selector: 'app-sign-in',
+  templateUrl: './sign-in.page.html',
+  styleUrls: ['./sign-in.page.scss'],
 })
-export class SignInPage implements OnInit {
+export class SignInPage implements OnInit, OnDestroy {
+  private authSubscription?: Subscription;
+  private returnUrl = '/';
+  
+  constructor(
+    private authService: AuthService,
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
+    private router: Router,
+    private route: ActivatedRoute,
+    private platform: Platform
+  ) {}
 
-    showEmailForm = false;
+  ngOnInit() {
+    // Get return URL from query params
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    
+    // Check if already authenticated
+    this.authSubscription = this.authService.authState$.subscribe(authState => {
+      if (authState.isAuthenticated && !authState.isLoading) {
+        this.navigateToReturnUrl();
+      }
+    });
 
-    constructor(
-        private authService: AuthService,
-        private userStorageService: UserStorageService,
-        private loadingCtrl: LoadingController,
-        private alertCtrl: AlertController,
-        private router: Router
-    ) {
+    // Check for redirect result on page load
+    this.checkRedirectResult();
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
     }
+  }
 
-    ngOnInit() {
+  /**
+   * Handle Google sign-in
+   */
+  async onGoogleSignIn(): Promise<void> {
+    const loading = await this.loadingCtrl.create({
+      message: 'Signing in with Google...',
+      spinner: 'circular'
+    });
+
+    try {
+      await loading.present();
+
+      // Use popup for web, redirect for mobile
+      if (this.platform.is('capacitor') || this.platform.is('cordova')) {
+        await this.authService.signInWithGoogleRedirect();
+        // Don't dismiss loading here - redirect will handle it
+      } else {
+        await this.authService.signInWithGooglePopup();
+        await loading.dismiss();
+        // Navigation will be handled by auth state subscription
+      }
+    } catch (error) {
+      await loading.dismiss();
+      await this.showErrorAlert('Google Sign-In Failed', error.message);
     }
+  }
 
-    async onSignin(form: NgForm) {
-        if (!form.valid) {
-            return;
-        }
-
-        const loadingDialog = await this.loadingCtrl.create({
-            message: 'Signing you in...'
-        });
-
-        try {
-            await loadingDialog.present();
-            
-            await this.authService.signin(form.value.email, form.value.password);
-            await loadingDialog.dismiss();
-            await this.router.navigate(['/']);
-            
-        } catch (error) {
-            await loadingDialog.dismiss();
-            
-            // Sanitize error message to prevent information disclosure
-            let userMessage = 'Sign in failed. Please check your credentials.';
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                userMessage = 'Invalid email or password.';
-            } else if (error.code === 'auth/too-many-requests') {
-                userMessage = 'Too many failed attempts. Please try again later.';
-            } else if (error.code === 'auth/invalid-email') {
-                userMessage = 'Invalid email format.';
-            } else if (typeof error.message === 'string' && error.message.includes('Invalid email format')) {
-                userMessage = error.message;
-            }
-            
-            const alert = await this.alertCtrl.create({
-                header: 'Sign In Failed',
-                message: userMessage,
-                buttons: ['OK']
-
-            });
-            await alert.present();
-        }
+  /**
+   * Check for redirect result after Google redirect sign-in
+   */
+  private async checkRedirectResult(): Promise<void> {
+    try {
+      const result = await this.authService.getRedirectResult();
+      if (result && result.user) {
+        // User signed in via redirect, navigation will be handled by auth state subscription
+        console.log('Google redirect sign-in successful');
+      }
+    } catch (error) {
+      console.error('Redirect result error:', error);
+      await this.showErrorAlert('Sign-In Error', error.message);
     }
+  }
 
-    async onGoogleSignin() {
-        const loadingDialog = await this.loadingCtrl.create({
-            message: 'Signing in with Google...'
-        });
+  /**
+   * Navigate to return URL or default route
+   */
+  private navigateToReturnUrl(): void {
+    this.router.navigate([this.returnUrl]).catch(error => {
+      console.error('Navigation error:', error);
+      // Fallback to home page
+      this.router.navigate(['/']).catch(e => {
+        console.error('Fallback navigation error:', e);
+      });
+    });
+  }
 
-        loadingDialog.present().catch(e => console.log('Could not present loading dialog'));
+  /**
+   * Show error alert
+   */
+  private async showErrorAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 
-        this.authService.signInWithGoogle()
-            .then(async (data) => {
-                loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
-                await this.userStorageService.storeFromCredential(data);
-                
-                console.log('Navigating to shopping list..');
-                this.router.navigate(['/']).catch(e => console.log('Could not navigate'));
-            })
-            .catch(error => {
-                loadingDialog.dismiss().catch(e => console.log('Could not dismiss loading dialog'));
-                const alert = this.alertCtrl.create({
-                    header: 'Google Sign-in failed!',
-                    message: error.message,
-                    buttons: ['Ok']
-                });
-                alert.then(alertWindow => alertWindow.present()).catch(e => console.log('Could not alert'));
-            });
-    }
-
+  /**
+   * Navigate to sign-up page
+   */
+  goToSignUp(): void {
+    this.router.navigate(['/sign-up']).catch(error => {
+      console.error('Navigation to sign-up error:', error);
+    });
+  }
 }

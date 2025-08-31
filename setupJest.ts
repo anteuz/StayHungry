@@ -1,4 +1,8 @@
-import 'jest-preset-angular/setup-jest';
+import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
+
+// Setup Zone.js testing environment
+setupZoneTestEnv();
+
 require('./jestGlobalMocks');
 
 // Make Jest testing utilities available globally
@@ -88,3 +92,15 @@ Object.defineProperty(window, 'matchMedia', {
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+// Mock Firebase Auth functions globally
+(global as any).mockFirebaseAuth = {
+  signInWithPopup: jest.fn(),
+  signInWithRedirect: jest.fn(),
+  getRedirectResult: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(),
+  GoogleAuthProvider: jest.fn().mockImplementation(() => ({
+    addScope: jest.fn()
+  }))
+};

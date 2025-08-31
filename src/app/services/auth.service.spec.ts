@@ -1,174 +1,245 @@
 import { TestBed } from '@angular/core/testing';
-import { Auth, User } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { Auth, User, UserCredential } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
+import { UserStorageService } from './user-storage.service';
+
+// Mock Firebase Auth functions - declare before using
+const mockSignInWithPopup = jest.fn();
+const mockSignInWithRedirect = jest.fn();
+const mockGetRedirectResult = jest.fn();
+const mockSignOut = jest.fn();
+const mockOnAuthStateChanged = jest.fn();
+const mockGoogleAuthProvider = jest.fn().mockImplementation(() => ({
+  addScope: jest.fn()
+}));
+
+// Mock Firebase Auth
+const mockAuth = {
+  currentUser: null,
+  signInWithPopup: mockSignInWithPopup,
+  signInWithRedirect: mockSignInWithRedirect,
+  getRedirectResult: mockGetRedirectResult,
+  signOut: mockSignOut
+};
+
+// Mock UserStorageService
+const mockUserStorageService = {
+  storeFromUser: jest.fn().mockResolvedValue(undefined),
+  clearUserData: jest.fn().mockResolvedValue(undefined)
+};
 
 describe('AuthService', () => {
   let service: AuthService;
-  let mockAuth: any;
-  let mockRouter: any;
+  let auth: Auth;
+  let userStorageService: UserStorageService;
+
+  const mockUser: Partial<User> = {
+    uid: 'test-uid',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    photoURL: 'https://example.com/photo.jpg',
+    getIdToken: jest.fn().mockResolvedValue('mock-token')
+  };
+
+  const mockUserCredential: Partial<UserCredential> = {
+    user: mockUser as User
+  };
 
   beforeEach(() => {
-    mockAuth = {
-      currentUser: null
-    };
-    
-    mockRouter = {
-      navigate: jest.fn()
-    };
+    // Mock onAuthStateChanged to immediately call the callback with null user
+    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+      callback(null);
+      return () => {}; // Return unsubscribe function
+    });
 
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         { provide: Auth, useValue: mockAuth },
-        { provide: Router, useValue: mockRouter }
+        { provide: UserStorageService, useValue: mockUserStorageService }
       ]
     });
 
     service = TestBed.inject(AuthService);
+    auth = TestBed.inject(Auth);
+    userStorageService = TestBed.inject(UserStorageService);
+
+    // Reset mocks
+    jest.clearAllMocks();
+    mockAuth.currentUser = null;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('Email Validation Security Tests', () => {
-    it('should reject invalid email formats', async () => {
-      const invalidEmails = [
-        'invalid-email',
-        '@example.com',
-        'test@',
-        'test..test@example.com',
-        'test@example',
-        '',
-        null,
-        undefined,
-        'a'.repeat(255) + '@example.com' // Test length limit
-      ];
+  describe('Google Sign-In Popup', () => {
+    it('should sign in with Google popup successfully', async () => {
+      mockSignInWithPopup.mockResolvedValue(mockUserCredential);
 
-      for (const email of invalidEmails) {
-        try {
-          await service.signin(email, 'validPassword123');
-          fail(`Should have rejected invalid email: ${email}`);
-        } catch (error) {
-          expect(error.message).toContain('Invalid email format');
-        }
-      }
+      const result = await service.signInWithGooglePopup();
+
+      expect(mockSignInWithPopup).toHaveBeenCalledWith(mockAuth, expect.any(Object));
+      expect(result).toEqual(mockUserCredential);
     });
 
-    it('should accept valid email formats', () => {
-      const validEmails = [
-        'test@example.com',
-        'user.name@example.com',
-        'user+tag@example.co.uk',
-        'test123@sub.example.com'
-      ];
+    it('should handle Google popup sign-in errors', async () => {
+      const mockError = { code: 'auth/popup-blocked', message: 'Popup blocked' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
 
-      validEmails.forEach(email => {
-        expect(() => service['validateEmail'](email)).not.toThrow();
-      });
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('Pop-up was blocked by your browser. Please allow pop-ups and try again.');
+    });
+
+    it('should handle popup closed by user error', async () => {
+      const mockError = { code: 'auth/popup-closed-by-user', message: 'Popup closed' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
+
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('Sign-in was cancelled. Please try again.');
     });
   });
 
-  describe('Password Validation Security Tests', () => {
-    it('should enforce strong password requirements', async () => {
-      const weakPasswords = [
-        'short',
-        '12345678', // Only numbers
-        'password', // Only letters
-        'PASSWORD', // Only uppercase
-        '',
-        null,
-        undefined,
-        'a'.repeat(129) // Test length limit
-      ];
+  describe('Google Sign-In Redirect', () => {
+    it('should sign in with Google redirect successfully', async () => {
+      mockSignInWithRedirect.mockResolvedValue(undefined);
 
-      for (const password of weakPasswords) {
-        try {
-          await service.signup('test@example.com', password);
-          fail(`Should have rejected weak password: ${password}`);
-        } catch (error) {
-          expect(error.message).toMatch(/Password must be at least 8 characters|Email and password are required/);
-        }
-      }
+      await service.signInWithGoogleRedirect();
+
+      expect(mockSignInWithRedirect).toHaveBeenCalledWith(mockAuth, expect.any(Object));
     });
 
-    it('should accept strong passwords', () => {
-      const strongPasswords = [
-        'Password123',
-        'MyStr0ngP@ss',
-        'SecurePass1'
-      ];
+    it('should get redirect result successfully', async () => {
+      mockGetRedirectResult.mockResolvedValue(mockUserCredential);
 
-      strongPasswords.forEach(password => {
-        expect(() => service['validatePassword'](password)).not.toThrow();
-      });
+      const result = await service.getRedirectResult();
+
+      expect(mockGetRedirectResult).toHaveBeenCalledWith(mockAuth);
+      expect(result).toEqual(mockUserCredential);
     });
   });
 
-  describe('Authentication State Management', () => {
-    it('should properly detect authenticated state', () => {
-      // Not authenticated
-      expect(service.isAuthenticated()).toBe(false);
+  describe('Sign Out', () => {
+    it('should sign out successfully', async () => {
+      mockSignOut.mockResolvedValue(undefined);
 
-      // Authenticated
-      const mockUser = { uid: 'test-uid-123' };
-      mockAuth.currentUser = mockUser;
-      expect(service.isAuthenticated()).toBe(true);
+      await service.signOut();
+
+      expect(mockSignOut).toHaveBeenCalledWith(mockAuth);
     });
 
-    it('should return user UID when authenticated', () => {
-      const mockUser = { uid: 'test-uid-123' };
-      mockAuth.currentUser = mockUser;
-      expect(service.getUserUID()).toBe('test-uid-123');
+    it('should handle sign out errors', async () => {
+      const mockError = new Error('Sign out failed');
+      mockSignOut.mockRejectedValue(mockError);
+
+      await expect(service.signOut()).rejects.toThrow('Authentication failed. Please try again.');
+    });
+  });
+
+  describe('User Information', () => {
+    beforeEach(() => {
+      mockAuth.currentUser = mockUser as User;
     });
 
-    it('should return null when not authenticated', () => {
+    it('should get current user', () => {
+      const user = service.getCurrentUser();
+      expect(user).toEqual(mockUser);
+    });
+
+    it('should get current user UID', () => {
+      const uid = service.getCurrentUserUID();
+      expect(uid).toBe('test-uid');
+    });
+
+    it('should get current user email', () => {
+      const email = service.getCurrentUserEmail();
+      expect(email).toBe('test@example.com');
+    });
+
+    it('should get current user display name', () => {
+      const displayName = service.getCurrentUserDisplayName();
+      expect(displayName).toBe('Test User');
+    });
+
+    it('should get current user photo URL', () => {
+      const photoURL = service.getCurrentUserPhotoURL();
+      expect(photoURL).toBe('https://example.com/photo.jpg');
+    });
+
+    it('should get current user token', async () => {
+      const token = await service.getCurrentUserToken();
+      expect(token).toBe('mock-token');
+      expect(mockUser.getIdToken).toHaveBeenCalled();
+    });
+
+    it('should return null values when no user is authenticated', () => {
       mockAuth.currentUser = null;
-      expect(service.getUserUID()).toBeNull();
+
+      expect(service.getCurrentUser()).toBeNull();
+      expect(service.getCurrentUserUID()).toBeNull();
+      expect(service.getCurrentUserEmail()).toBeNull();
+      expect(service.getCurrentUserDisplayName()).toBeNull();
+      expect(service.getCurrentUserPhotoURL()).toBeNull();
+    });
+
+    it('should return null token when no user is authenticated', async () => {
+      mockAuth.currentUser = null;
+      const token = await service.getCurrentUserToken();
+      expect(token).toBeNull();
     });
   });
 
-  describe('Security Input Sanitization', () => {
-    it('should sanitize email input', async () => {
-      const emailWithSpaces = '  Test@EXAMPLE.COM  ';
-      const mockUser = { uid: 'test-uid-123', getIdToken: jest.fn().mockResolvedValue('token') };
-      mockAuth.currentUser = mockUser;
-      
-      try {
-        await service.signin(emailWithSpaces, 'ValidPassword123');
-      } catch (error) {
-        // Expected behavior since we're not mocking the actual Firebase call
-      }
-      
-      // Verify email was trimmed and lowercased (would be passed to Firebase)
-      expect(emailWithSpaces.trim().toLowerCase()).toBe('test@example.com');
+  describe('Authentication State', () => {
+    it('should return correct authentication status', () => {
+      // Set up authenticated state
+      service['authState'].next({
+        user: mockUser as User,
+        isAuthenticated: true,
+        isLoading: false
+      });
+
+      expect(service.isAuthenticated()).toBe(true);
+      expect(service.isLoading()).toBe(false);
     });
 
-    it('should reject null or undefined inputs', async () => {
-      const testCases = [
-        { email: null, password: 'valid123' },
-        { email: 'test@example.com', password: null },
-        { email: undefined, password: 'valid123' },
-        { email: 'test@example.com', password: undefined }
-      ];
+    it('should return correct loading status', () => {
+      // Set up loading state
+      service['authState'].next({
+        user: null,
+        isAuthenticated: false,
+        isLoading: true
+      });
 
-      for (const testCase of testCases) {
-        try {
-          await service.signin(testCase.email, testCase.password);
-          fail('Should have rejected null/undefined inputs');
-        } catch (error) {
-          expect(error.message).toBe('Email and password are required');
-        }
-      }
+      expect(service.isAuthenticated()).toBe(false);
+      expect(service.isLoading()).toBe(true);
     });
   });
 
-  describe('Error Handling Security', () => {
-    it('should not expose sensitive Firebase errors', () => {
-      // This test ensures that Firebase errors are properly sanitized
-      // The actual error sanitization happens in the components
-      expect(service).toBeTruthy();
+  describe('Error Handling', () => {
+    it('should handle network errors', async () => {
+      const mockError = { code: 'auth/network-request-failed', message: 'Network failed' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
+
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('Network error. Please check your connection and try again.');
+    });
+
+    it('should handle too many requests error', async () => {
+      const mockError = { code: 'auth/too-many-requests', message: 'Too many requests' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
+
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('Too many requests. Please wait a moment and try again.');
+    });
+
+    it('should handle user disabled error', async () => {
+      const mockError = { code: 'auth/user-disabled', message: 'User disabled' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
+
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('This account has been disabled. Please contact support.');
+    });
+
+    it('should handle unknown errors with generic message', async () => {
+      const mockError = { code: 'auth/unknown-error', message: 'Unknown error' };
+      mockSignInWithPopup.mockRejectedValue(mockError);
+
+      await expect(service.signInWithGooglePopup()).rejects.toThrow('Authentication failed. Please try again.');
     });
   });
 });

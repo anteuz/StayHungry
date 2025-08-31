@@ -266,8 +266,9 @@ export class RecipePage implements OnInit, OnDestroy {
             }
 
             // Parse recipe ingredients using the ingredient parser service with merging
+            const ingredientStrings = this.recipe.recipeIngredient?.map(ing => ing.item?.itemName || '') || [];
             const parsedIngredients = this.ingredientParser.parseRecipeToIngredients(
-                this.recipe.recipeIngredient,
+                ingredientStrings,
                 { confidenceThreshold: 0.6 }
             );
 

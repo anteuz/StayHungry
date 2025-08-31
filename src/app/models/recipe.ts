@@ -7,6 +7,7 @@ export class Recipe {
     public description: string = null;
     public imageURI: any = null;
     public ingredients: Ingredient [] = null;
+    public recipeIngredient: Ingredient [] = null; // Legacy property for backward compatibility
     ingredientMap: Map<string, Ingredient[]>;
     public category: string = 'food';
 
@@ -23,6 +24,7 @@ export class Recipe {
         this.description = description;
         this.imageURI = imageURI;
         this.ingredients = ingredients || null;
+        this.recipeIngredient = ingredients || null; // Legacy property for backward compatibility
         this.category = category || 'food';
     }
 }
