@@ -9,7 +9,10 @@
     "build": "ng build",
     "test": "jest",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only database,storage"
   },
   "private": true,
   "dependencies": {
