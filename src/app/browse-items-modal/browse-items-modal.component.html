@@ -40,16 +40,17 @@
   <!-- Items List -->
   <ion-list #itemsList *ngIf="displayedItems.length > 0" lines="inset" class="items-list">
     <ion-item-sliding *ngFor="let item of displayedItems; trackBy: trackByItemId" class="item-sliding">
+      <!-- Category indicator outside the ion-item -->
+      <div 
+        [class]="getStyleClass(item) + ' category-indicator'" 
+        [ngStyle]="getStyle(item.itemColor)"
+        [attr.aria-hidden]="true">
+      </div>
       <ion-item 
         class="item-card noPadding" 
         (click)="onItemSelected(item)"
         button
         [attr.aria-label]="'Add ' + item.itemName + ' to shopping list'">
-        <div 
-          [class]="getStyleClass(item) + ' category-indicator'" 
-          [ngStyle]="{'border-left': getStyle(item.itemColor)}"
-          [attr.aria-hidden]="true">
-        </div>
         <ion-label class="item-label">
           <h3 class="item-name">{{ item.itemName }}</h3>
           <p *ngIf="item.usageCount > 0" class="usage-info">

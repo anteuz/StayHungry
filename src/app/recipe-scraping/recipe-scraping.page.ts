@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { UnifiedRecipeScrapingService } from '../services/unified-recipe-scraping.service';
 import { RecipeServiceService } from '../services/recipe-service.service';
 import { ScrapedRecipe } from '../models/scraped-recipe';
+import { ToastService } from '../shared/services/toast.service';
 
 @Component({
   selector: 'app-recipe-scraping',
@@ -22,7 +23,7 @@ export class RecipeScrapingPage implements OnInit {
     private recipeService: RecipeServiceService,
     private loadingController: LoadingController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {}
@@ -55,7 +56,7 @@ export class RecipeScrapingPage implements OnInit {
       const result = await this.recipeScrapingService.scrapeRecipeFromUrl(this.url).toPromise();
       
       if (result?.status === 'ok' && result.recipe) {
-        this.scrapedRecipe = result.recipe;
+        this.scrapedRecipe = this.validateAndCleanRecipe(result.recipe);
         this.showSuccess(`Recipe scraped successfully using ${result.extractionMethod}`);
       } else {
         this.errorMessage = result?.error || 'Failed to scrape recipe';
@@ -71,11 +72,99 @@ export class RecipeScrapingPage implements OnInit {
   }
 
   /**
+   * Validate and clean scraped recipe data
+   */
+  private validateAndCleanRecipe(recipe: ScrapedRecipe): ScrapedRecipe {
+    // Ensure recipe has a name
+    if (!recipe.name || recipe.name.trim() === '') {
+      recipe.name = 'Untitled Recipe';
+    }
+
+    // Clean and validate ingredients
+    if (recipe.recipeIngredient) {
+      recipe.recipeIngredient = recipe.recipeIngredient
+        .map(ingredient => ingredient?.trim())
+        .filter(ingredient => ingredient && ingredient.length > 0);
+    }
+
+    // Clean and validate instructions
+    if (recipe.recipeInstructions) {
+      recipe.recipeInstructions = recipe.recipeInstructions
+        .map(instruction => this.cleanInstructionText(instruction))
+        .filter(instruction => instruction && instruction.length > 0);
+    }
+
+    // Clean description
+    if (recipe.description) {
+      recipe.description = recipe.description.trim();
+    }
+
+    return recipe;
+  }
+
+  /**
+   * Clean instruction text from various formats
+   */
+  private cleanInstructionText(instruction: any): string {
+    if (typeof instruction === 'string') {
+      return instruction.trim();
+    }
+    
+    if (typeof instruction === 'object' && instruction !== null) {
+      // Handle HowToStep objects
+      if (instruction.text) {
+        return instruction.text.trim();
+      }
+      if (instruction.name) {
+        return instruction.name.trim();
+      }
+      if (instruction.description) {
+        return instruction.description.trim();
+      }
+      if (instruction.content) {
+        return instruction.content.trim();
+      }
+      if (instruction.step) {
+        return instruction.step.trim();
+      }
+      
+      // Try to find any string property
+      for (const key in instruction) {
+        if (typeof instruction[key] === 'string' && instruction[key].trim()) {
+          return instruction[key].trim();
+        }
+      }
+    }
+    
+    // Fallback: convert to string
+    return String(instruction).trim();
+  }
+
+  /**
+   * Check if recipe has valid data for saving
+   */
+  canSaveRecipe(): boolean {
+    if (!this.scrapedRecipe) return false;
+    
+    const hasIngredients = this.scrapedRecipe.recipeIngredient && 
+                          this.scrapedRecipe.recipeIngredient.length > 0;
+    const hasInstructions = this.scrapedRecipe.recipeInstructions && 
+                           this.scrapedRecipe.recipeInstructions.length > 0;
+    
+    return hasIngredients && hasInstructions;
+  }
+
+  /**
    * Save scraped recipe to the app
    */
   async saveRecipe() {
     if (!this.scrapedRecipe) {
       this.showError('No recipe to save');
+      return;
+    }
+
+    if (!this.canSaveRecipe()) {
+      this.showError('Recipe must have both ingredients and instructions to save');
       return;
     }
 
@@ -107,26 +196,14 @@ export class RecipeScrapingPage implements OnInit {
    * Show error message
    */
   private async showError(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color: 'danger',
-      position: 'top'
-    });
-    toast.present();
+    await this.toastService.showError(message);
   }
 
   /**
    * Show success message
    */
   private async showSuccess(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color: 'success',
-      position: 'top'
-    });
-    toast.present();
+    await this.toastService.showSuccess(message);
   }
 
   /**

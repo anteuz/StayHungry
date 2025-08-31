@@ -3,27 +3,35 @@
         <ion-segment scrollable (ionChange)="segmentChanged($event)">
             <ion-segment-button checked value="all">
                 <ion-icon name="globe" ariaLabel="All"></ion-icon>
+                <ion-label>All</ion-label>
             </ion-segment-button>
             <ion-segment-button value="basicStuff">
                 <ion-icon name="basket" ariaLabel="Basic stuff"></ion-icon>
+                <ion-label>Basic</ion-label>
             </ion-segment-button>
             <ion-segment-button value="food">
                 <ion-icon name="pizza"></ion-icon>
+                <ion-label>Food</ion-label>
             </ion-segment-button>
             <ion-segment-button value="drinks">
                 <ion-icon name="wine"></ion-icon>
+                <ion-label>Drinks</ion-label>
             </ion-segment-button>
             <ion-segment-button value="desserts">
                 <ion-icon name="ice-cream"></ion-icon>
+                <ion-label>Desserts</ion-label>
             </ion-segment-button>
             <ion-segment-button value="householdUtilities">
                 <ion-icon name="construct"></ion-icon>
+                <ion-label>Household</ion-label>
             </ion-segment-button>
             <ion-segment-button value="apothecary">
                 <ion-icon name="medkit"></ion-icon>
+                <ion-label>Health</ion-label>
             </ion-segment-button>
             <ion-segment-button value="clothes">
                 <ion-icon name="shirt"></ion-icon>
+                <ion-label>Clothes</ion-label>
             </ion-segment-button>
         </ion-segment>
         <ion-buttons slot="secondary">
@@ -53,7 +61,16 @@
                 </ion-thumbnail>
                 <ion-label>
                     <h3>{{recipe.name}}</h3>
-                    <p>{{recipe.ingredients | objectName}}</p>
+                    <p>{{getRecipeDisplayInfo(recipe)}}</p>
+                    <p *ngIf="hasInstructions(recipe)">
+                        <ion-icon name="list" size="small"></ion-icon>
+                        {{getInstructionCount(recipe)}} steps
+                    </p>
+                    <p *ngIf="recipe.tags && recipe.tags.length > 0">
+                        <ion-chip *ngFor="let tag of recipe.tags.slice(0, 2)" size="small" color="primary" outline>
+                            <ion-label>{{tag}}</ion-label>
+                        </ion-chip>
+                    </p>
                 </ion-label>
                 <ion-icon slot="end" name="add-circle" (click)="addToCart(recipe)"></ion-icon>
             </ion-item>

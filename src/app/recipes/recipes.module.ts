@@ -15,6 +15,9 @@ const routes: Routes = [
   },
   {
     path: 'recipe', loadChildren: () => import('../recipe/recipe.module').then(m => m.RecipePageModule)
+  },
+  {
+    path: 'scrape', loadChildren: () => import('../recipe-scraping/recipe-scraping.module').then(m => m.RecipeScrapingPageModule)
   }
 ];
 

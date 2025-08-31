@@ -1,47 +1,52 @@
 {
   "rules": {
     "users": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
+      "$ownerUid": {
+        ".read": "auth != null && auth.uid == $ownerUid",
+        ".write": "auth != null && auth.uid == $ownerUid",
+
         "shopping-list": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
-          "$listId": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid",
-            ".validate": "newData.hasChildren(['uuid', 'items'])"
-          }
+          ".read": "auth != null && (auth.uid == $ownerUid || root.child('users/' + $ownerUid + '/shared_data_access/' + auth.uid + '/shopping-list').val() === true)",
+          ".write": "auth != null && (auth.uid == $ownerUid || root.child('users/' + $ownerUid + '/shared_data_access/' + auth.uid + '/shopping-list').val() === true)",
         },
+
         "recipes": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
+          ".read": "auth != null && (auth.uid == $ownerUid || root.child('users/' + $ownerUid + '/shared_data_access/' + auth.uid + '/recipes').val() === true)",
+          ".write": "auth != null && (auth.uid == $ownerUid || root.child('users/' + $ownerUid + '/shared_data_access/' + auth.uid + '/recipes').val() === true)",
           "$recipeId": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid",
             ".validate": "newData.hasChildren(['uuid', 'name'])"
           }
         },
+
+        "shared_data_access": {
+          ".read": "auth != null && auth.uid == $ownerUid",
+          ".write": "auth != null && auth.uid == $ownerUid",
+          "$guestUid": {
+            ".read": false,
+            ".write": false
+          }
+        },
+
         "items": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
+          ".read": "auth != null && auth.uid == $ownerUid",
+          ".write": "auth != null && auth.uid == $ownerUid",
           "$itemId": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid",
+            ".read": "auth != null && auth.uid == $ownerUid",
+            ".write": "auth != null && auth.uid == $ownerUid",
             ".validate": "newData.hasChildren(['uuid', 'itemName'])"
           }
         },
         "weekly-menu": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
+          ".read": "auth != null && auth.uid == $ownerUid",
+          ".write": "auth != null && auth.uid == $ownerUid",
           "$menuId": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid"
+            ".read": "auth != null && auth.uid == $ownerUid",
+            ".write": "auth != null && auth.uid == $ownerUid"
           }
         },
         "profile": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
+          ".read": "auth != null && auth.uid == $ownerUid",
+          ".write": "auth != null && auth.uid == $ownerUid",
           ".validate": "newData.hasChildren(['email', 'uid'])"
         }
       }
@@ -49,6 +54,8 @@
     "$other": {
       ".read": false,
       ".write": false
-    }
+    },
+    ".read": false,
+    ".write": false
   }
 }

@@ -1,0 +1,213 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Recipe Ingredient Parser</ion-card-title>
+    <ion-card-subtitle>Parse and validate recipe ingredients</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <!-- Single Ingredient Parser -->
+    <ion-item>
+      <ion-label position="stacked">Test Single Ingredient</ion-label>
+      <ion-input 
+        [(ngModel)]="ingredientText" 
+        placeholder="e.g., 1 pkt (6 kpl/500 g) Pirkka lehtitaikinalevyjä (pakaste)"
+        (ionInput)="parseSingleIngredient()">
+      </ion-input>
+    </ion-item>
+
+    <ion-button 
+      fill="clear" 
+      size="small" 
+      (click)="parseSingleIngredient()"
+      [disabled]="!ingredientText.trim()">
+      Parse Ingredient
+    </ion-button>
+
+    <ion-button 
+      fill="clear" 
+      size="small" 
+      (click)="clearParsedResult()"
+      [disabled]="!parsedResult">
+      Clear
+    </ion-button>
+
+    <!-- Parsed Result Display -->
+    <div *ngIf="parsedResult" class="parsed-result">
+      <ion-item>
+        <ion-label>
+          <h3>Parsed Result</h3>
+          <p><strong>Amount:</strong> {{ parsedResult.amount || 'None' }}</p>
+          <p><strong>Item Name:</strong> {{ parsedResult.itemName }}</p>
+          <p *ngIf="parsedResult.brand"><strong>Brand:</strong> {{ parsedResult.brand }}</p>
+          <p *ngIf="parsedResult.category"><strong>Category:</strong> {{ parsedResult.category }}</p>
+          <p><strong>Confidence:</strong> 
+            <ion-badge [color]="getConfidenceColor(parsedResult.confidence)">
+              {{ getConfidenceText(parsedResult.confidence) }} ({{ (parsedResult.confidence * 100).toFixed(0) }}%)
+            </ion-badge>
+          </p>
+          <p *ngIf="parsedResult.metadata?.packageSize"><strong>Package Size:</strong> {{ parsedResult.metadata.packageSize }}</p>
+          <p *ngIf="parsedResult.metadata?.temperature"><strong>Temperature:</strong> {{ parsedResult.metadata.temperature }}</p>
+          <p *ngIf="parsedResult.metadata?.preparation"><strong>Preparation:</strong> {{ parsedResult.metadata.preparation }}</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
+    <!-- Recipe Validation Section -->
+    <div *ngIf="recipe" class="recipe-validation">
+      <ion-item>
+        <ion-label>
+          <h3>Recipe Validation</h3>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="validateRecipe()">
+            Validate Recipe
+          </ion-button>
+        </ion-label>
+      </ion-item>
+
+      <div *ngIf="validationResult" class="validation-results">
+        <ion-item>
+          <ion-label>
+            <h4>Validation Summary</h4>
+            <p><strong>Total Ingredients:</strong> {{ validationResult.totalIngredients }}</p>
+            <p><strong>Valid Ingredients:</strong> 
+              <ion-badge color="success">{{ validationResult.validIngredients }}</ion-badge>
+            </p>
+            <p><strong>Low Confidence:</strong> 
+              <ion-badge color="warning">{{ validationResult.lowConfidenceIngredients }}</ion-badge>
+            </p>
+          </ion-label>
+        </ion-item>
+
+        <!-- Parsed Results List -->
+        <ion-list *ngIf="validationResult.parsedResults.length > 0">
+          <ion-item *ngFor="let result of validationResult.parsedResults; let i = index">
+            <ion-label>
+              <h4>{{ i + 1 }}. {{ result.rawText }}</h4>
+              <p><strong>Parsed:</strong> {{ result.amount }} {{ result.itemName }}</p>
+              <p *ngIf="result.brand"><strong>Brand:</strong> {{ result.brand }}</p>
+              <p><strong>Confidence:</strong> 
+                <ion-badge [color]="getConfidenceColor(result.confidence)">
+                  {{ getConfidenceText(result.confidence) }} ({{ (result.confidence * 100).toFixed(0) }}%)
+                </ion-badge>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+    </div>
+
+    <!-- Shopping List Operations -->
+    <div *ngIf="recipe && validationResult" class="shopping-list-operations">
+      <ion-item>
+        <ion-label>
+          <h3>Shopping List Operations</h3>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Shopping List ID</ion-label>
+        <ion-input 
+          [(ngModel)]="selectedShoppingListId" 
+          placeholder="Enter shopping list ID">
+        </ion-input>
+      </ion-item>
+
+      <ion-button 
+        expand="block" 
+        (click)="addToShoppingList()"
+        [disabled]="!selectedShoppingListId || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        Add to Shopping List
+      </ion-button>
+
+      <ion-button 
+        expand="block" 
+        fill="outline"
+        (click)="createNewShoppingList()"
+        [disabled]="isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        Create New Shopping List
+      </ion-button>
+    </div>
+
+    <!-- Operation Results -->
+    <div *ngIf="lastOperationResult" class="operation-results">
+      <ion-item>
+        <ion-label>
+          <h3>Operation Result</h3>
+          <ion-badge [color]="getOperationStatusColor()">
+            {{ getOperationStatusMessage() }}
+          </ion-badge>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="clearLastOperationResult()">
+            Clear
+          </ion-button>
+        </ion-label>
+      </ion-item>
+
+      <div *ngIf="lastOperationResult.success && lastOperationResult.addedIngredients.length > 0">
+        <ion-item>
+          <ion-label>
+            <h4>Added Ingredients:</h4>
+            <ion-list>
+              <ion-item *ngFor="let ingredient of lastOperationResult.addedIngredients">
+                <ion-label>
+                  <p>{{ ingredient.amount }} {{ ingredient.item.itemName }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-label>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Ingredients Needing Review -->
+    <div *ngIf="getIngredientsNeedingReview().length > 0" class="review-needed">
+      <ion-item>
+        <ion-label>
+          <h3>Ingredients Needing Review</h3>
+          <ion-badge color="warning">{{ getIngredientsNeedingReview().length }} items</ion-badge>
+        </ion-label>
+      </ion-item>
+
+      <ion-list>
+        <ion-item *ngFor="let result of getIngredientsNeedingReview()">
+          <ion-label>
+            <h4>{{ result.rawText }}</h4>
+            <p><strong>Parsed:</strong> {{ result.amount }} {{ result.itemName }}</p>
+            <p><strong>Confidence:</strong> 
+              <ion-badge color="danger">{{ (result.confidence * 100).toFixed(0) }}%</ion-badge>
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Successfully Parsed Ingredients -->
+    <div *ngIf="getSuccessfullyParsedIngredients().length > 0" class="successfully-parsed">
+      <ion-item>
+        <ion-label>
+          <h3>Successfully Parsed</h3>
+          <ion-badge color="success">{{ getSuccessfullyParsedIngredients().length }} items</ion-badge>
+        </ion-label>
+      </ion-item>
+
+      <ion-list>
+        <ion-item *ngFor="let result of getSuccessfullyParsedIngredients()">
+          <ion-label>
+            <h4>{{ result.rawText }}</h4>
+            <p><strong>Parsed:</strong> {{ result.amount }} {{ result.itemName }}</p>
+            <p *ngIf="result.brand"><strong>Brand:</strong> {{ result.brand }}</p>
+            <p><strong>Confidence:</strong> 
+              <ion-badge color="success">{{ (result.confidence * 100).toFixed(0) }}%</ion-badge>
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </ion-card-content>
+</ion-card>

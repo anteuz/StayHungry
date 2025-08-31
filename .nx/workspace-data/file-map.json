@@ -42,7 +42,7 @@
       "app": [
         {
           "file": ".firebase/hosting.d3d3.cache",
-          "hash": "15204542691990200445"
+          "hash": "16793053644462223163"
         },
         {
           "file": ".firebaserc",
@@ -57,8 +57,76 @@
           "hash": "16821663489707375270"
         },
         {
+          "file": "AGENTS.md",
+          "hash": "221776519996524241"
+        },
+        {
+          "file": "CORS_ISSUES_SUMMARY.md",
+          "hash": "13580625083516520472"
+        },
+        {
+          "file": "DATABASE_SECURITY_IMPLEMENTATION.md",
+          "hash": "14058802732907231940"
+        },
+        {
+          "file": "DEPENDENCY_UPGRADE_SUMMARY.md",
+          "hash": "9071123906571303255"
+        },
+        {
+          "file": "FINNISH_LEMMATIZATION_SOLUTION.md",
+          "hash": "643780084108651348"
+        },
+        {
+          "file": "FIREBASE_FUNCTION_SETUP.md",
+          "hash": "4303626830137590962"
+        },
+        {
+          "file": "FIREBASE_STORAGE_RULES_FIX.md",
+          "hash": "404283878189788582"
+        },
+        {
+          "file": "GOOGLE_LOGIN_IMPLEMENTATION.md",
+          "hash": "17075928047361557255"
+        },
+        {
           "file": "GoogleService-Info.plist",
           "hash": "15253829089135301919"
+        },
+        {
+          "file": "ICON_FIXES_SUMMARY.md",
+          "hash": "9439511882196717407"
+        },
+        {
+          "file": "IMPLEMENTATION_SUMMARY.md",
+          "hash": "3542835470905090166"
+        },
+        {
+          "file": "INGREDIENT_MERGER_IMPLEMENTATION.md",
+          "hash": "17795802124745997687"
+        },
+        {
+          "file": "MOBILE_BLACK_SCREEN_FIX.md",
+          "hash": "16667636046399419527"
+        },
+        {
+          "file": "RECIPE_INGREDIENT_PARSER_IMPLEMENTATION.md",
+          "hash": "3870426843967308465"
+        },
+        {
+          "file": "RECIPE_SCRAPING_STANDALONE.md",
+          "hash": "16755966391514037915"
+        },
+        {
+          "file": "SECURITY_AUDIT_REPORT.md",
+          "hash": "6278404099387071927"
+        },
+        {
+          "file": "SECURITY_IMPLEMENTATION_SUMMARY.md",
+          "hash": "5108713381191604612"
+        },
+        {
+          "file": "TESTING_GUIDE.md",
+          "hash": "11007703340044233834"
         },
         {
           "file": "THEME_GUIDE.md",
@@ -70,15 +138,23 @@
         },
         {
           "file": "angular.json",
-          "hash": "4608617234246177984"
+          "hash": "11064012222826467336"
+        },
+        {
+          "file": "bash.exe.stackdump",
+          "hash": "4223133843893500377"
         },
         {
           "file": "config.xml",
           "hash": "2170955474846826475"
         },
         {
+          "file": "database.rules.json",
+          "hash": "13433466413944986088"
+        },
+        {
           "file": "firebase.json",
-          "hash": "9235955445013226615"
+          "hash": "16571100122082043186"
         },
         {
           "file": "ionic.config.json",
@@ -86,7 +162,7 @@
         },
         {
           "file": "jest.config.js",
-          "hash": "8203551694239201766"
+          "hash": "11106052098500162613"
         },
         {
           "file": "jestGlobalMocks.ts",
@@ -98,11 +174,11 @@
         },
         {
           "file": "package-lock.json",
-          "hash": "18215162881830390032"
+          "hash": "7256386815413716134"
         },
         {
           "file": "package.json",
-          "hash": "7668601703079865049",
+          "hash": "15954817512357976943",
           "deps": [
             "npm:@angular-devkit/core",
             "npm:@angular-devkit/schematics",
@@ -395,11 +471,11 @@
         },
         {
           "file": "setupJest.ts",
-          "hash": "6065184172537933281"
+          "hash": "4436796866540503904"
         },
         {
           "file": "src/__mocks__/firebase-mocks.js",
-          "hash": "3428427742211722866"
+          "hash": "16725726197977943661"
         },
         {
           "file": "src/__mocks__/ionic-native-mocks.js",
@@ -407,7 +483,7 @@
         },
         {
           "file": "src/__mocks__/user-storage-mocks.js",
-          "hash": "2050293188410277679"
+          "hash": "17046051491627961883"
         },
         {
           "file": "src/app/app-routing.module.ts",
@@ -419,35 +495,35 @@
         },
         {
           "file": "src/app/app.component.spec.ts",
-          "hash": "10344604492956238760"
+          "hash": "14927215250160451877"
         },
         {
           "file": "src/app/app.component.ts",
-          "hash": "203171539528791696"
+          "hash": "787178032065126436"
         },
         {
           "file": "src/app/app.module.ts",
-          "hash": "1333490704837768569"
+          "hash": "13117974797217323452"
         },
         {
           "file": "src/app/app.routes.ts",
-          "hash": "9136540268850215114"
+          "hash": "17553335991010024418"
         },
         {
           "file": "src/app/browse-items-modal/browse-items-modal.component.html",
-          "hash": "8203808810499880338"
+          "hash": "15781779594161655420"
         },
         {
           "file": "src/app/browse-items-modal/browse-items-modal.component.scss",
-          "hash": "14323526237607175303"
+          "hash": "1787063559646942358"
         },
         {
           "file": "src/app/browse-items-modal/browse-items-modal.component.spec.ts",
-          "hash": "10927530440434701358"
+          "hash": "9281891716738885313"
         },
         {
           "file": "src/app/browse-items-modal/browse-items-modal.component.ts",
-          "hash": "5551480142669968080"
+          "hash": "11048662086201267919"
         },
         {
           "file": "src/app/cart-popover/cart-popover.component.html",
@@ -459,7 +535,7 @@
         },
         {
           "file": "src/app/cart-popover/cart-popover.component.spec.ts",
-          "hash": "9926391545360774534"
+          "hash": "8205725225566085612"
         },
         {
           "file": "src/app/cart-popover/cart-popover.component.ts",
@@ -475,11 +551,15 @@
         },
         {
           "file": "src/app/ingredient-overlay/ingredient-overlay.page.spec.ts",
-          "hash": "1184044049699074865"
+          "hash": "1989010440492209162"
         },
         {
           "file": "src/app/ingredient-overlay/ingredient-overlay.page.ts",
-          "hash": "6492103200796374396"
+          "hash": "11725432867831617332"
+        },
+        {
+          "file": "src/app/integration/user-workflow.integration.spec.ts",
+          "hash": "1667503376609189763"
         },
         {
           "file": "src/app/models/app-state.ts",
@@ -490,12 +570,24 @@
           "hash": "16374620169890531069"
         },
         {
+          "file": "src/app/models/ingredient-parser-result.ts",
+          "hash": "14636008359334717049"
+        },
+        {
           "file": "src/app/models/ingredient.ts",
           "hash": "8840956861966236139"
         },
         {
           "file": "src/app/models/recipe.ts",
-          "hash": "5709575650932203201"
+          "hash": "13903223115680674245"
+        },
+        {
+          "file": "src/app/models/scraped-recipe.ts",
+          "hash": "1046512559358016975"
+        },
+        {
+          "file": "src/app/models/security-test.spec.ts",
+          "hash": "10098317789708579514"
         },
         {
           "file": "src/app/models/shopping-list.ts",
@@ -506,12 +598,32 @@
           "hash": "17893907645610056816"
         },
         {
+          "file": "src/app/recipe-scraping/recipe-scraping.module.ts",
+          "hash": "15989145251416226449"
+        },
+        {
+          "file": "src/app/recipe-scraping/recipe-scraping.page.html",
+          "hash": "13050033072999290757"
+        },
+        {
+          "file": "src/app/recipe-scraping/recipe-scraping.page.scss",
+          "hash": "14009776177612364093"
+        },
+        {
+          "file": "src/app/recipe-scraping/recipe-scraping.page.spec.ts",
+          "hash": "11129731073254099261"
+        },
+        {
+          "file": "src/app/recipe-scraping/recipe-scraping.page.ts",
+          "hash": "18359934738986700190"
+        },
+        {
           "file": "src/app/recipe/recipe.module.ts",
           "hash": "13265227413213616329"
         },
         {
           "file": "src/app/recipe/recipe.page.html",
-          "hash": "12467614096877403374"
+          "hash": "16959725222919815175"
         },
         {
           "file": "src/app/recipe/recipe.page.scss",
@@ -519,19 +631,19 @@
         },
         {
           "file": "src/app/recipe/recipe.page.spec.ts",
-          "hash": "15581002637766271186"
+          "hash": "6640061842501582705"
         },
         {
           "file": "src/app/recipe/recipe.page.ts",
-          "hash": "14126131246400417315"
+          "hash": "10006090284257715755"
         },
         {
           "file": "src/app/recipes/recipes.module.ts",
-          "hash": "12661388731339054833"
+          "hash": "12519742193062734450"
         },
         {
           "file": "src/app/recipes/recipes.page.html",
-          "hash": "14370870221495555567"
+          "hash": "9852436073727824181"
         },
         {
           "file": "src/app/recipes/recipes.page.scss",
@@ -539,27 +651,83 @@
         },
         {
           "file": "src/app/recipes/recipes.page.spec.ts",
-          "hash": "8127947482703755521"
+          "hash": "14483431519506049631"
         },
         {
           "file": "src/app/recipes/recipes.page.ts",
-          "hash": "219546046177780922"
+          "hash": "6701657722978653613"
+        },
+        {
+          "file": "src/app/security/security-vulnerabilities.spec.ts",
+          "hash": "7640643912355029360"
         },
         {
           "file": "src/app/services/auth-service.service.spec.ts",
-          "hash": "6310731124999358397"
+          "hash": "7755243532423108422"
+        },
+        {
+          "file": "src/app/services/auth.service.spec.ts",
+          "hash": "5893977312069674268"
         },
         {
           "file": "src/app/services/auth.service.ts",
-          "hash": "5981820213001837952"
+          "hash": "8456160882182961992"
+        },
+        {
+          "file": "src/app/services/category-detection.service.spec.ts",
+          "hash": "10603798870354743595"
+        },
+        {
+          "file": "src/app/services/category-detection.service.ts",
+          "hash": "10634409031292096983"
         },
         {
           "file": "src/app/services/cloud-store.service.spec.ts",
-          "hash": "4027891179687454349"
+          "hash": "16102684697243395553"
         },
         {
           "file": "src/app/services/cloud-store.service.ts",
-          "hash": "12986338643456296569"
+          "hash": "12603577785219711743"
+        },
+        {
+          "file": "src/app/services/drag-drop.service.spec.ts",
+          "hash": "8912133592609029042"
+        },
+        {
+          "file": "src/app/services/drag-drop.service.ts",
+          "hash": "630737148336762609"
+        },
+        {
+          "file": "src/app/services/finnish-lemmatizer.service.spec.ts",
+          "hash": "10452875623369299337"
+        },
+        {
+          "file": "src/app/services/finnish-lemmatizer.service.ts",
+          "hash": "1390269706637943522"
+        },
+        {
+          "file": "src/app/services/ingredient-merger-integration.spec.ts",
+          "hash": "11380180460276445607"
+        },
+        {
+          "file": "src/app/services/ingredient-merger.service.spec.ts",
+          "hash": "10526604360104775663"
+        },
+        {
+          "file": "src/app/services/ingredient-merger.service.ts",
+          "hash": "12069011031497698403"
+        },
+        {
+          "file": "src/app/services/ingredient-parser-integration.spec.ts",
+          "hash": "1354154976375488494"
+        },
+        {
+          "file": "src/app/services/ingredient-parser.service.spec.ts",
+          "hash": "1644340732849565306"
+        },
+        {
+          "file": "src/app/services/ingredient-parser.service.ts",
+          "hash": "8344438932107740189"
         },
         {
           "file": "src/app/services/network-service.service.spec.ts",
@@ -570,20 +738,48 @@
           "hash": "18113511452857688019"
         },
         {
+          "file": "src/app/services/recipe-scraping-config.service.ts",
+          "hash": "6620085452854282664"
+        },
+        {
+          "file": "src/app/services/recipe-scraping.service.spec.ts",
+          "hash": "7389668334132514025"
+        },
+        {
+          "file": "src/app/services/recipe-scraping.service.ts",
+          "hash": "13573046363084411809"
+        },
+        {
           "file": "src/app/services/recipe-service.service.spec.ts",
-          "hash": "17823388404137728651"
+          "hash": "7579716521187308262"
         },
         {
           "file": "src/app/services/recipe-service.service.ts",
           "hash": "12265671196663343692"
         },
         {
+          "file": "src/app/services/recipe-to-shopping-list.service.spec.ts",
+          "hash": "2770496395011531521"
+        },
+        {
+          "file": "src/app/services/recipe-to-shopping-list.service.ts",
+          "hash": "15827707530116771411"
+        },
+        {
           "file": "src/app/services/shopping-list-service.service.spec.ts",
-          "hash": "1483653067595987242"
+          "hash": "4803144061740091544"
+        },
+        {
+          "file": "src/app/services/shopping-list.service.spec.ts",
+          "hash": "14703330607755570015"
         },
         {
           "file": "src/app/services/shopping-list.service.ts",
-          "hash": "10758884439303030376"
+          "hash": "8925781488764133804"
+        },
+        {
+          "file": "src/app/services/simple-item.service.spec.ts",
+          "hash": "12087432616665819283"
         },
         {
           "file": "src/app/services/simple-item.service.ts",
@@ -594,24 +790,56 @@
           "hash": "12199409825529042089"
         },
         {
+          "file": "src/app/services/standalone-recipe-scraping.service.spec.ts",
+          "hash": "16376122183810410562"
+        },
+        {
+          "file": "src/app/services/standalone-recipe-scraping.service.ts",
+          "hash": "6739577894655550197"
+        },
+        {
           "file": "src/app/services/theme.service.spec.ts",
-          "hash": "6325069322521471682"
+          "hash": "18086121353930292641"
         },
         {
           "file": "src/app/services/theme.service.ts",
           "hash": "6097265345717765336"
         },
         {
+          "file": "src/app/services/unified-recipe-scraping.service.spec.ts",
+          "hash": "2187964868989103752"
+        },
+        {
+          "file": "src/app/services/unified-recipe-scraping.service.ts",
+          "hash": "13659126092194132712"
+        },
+        {
+          "file": "src/app/services/user-profile.service.ts",
+          "hash": "16576747990174692642"
+        },
+        {
+          "file": "src/app/services/user-storage.service.ts",
+          "hash": "663237286442512587"
+        },
+        {
+          "file": "src/app/services/weekly-menu.service.spec.ts",
+          "hash": "1343401694479196321"
+        },
+        {
           "file": "src/app/services/weekly-menu.service.ts",
-          "hash": "11012619362971690742"
+          "hash": "9033464863710668640"
         },
         {
           "file": "src/app/shared/auth-guard.guard.spec.ts",
           "hash": "4888847400088905627"
         },
         {
+          "file": "src/app/shared/auth-guard.service.spec.ts",
+          "hash": "17666234272722194235"
+        },
+        {
           "file": "src/app/shared/auth-guard.service.ts",
-          "hash": "7481921680467559715"
+          "hash": "1921849729332024346"
         },
         {
           "file": "src/app/shared/iscollected.pipe.spec.ts",
@@ -628,6 +856,22 @@
         {
           "file": "src/app/shared/object-name.pipe.ts",
           "hash": "15967576592716751985"
+        },
+        {
+          "file": "src/app/shared/recipe-ingredient-parser.component.html",
+          "hash": "689630057983418437"
+        },
+        {
+          "file": "src/app/shared/recipe-ingredient-parser.component.scss",
+          "hash": "11839364548710864444"
+        },
+        {
+          "file": "src/app/shared/recipe-ingredient-parser.component.spec.ts",
+          "hash": "14511934692880905919"
+        },
+        {
+          "file": "src/app/shared/recipe-ingredient-parser.component.ts",
+          "hash": "5912295906539800599"
         },
         {
           "file": "src/app/shared/shared-module.ts",
@@ -651,7 +895,7 @@
         },
         {
           "file": "src/app/shared/theme-toggle.component.spec.ts",
-          "hash": "7675680932380043939"
+          "hash": "4245741654757667626"
         },
         {
           "file": "src/app/shared/theme-toggle.component.ts",
@@ -667,11 +911,11 @@
         },
         {
           "file": "src/app/shopping-list-items/shopping-list-items.component.spec.ts",
-          "hash": "9327206525829368592"
+          "hash": "1677858071817605104"
         },
         {
           "file": "src/app/shopping-list-items/shopping-list-items.component.ts",
-          "hash": "8530466341461138214"
+          "hash": "17182436602102896151"
         },
         {
           "file": "src/app/shopping-list-transfer/shopping-list-transfer.component.html",
@@ -683,7 +927,7 @@
         },
         {
           "file": "src/app/shopping-list-transfer/shopping-list-transfer.component.spec.ts",
-          "hash": "17408069231388590149"
+          "hash": "6195676055806818803"
         },
         {
           "file": "src/app/shopping-list-transfer/shopping-list-transfer.component.ts",
@@ -695,19 +939,19 @@
         },
         {
           "file": "src/app/shopping-list/shopping-list.page.html",
-          "hash": "17226711787601243502"
+          "hash": "9111063961371355898"
         },
         {
           "file": "src/app/shopping-list/shopping-list.page.scss",
-          "hash": "11844785185140910510"
+          "hash": "14416944692722091134"
         },
         {
           "file": "src/app/shopping-list/shopping-list.page.spec.ts",
-          "hash": "5500006978505685449"
+          "hash": "1545446504403343751"
         },
         {
           "file": "src/app/shopping-list/shopping-list.page.ts",
-          "hash": "2429828320609147412"
+          "hash": "237574170207943537"
         },
         {
           "file": "src/app/sign-in/sign-in.module.ts",
@@ -715,19 +959,19 @@
         },
         {
           "file": "src/app/sign-in/sign-in.page.html",
-          "hash": "7788097053604468883"
+          "hash": "1038288192107137701"
         },
         {
           "file": "src/app/sign-in/sign-in.page.scss",
-          "hash": "3244421341483603138"
+          "hash": "1175507922492917588"
         },
         {
           "file": "src/app/sign-in/sign-in.page.spec.ts",
-          "hash": "16951667260890575724"
+          "hash": "13084117644463883228"
         },
         {
           "file": "src/app/sign-in/sign-in.page.ts",
-          "hash": "13983801235173682341"
+          "hash": "9523045195129245999"
         },
         {
           "file": "src/app/sign-up/sign-up.module.ts",
@@ -735,19 +979,19 @@
         },
         {
           "file": "src/app/sign-up/sign-up.page.html",
-          "hash": "3194183281012021481"
+          "hash": "3696893045296093179"
         },
         {
           "file": "src/app/sign-up/sign-up.page.scss",
-          "hash": "3244421341483603138"
+          "hash": "7958518873689531598"
         },
         {
           "file": "src/app/sign-up/sign-up.page.spec.ts",
-          "hash": "16202832252242328287"
+          "hash": "1553035842919251611"
         },
         {
           "file": "src/app/sign-up/sign-up.page.ts",
-          "hash": "1946489216308274455"
+          "hash": "5883499683189514086"
         },
         {
           "file": "src/app/tabs/tabs.module.ts",
@@ -774,6 +1018,18 @@
           "hash": "8542607182250514654"
         },
         {
+          "file": "src/app/test-utils/test-setup.ts",
+          "hash": "17598531864262344016"
+        },
+        {
+          "file": "src/app/utils/validation.utils.spec.ts",
+          "hash": "16593543587643820125"
+        },
+        {
+          "file": "src/app/utils/validation.utils.ts",
+          "hash": "17003308042576996850"
+        },
+        {
           "file": "src/app/weekly-menu/weekly-menu.module.ts",
           "hash": "12746120363975269622"
         },
@@ -787,11 +1043,11 @@
         },
         {
           "file": "src/app/weekly-menu/weekly-menu.page.spec.ts",
-          "hash": "5516182300237817086"
+          "hash": "849731388675529130"
         },
         {
           "file": "src/app/weekly-menu/weekly-menu.page.ts",
-          "hash": "1732993889083970739"
+          "hash": "4170746271135120701"
         },
         {
           "file": "src/assets/icon/favicon.png",
@@ -851,11 +1107,15 @@
         },
         {
           "file": "src/global.scss",
-          "hash": "9042082139068963376"
+          "hash": "6234738165070166036"
         },
         {
           "file": "src/index.html",
-          "hash": "840230060866628885"
+          "hash": "13853214764151191264"
+        },
+        {
+          "file": "src/jest-matchers.d.ts",
+          "hash": "10926785659210953607"
         },
         {
           "file": "src/jest.config.js",
@@ -863,7 +1123,7 @@
         },
         {
           "file": "src/main.ts",
-          "hash": "14418682105238715715"
+          "hash": "1279899112117348893"
         },
         {
           "file": "src/manifest.json",
@@ -887,15 +1147,23 @@
         },
         {
           "file": "src/tsconfig.app.json",
-          "hash": "8724344485437682650"
+          "hash": "8500289704812358778"
         },
         {
           "file": "src/tsconfig.spec.json",
           "hash": "15155244583031927258"
         },
         {
+          "file": "src/zone-flags.ts",
+          "hash": "17353504809745981733"
+        },
+        {
+          "file": "storage.rules",
+          "hash": "11476090993639706402"
+        },
+        {
           "file": "tsconfig.json",
-          "hash": "9999545852166986964"
+          "hash": "8921093382963597544"
         },
         {
           "file": "tsconfig.spec.json",

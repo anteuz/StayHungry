@@ -24,6 +24,7 @@ import {ShoppingListService} from './services/shopping-list.service';
 import {SimpleItemService} from './services/simple-item.service';
 import {WeeklyMenuService} from './services/weekly-menu.service';
 import {UserProfileService} from './services/user-profile.service';
+import {IngredientParserService} from './services/ingredient-parser.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ShoppingListItemsComponent } from './shopping-list-items/shopping-list-items.component';
 import { CartPopoverComponent } from './cart-popover/cart-popover.component';
@@ -61,6 +62,7 @@ import { ShoppingListTransferComponent } from './shopping-list-transfer/shopping
         RecipeServiceService,
         WeeklyMenuService,
         UserProfileService,
+        IngredientParserService,
 
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
     ],

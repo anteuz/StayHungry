@@ -195,3 +195,10 @@ ion-icon {
     color: var(--ion-color-medium);
   }
 }
+
+// Fix for stacked label z-index issue
+ion-item ion-label[label-stacked] {
+  z-index: 1;
+  position: relative;
+  margin-bottom: 6px;
+}

@@ -40,94 +40,98 @@
             <ion-item class="noPadding" lines="none">
                 <ion-label position="stacked">Recipe category</ion-label>
                 <ion-segment scrollable (ionChange)="segmentChanged($event)" [value]="recipe.category" [disabled]="mode === 'view' ? true : false">
-                    <ion-segment-button checked value="all">
+                    <ion-segment-button value="all">
                         <ion-icon name="globe" ariaLabel="All"></ion-icon>
+                        <ion-label>All</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="basicStuff">
                         <ion-icon name="basket" ariaLabel="Basic stuff"></ion-icon>
+                        <ion-label>Basic</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="food">
                         <ion-icon name="pizza"></ion-icon>
+                        <ion-label>Food</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="drinks">
                         <ion-icon name="wine"></ion-icon>
+                        <ion-label>Drinks</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="desserts">
                         <ion-icon name="ice-cream"></ion-icon>
+                        <ion-label>Desserts</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="householdUtilities">
                         <ion-icon name="construct"></ion-icon>
+                        <ion-label>Household</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="apothecary">
                         <ion-icon name="medkit"></ion-icon>
+                        <ion-label>Health</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="clothes">
                         <ion-icon name="shirt"></ion-icon>
+                        <ion-label>Clothes</ion-label>
                     </ion-segment-button>
                 </ion-segment>
             </ion-item>
-            <ion-item class="noPadding" lines="none">
-                <ion-label>Recipe ingredients</ion-label>
+
+            <!-- Recipe Instructions Section -->
+            <ion-item *ngIf="recipe.recipeInstructions && recipe.recipeInstructions.length > 0" class="noPadding" lines="none">
+                <ion-label>Recipe Instructions</ion-label>
+                <ion-button fill="clear" (click)="toggleInstructions()" slot="end">
+                    <ion-icon [name]="showInstructions ? 'chevron-up' : 'chevron-down'" slot="icon-only"></ion-icon>
+                </ion-button>
             </ion-item>
-            <ion-grid>
-                <ion-list #ingredientList>
-                    <ion-row>
-                        <ion-list-header class="noPadding">
-                            <ion-col size="6">
-                                <ion-label>Item name</ion-label>
-                            </ion-col>
-                            <ion-col size="3">
-                                <ion-label>#</ion-label>
-                            </ion-col>
-                            <ion-col size="3">
-                                <ion-label>To list</ion-label>
-                            </ion-col>
-                        </ion-list-header>
-                    </ion-row>
-                    <ion-row *ngFor="let ingredient of recipe.ingredients; let i = index">
-                        <ion-item-sliding>
-                            <ion-item class="noPadding">
-                                <div [class]="getStyleClass(ingredient)" [ngStyle]="{'border-left': getStyle(ingredient.item.itemColor)}"></div>
-                                <ion-col size="6">
-                                    <ion-label>
-                                        <h3>{{ ingredient.item.itemName }}</h3>
-                                    </ion-label>
-                                </ion-col>
-                                <ion-col size="3">
-                                    <ion-badge *ngIf="ingredient.amount != '0'" color="primary">{{ ingredient.amount }}</ion-badge>
-                                </ion-col>
-                                <ion-col size="3">
-                                    <ion-toggle *ngIf="mode === 'edit' || mode === 'new'" [checked]="ingredient.isCollectedAsDefault" [value]="ingredient.isCollectedAsDefault" (ionChange)="onToggleIngredientCollectionDefault(ingredient)"></ion-toggle>
-                                    <ion-icon *ngIf="mode === 'view' && ingredient.isCollectedAsDefault" name="checkmark-circle-outline" color="success"></ion-icon>
-                                    <ion-icon *ngIf="mode === 'view' && !ingredient.isCollectedAsDefault" name="close-circle-outline" color="danger"></ion-icon>
-                                </ion-col>
-                            </ion-item>
-                            <ion-item-options side="end" *ngIf="mode === 'new' || mode === 'edit'">
-                                <ion-item-option
-                                        size="small"
-                                        color="primary"
-                                        (click)="onEdit(ingredient)"
-                                >
-                                    <ion-icon name="create"></ion-icon>
-                                    Edit
-                                </ion-item-option>
-                                <ion-item-option
-                                        size="small"
-                                        color="secondary"
-                                        (click)="onRemoveItem(ingredient)"
-                                >
-                                    <ion-icon name="trash"></ion-icon>
-                                    Delete
-                                </ion-item-option>
-                            </ion-item-options>
-                        </ion-item-sliding>
-                    </ion-row>
-                </ion-list>
-            </ion-grid>
-            <ion-button (click)="addItems()" fill="clear" *ngIf="mode === 'edit' || mode === 'new'" >
-                <ion-icon name="add" slot="start"></ion-icon>
-                <ion-label>Add items</ion-label>
-            </ion-button>
+            
+            <ion-list *ngIf="showInstructions && recipe.recipeInstructions && recipe.recipeInstructions.length > 0">
+                <ion-item *ngFor="let instruction of recipe.recipeInstructions; let i = index" lines="none">
+                    <ion-label>
+                        <h3><strong>{{i + 1}}.</strong> {{instruction}}</h3>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+
+            <!-- Recipe Tags Section -->
+            <ion-item *ngIf="recipe.tags && recipe.tags.length > 0" class="noPadding" lines="none">
+                <ion-label>Tags</ion-label>
+            </ion-item>
+            <ion-chip-list *ngIf="recipe.tags && recipe.tags.length > 0">
+                <ion-chip *ngFor="let tag of recipe.tags" color="primary" outline>
+                    <ion-label>{{tag}}</ion-label>
+                </ion-chip>
+            </ion-chip-list>
+
+            <!-- Source URL Section -->
+            <ion-item *ngIf="recipe.sourceUrl" class="noPadding" lines="none">
+                <ion-label>Source</ion-label>
+                <ion-button fill="clear" slot="end" (click)="openSourceUrl(recipe.sourceUrl)">
+                    <ion-icon name="open-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-item>
+
+            <!-- Recipe Ingredients Section -->
+            <ion-item *ngIf="recipe.recipeIngredient && recipe.recipeIngredient.length > 0" class="noPadding" lines="none">
+                <ion-icon name="list" slot="start" color="secondary"></ion-icon>
+                <ion-label>
+                    <h3>Ingredients ({{ recipe.recipeIngredient?.length || 0 }})</h3>
+                </ion-label>
+            </ion-item>
+            
+            <ion-list *ngIf="recipe.recipeIngredient && recipe.recipeIngredient.length > 0">
+                <ion-item *ngFor="let ingredient of recipe.recipeIngredient; let i = index">
+                    <ion-label>
+                        <p>{{ ingredient }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+            
+            <ion-item *ngIf="!recipe.recipeIngredient || recipe.recipeIngredient.length === 0" color="warning">
+                <ion-icon name="warning" slot="start"></ion-icon>
+                <ion-label>
+                    <p>No ingredients found</p>
+                </ion-label>
+            </ion-item>
+
         </ion-card-content>
         <ion-grid *ngIf="mode === 'view'">
             <ion-row>

@@ -30,7 +30,8 @@
             [(ngModel)]="url" 
             placeholder="https://www.k-ruoka.fi/reseptit/..."
             type="url"
-            clearInput="true">
+            clearInput="true"
+            (keyup.enter)="scrapeRecipe()">
           </ion-input>
         </ion-item>
         
@@ -61,6 +62,13 @@
       <ion-card-content>
         <ion-icon name="warning" slot="start"></ion-icon>
         {{ errorMessage }}
+        <ion-button 
+          fill="clear" 
+          color="light" 
+          size="small"
+          (click)="errorMessage = ''">
+          Dismiss
+        </ion-button>
       </ion-card-content>
     </ion-card>
 
@@ -107,11 +115,11 @@
         <ion-item>
           <ion-icon name="list" slot="start" color="secondary"></ion-icon>
           <ion-label>
-            <h3>Ingredients ({{ scrapedRecipe.recipeIngredient.length }})</h3>
+            <h3>Ingredients ({{ scrapedRecipe.recipeIngredient?.length || 0 }})</h3>
           </ion-label>
         </ion-item>
         
-        <ion-list>
+        <ion-list *ngIf="scrapedRecipe.recipeIngredient && scrapedRecipe.recipeIngredient.length > 0">
           <ion-item *ngFor="let ingredient of scrapedRecipe.recipeIngredient; let i = index">
             <ion-label>
               <p>{{ ingredient }}</p>
@@ -119,15 +127,22 @@
           </ion-item>
         </ion-list>
         
+        <ion-item *ngIf="!scrapedRecipe.recipeIngredient || scrapedRecipe.recipeIngredient.length === 0" color="warning">
+          <ion-icon name="warning" slot="start"></ion-icon>
+          <ion-label>
+            <p>No ingredients found</p>
+          </ion-label>
+        </ion-item>
+        
         <!-- Instructions -->
         <ion-item>
           <ion-icon name="book" slot="start" color="tertiary"></ion-icon>
           <ion-label>
-            <h3>Instructions ({{ scrapedRecipe.recipeInstructions.length }})</h3>
+            <h3>Instructions ({{ scrapedRecipe.recipeInstructions?.length || 0 }})</h3>
           </ion-label>
         </ion-item>
         
-        <ion-list>
+        <ion-list *ngIf="scrapedRecipe.recipeInstructions && scrapedRecipe.recipeInstructions.length > 0">
           <ion-item *ngFor="let instruction of scrapedRecipe.recipeInstructions; let i = index">
             <ion-label>
               <h4>Step {{ i + 1 }}</h4>
@@ -135,6 +150,13 @@
             </ion-label>
           </ion-item>
         </ion-list>
+        
+        <ion-item *ngIf="!scrapedRecipe.recipeInstructions || scrapedRecipe.recipeInstructions.length === 0" color="warning">
+          <ion-icon name="warning" slot="start"></ion-icon>
+          <ion-label>
+            <p>No instructions found</p>
+          </ion-label>
+        </ion-item>
         
         <!-- Source URL -->
         <ion-item *ngIf="scrapedRecipe.sourceUrl">
@@ -151,6 +173,7 @@
             expand="block" 
             color="success" 
             (click)="saveRecipe()"
+            [disabled]="!canSaveRecipe()"
             class="save-button">
             <ion-icon name="save" slot="start"></ion-icon>
             Save Recipe
@@ -211,6 +234,10 @@
             </ion-label>
           </ion-item>
         </ion-list>
+        
+        <ion-note color="medium">
+          <p><strong>Tip:</strong> Most modern recipe websites with structured data (JSON-LD) should work automatically.</p>
+        </ion-note>
       </ion-card-content>
     </ion-card>
   </div>

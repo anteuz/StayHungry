@@ -53,7 +53,7 @@
                 },
                 {
                   "glob": "**/*.svg",
-                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "input": "node_modules/@ionic/angular/node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
                 },
                 "src/manifest.json"
@@ -47332,5 +47332,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1756550143864
+  "computedAt": 1756661048297
 }

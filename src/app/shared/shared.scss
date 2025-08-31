@@ -1,0 +1,47 @@
+/* Non-blocking Toast Styles */
+.non-blocking-toast {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --min-height: 48px;
+  --min-width: 250px;
+  --max-width: 90vw;
+  z-index: 1000;
+  
+  /* Ensure toast doesn't block touch events on underlying elements */
+  pointer-events: auto;
+  
+  /* Position to avoid interfering with main content */
+  margin: 8px;
+}
+
+.non-blocking-toast.toast-top {
+  top: 60px; /* Below header */
+}
+
+.non-blocking-toast.toast-bottom {
+  bottom: 20px; /* Above bottom safe area */
+}
+
+/* Toast button styles */
+.non-blocking-toast ion-button {
+  --color: var(--ion-color-primary-contrast);
+  --opacity: 0.8;
+  margin: 0;
+  padding: 0 8px;
+}
+
+.non-blocking-toast ion-button:hover {
+  --opacity: 1;
+}
+
+/* Ensure toasts don't interfere with modal interactions */
+ion-modal ~ .non-blocking-toast {
+  z-index: 999;
+}
+
+/* Ensure toasts don't interfere with popover interactions */
+ion-popover ~ .non-blocking-toast {
+  z-index: 999;
+}

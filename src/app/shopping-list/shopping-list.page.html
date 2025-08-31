@@ -21,7 +21,13 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content #shoppingListContent>
+    <!-- Mobile test indicator -->
+    <div *ngIf="platform.is('mobile') || platform.is('ios')" class="mobile-test-indicator">
+        <ion-icon name="phone-portrait" color="success"></ion-icon>
+        <span>Mobile Mode Active</span>
+    </div>
+
     <ion-item *ngIf="showSearchBar && shoppingList != null" class="search-container">
         <ion-searchbar #ingredientBar
                    showCancelButton="false"
@@ -55,7 +61,12 @@
          class="categorized-shopping-list">
         <div *ngFor="let categoryGroup of categorizedIngredients" class="category-group">
             <!-- Category Header -->
-            <ion-item class="category-header" lines="none">
+            <ion-item class="category-header drop-zone" 
+                      lines="none"
+                      [attr.data-category]="categoryGroup.category.key"
+                      (dragover)="onDragOver($event, categoryGroup.category.key)"
+                      (dragleave)="onDragLeave($event)"
+                      (drop)="onDrop($event, categoryGroup.category.key)">
                 <ion-icon 
                     [name]="categoryGroup.category.icon" 
                     [color]="categoryGroup.category.color" 
@@ -79,21 +90,26 @@
                         [attr.aria-hidden]="true">
                     </div>
                     <ion-item 
-                        class="ingredient-item noPadding" 
+                        class="ingredient-item noPadding draggable-item" 
                         [ngClass]="ingredient.isBeingCollected ? 'collected' : ''" 
                         (click)="!ingredient.isBeingCollected ? onStartCollect(ingredient) : cancelCollect(ingredient)" 
                         (transitionend)="onTransitionEnd($event, ingredient)"
+                        (mousedown)="onMouseDown($event, ingredient, categoryGroup.category.key, i)"
+                        (touchstart)="onTouchStart($event, ingredient, categoryGroup.category.key, i)"
+                        (touchmove)="onTouchMove($event)"
+                        (touchend)="onTouchEnd($event)"
                         button
                         [attr.aria-label]="'Mark ' + ingredient.item.itemName + ' as collected'">
                         <ion-label class="ingredient-label">
                             <h3 class="ingredient-name">{{ ingredient.item.itemName }}</h3>
                         </ion-label>
-                        <ion-badge 
-                            *ngIf="ingredient.amount != '0'" 
-                            color="primary" 
-                            class="amount-badge">
-                            {{ ingredient.amount }}
-                        </ion-badge>
+                        <ion-badge class="amount-badge" slot="end">{{ ingredient.amount }}</ion-badge>
+                        <ion-icon 
+                            name="move" 
+                            class="drag-handle" 
+                            slot="end"
+                            [attr.aria-label]="'Drag ' + ingredient.item.itemName + ' to change category'">
+                        </ion-icon>
                     </ion-item>
                     <ion-item-options side="end">
                         <ion-item-option

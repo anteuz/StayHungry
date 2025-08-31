@@ -16,7 +16,7 @@ export class RecipeScrapingConfigService {
     useStandalone: true, // Default to standalone mode
     firebaseFunctionUrl: 'https://your-firebase-function-url.com/parseRecipe',
     corsProxyUrl: 'https://api.allorigins.win/raw?url=',
-    timeoutMs: 30000, // 30 seconds
+    timeoutMs: 45000, // 45 seconds
     maxRetries: 3
   };
 
@@ -122,26 +122,29 @@ export class RecipeScrapingConfigService {
       useStandalone: true,
       firebaseFunctionUrl: 'https://your-firebase-function-url.com/parseRecipe',
       corsProxyUrl: 'https://api.allorigins.win/raw?url=',
-      timeoutMs: 30000,
+      timeoutMs: 45000,
       maxRetries: 3
     };
     this.saveConfig();
   }
 
   /**
-   * Get available CORS proxies
+   * Get available CORS proxies (updated list)
    */
   getAvailableCorsProxies(): string[] {
     return [
       'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
       'https://cors-anywhere.herokuapp.com/',
       'https://thingproxy.freeboard.io/fetch/',
-      'https://api.codetabs.com/v1/proxy?quest='
+      'https://api.codetabs.com/v1/proxy?quest=',
+      'https://cors.bridged.cc/',
+      'https://cors-anywhere.herokuapp.com/'
     ];
   }
 
   /**
-   * Test configuration
+   * Test configuration with improved error handling
    */
   async testConfiguration(): Promise<{ success: boolean; message: string }> {
     if (this.config.useStandalone) {
@@ -152,35 +155,50 @@ export class RecipeScrapingConfigService {
   }
 
   /**
-   * Test standalone mode
+   * Test standalone mode with multiple proxies
    */
   private async testStandaloneMode(): Promise<{ success: boolean; message: string }> {
-    try {
-      const testUrl = 'https://httpbin.org/html';
-      const response = await fetch(this.getCorsProxyUrl() + encodeURIComponent(testUrl), {
-        method: 'GET',
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-        }
-      });
+    const testUrl = 'https://httpbin.org/html';
+    const proxies = this.getAvailableCorsProxies();
+    
+    for (let i = 0; i < proxies.length; i++) {
+      const proxy = proxies[i];
+      
+      try {
+        const proxyUrl = proxy === 'https://corsproxy.io/?' ? 
+          `${proxy}${encodeURIComponent(testUrl)}` : 
+          `${proxy}${testUrl}`;
 
-      if (response.ok) {
-        return {
-          success: true,
-          message: 'Standalone mode is working correctly'
-        };
-      } else {
-        return {
-          success: false,
-          message: `CORS proxy failed with status: ${response.status}`
-        };
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        const response = await fetch(proxyUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          return {
+            success: true,
+            message: `Standalone mode is working correctly with proxy: ${proxy}`
+          };
+        }
+      } catch (error) {
+        console.warn(`Proxy ${proxy} failed:`, error);
+        continue;
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: `Standalone mode test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
     }
+
+    return {
+      success: false,
+      message: 'All CORS proxies failed. Consider using Firebase function mode.'
+    };
   }
 
   /**
@@ -195,13 +213,19 @@ export class RecipeScrapingConfigService {
         };
       }
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch(this.config.firebaseFunctionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ url: 'https://httpbin.org/html' })
+        body: JSON.stringify({ url: 'https://httpbin.org/html' }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         return {

@@ -202,6 +202,15 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
   }
 
   getStyle(itemColor: string) {
+    const cssVariable = this.getCategoryColor(itemColor);
+    
+    // Use CSS custom property for background-color instead of border-left
+    return {
+      '--category-color': `var(${cssVariable})`
+    };
+  }
+
+  private getCategoryColor(itemColor: string): string {
     // Handle both new category colors and legacy itemColor variables
     let cssVariable = itemColor;
     
@@ -216,7 +225,7 @@ export class BrowseItemsModalComponent implements OnInit, OnDestroy {
       cssVariable = '--ion-color-category-other';
     }
     
-    return `5px solid var(${cssVariable})`;
+    return cssVariable;
   }
 
   getStyleClass(item: SimpleItem): string {

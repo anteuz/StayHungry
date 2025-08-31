@@ -42,6 +42,10 @@ export class AppComponent {
 
   initializeApp() {
     console.log('Initializing app...');
+    
+    // Mobile-specific fixes for iOS black screen issue
+    this.applyMobileFixes();
+    
     this.platform.ready().then(() => {
       console.log('Platform ready');
       this.subscribeToAuthState();
@@ -55,6 +59,34 @@ export class AppComponent {
         SplashScreen.hide();
       }
     }).catch(e => console.log('Could not initialize platform:', e));
+  }
+
+  private applyMobileFixes() {
+    // Apply mobile-specific CSS fixes to prevent black screen
+    if (typeof document !== 'undefined') {
+      // Ensure proper background color on mobile
+      document.documentElement.style.setProperty('--ion-background-color', '#ffffff');
+      document.documentElement.style.setProperty('--ion-text-color', '#000000');
+      
+      // Add mobile-specific class to body
+      if (this.platform.is('mobile') || this.platform.is('ios')) {
+        document.body.classList.add('mobile-device');
+      }
+      
+      // iOS Safari specific fixes
+      if (this.platform.is('ios')) {
+        document.body.classList.add('ios-device');
+        
+        // Force repaint to prevent black screen
+        setTimeout(() => {
+          if (document.body) {
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // Force reflow
+            document.body.style.display = '';
+          }
+        }, 100);
+      }
+    }
   }
 
   private updateStatusBarForTheme() {

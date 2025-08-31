@@ -6,21 +6,34 @@
 
     <base href="/"/>
 
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Updated viewport meta tag for better mobile compatibility -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
     <meta name="format-detection" content="telephone=no"/>
     <meta name="msapplication-tap-highlight" content="no"/>
+
+    <!-- iOS-specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+    <meta name="apple-mobile-web-app-title" content="Stay Hungry!"/>
+    
+    <!-- Prevent iOS Safari from zooming on input focus -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
     <link rel="icon" type="image/png" href="assets/icon/favicon.png"/>
 
     <!-- add to homescreen for ios -->
     <meta name="mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1976d2">
-</head>
+    <meta name="theme-color" content="#6496F2">
+    
+    <!-- iOS touch icons -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192x192.png"/>
+    <link rel="apple-touch-icon" sizes="167x167" href="assets/icons/icon-152x152.png"/>
+  </head>
   <body>
     <app-root></app-root>
     <noscript>Please enable JavaScript to continue using this application.</noscript>
-</body>
+  </body>
 </html>

@@ -10,6 +10,140 @@
 @import '@ionic/angular/css/text-transformation.css';
 @import '@ionic/angular/css/flex-utils.css';
 
+// Mobile-specific fixes for iOS black screen issue
+html, body {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Ensure ion-app has proper background
+ion-app {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+}
+
+// Fix for iOS Safari rendering issues
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+// Allow text selection for specific elements
+input, textarea, ion-input, ion-textarea {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+// iOS-specific fixes
+@supports (-webkit-touch-callout: none) {
+  body {
+    /* iOS Safari specific fixes */
+    background-color: var(--ion-background-color, #ffffff) !important;
+    color: var(--ion-text-color, #000000) !important;
+  }
+  
+  ion-app {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  /* Fix for iOS Safari viewport issues */
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+}
+
+// Dark theme mobile fixes
+body.dark-theme {
+  background-color: var(--ion-background-color, #121212) !important;
+  color: var(--ion-text-color, #ffffff) !important;
+  
+  ion-app {
+    background-color: var(--ion-background-color, #121212) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #121212) !important;
+  }
+}
+
+// Mobile device specific classes
+body.mobile-device {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+  
+  ion-app {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+}
+
+// iOS device specific classes
+body.ios-device {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+  
+  ion-app {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  // iOS Safari specific touch handling
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  // Fix for iOS Safari viewport issues
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+    min-height: 100vh;
+  }
+}
+
+// Dark theme with mobile classes
+body.dark-theme.mobile-device,
+body.dark-theme.ios-device {
+  background-color: var(--ion-background-color, #121212) !important;
+  color: var(--ion-text-color, #ffffff) !important;
+  
+  ion-app {
+    background-color: var(--ion-background-color, #121212) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #121212) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #121212) !important;
+  }
+}
+
 .noBackground {
   background-color: rgba(0,0,0,.0)!important;
   --background: rgba(255,255,255,0.4)!important;
@@ -371,5 +505,53 @@ ion-modal.browse-items-modal {
   
   .modal-wrapper {
     border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+  }
+}
+
+/* Mobile-specific fixes for iOS Safari */
+@media screen and (max-width: 768px) {
+  /* Ensure proper rendering on mobile devices */
+  ion-app {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  /* Fix for iOS Safari touch issues */
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  /* Ensure proper contrast on mobile */
+  ion-item {
+    background-color: var(--ion-item-background, var(--ion-color-light)) !important;
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  body {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-app {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .ion-page {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  /* Fix for iOS Safari rendering issues */
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  /* Ensure proper touch handling */
+  ion-item {
+    -webkit-tap-highlight-color: transparent;
   }
 }

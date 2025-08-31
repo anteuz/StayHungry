@@ -1,5 +1,51 @@
 // Enhanced Shopping List Styling with Design Tokens
 
+// Mobile-specific fixes for iOS black screen issue
+:host {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+}
+
+ion-content {
+  background-color: var(--ion-background-color, #ffffff) !important;
+  color: var(--ion-text-color, #000000) !important;
+}
+
+// iOS Safari specific fixes
+@supports (-webkit-touch-callout: none) {
+  :host {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .categorized-shopping-list {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+}
+
+// Mobile test indicator
+.mobile-test-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  margin: var(--space-sm);
+  background: var(--ion-color-success-tint);
+  border: 1px solid var(--ion-color-success);
+  border-radius: var(--radius-md);
+  color: var(--ion-color-success-shade);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  
+  ion-icon {
+    font-size: 1.2em;
+  }
+}
+
 .search-container {
   --background: var(--ion-color-light);
   --padding-start: var(--space-md);
@@ -806,6 +852,242 @@ ion-list[position="bottom"] {
 
 // These dark theme sections have been consolidated into the main dark theme section above
 
+// Drag and Drop Styles
+.draggable-item {
+  cursor: grab;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+  touch-action: pan-y; // Allow vertical scrolling but prevent horizontal
+  
+  &:active {
+    cursor: grabbing;
+  }
+  
+  &.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+    z-index: 1000;
+    position: relative;
+    pointer-events: none; // Prevent interaction while dragging
+    filter: blur(0.5px); // Subtle blur effect
+  }
+  
+  // Prevent text selection during drag
+  &.dragging * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  // Hover effect to indicate draggability
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Active state for better feedback
+  &:active:not(.dragging) {
+    transform: translateY(0px) scale(0.98);
+    transition: all 0.1s ease-out;
+  }
+}
+
+.drag-ghost {
+  background: var(--ion-color-light);
+  border: 2px solid var(--ion-color-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(3deg) scale(1.05);
+  transition: all 0.1s ease-out;
+  
+  // Remove any Ionic-specific styling that might interfere
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
+  --border-radius: var(--radius-lg);
+  --padding-start: var(--space-md);
+  --padding-end: var(--space-md);
+  --padding-top: var(--space-sm);
+  --padding-bottom: var(--space-sm);
+  
+  ion-label {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .ingredient-name {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+  }
+  
+  .amount-badge {
+    margin-left: var(--space-sm);
+    font-size: var(--font-size-xs);
+  }
+}
+
+.drag-handle {
+  color: var(--ion-color-medium);
+  font-size: 1.2em;
+  cursor: grab;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease-in-out;
+  opacity: 0.7;
+  
+  &:active {
+    cursor: grabbing;
+    background: var(--ion-color-light-tint);
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  
+  &:hover {
+    background: var(--ion-color-light-tint);
+    color: var(--ion-color-primary);
+    opacity: 1;
+  }
+}
+
+.drop-zone {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  
+  &.drag-over {
+    background: var(--ion-color-primary-tint);
+    border: 2px dashed var(--ion-color-primary);
+    border-radius: var(--radius-lg);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+    
+    .category-title {
+      color: var(--ion-color-primary) !important;
+      font-weight: 700;
+    }
+    
+    // Enhanced pulse animation
+    animation: dropZonePulse 1.2s ease-in-out infinite;
+  }
+  
+  // Subtle hover effect to indicate drop zones
+  &:hover {
+    background: var(--ion-color-light-tint);
+    transform: scale(1.01);
+  }
+}
+
+@keyframes dropZonePulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.4);
+    transform: scale(1.03);
+  }
+}
+
+// Drag feedback for category headers
+.category-header.drop-zone {
+  &.drag-over {
+    --background: var(--ion-color-primary-tint);
+    border: 2px dashed var(--ion-color-primary);
+    border-radius: var(--radius-lg);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+    
+    .category-title {
+      color: var(--ion-color-primary) !important;
+      font-weight: 700;
+    }
+    
+    ion-icon {
+      color: var(--ion-color-primary) !important;
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Touch-specific improvements
+@media (hover: none) and (pointer: coarse) {
+  .draggable-item {
+    // Increase touch target size
+    min-height: 48px;
+    
+    .drag-handle {
+      min-width: 48px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8; // More visible on touch devices
+    }
+    
+    // Better touch feedback
+    &:active:not(.dragging) {
+      background: var(--ion-color-light-tint);
+      transform: scale(0.98);
+    }
+  }
+  
+  .drop-zone {
+    // Larger drop zone for touch
+    min-height: 56px;
+    
+    &.drag-over {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(var(--ion-color-primary-rgb), 0.3);
+    }
+  }
+  
+  // Reduce long press delay for better responsiveness
+  .draggable-item {
+    touch-action: pan-y;
+  }
+}
+
+// Keyboard accessibility
+.draggable-item:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+.draggable-item:focus .drag-handle {
+  background: var(--ion-color-primary-tint);
+  color: var(--ion-color-primary);
+  opacity: 1;
+}
+
+// Visual indicator for draggable items
+.draggable-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(var(--ion-color-primary-rgb), 0.05) 50%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+}
+
+.draggable-item:hover::before {
+  opacity: 1;
+}
+
+.draggable-item.dragging::before {
+  opacity: 0;
+}
+
 // Global dark theme overrides that bypass Angular ViewEncapsulation
 :host-context(body.dark-theme) {
   // Category headers
@@ -851,6 +1133,117 @@ ion-list[position="bottom"] {
     font-weight: 600 !important;
   }
   
+  // Drag and Drop dark theme
+  .draggable-item {
+    cursor: grab !important;
+    
+    &.dragging {
+      opacity: 0.4 !important;
+      transform: scale(0.98) !important;
+      z-index: 1000 !important;
+      position: relative !important;
+      pointer-events: none !important;
+      filter: blur(0.5px) !important;
+    }
+    
+    &:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    &:active:not(.dragging) {
+      transform: translateY(0px) scale(0.98) !important;
+      background: var(--ion-color-step-200) !important;
+    }
+    
+    &:focus {
+      outline: 2px solid var(--ion-color-primary) !important;
+      outline-offset: 2px !important;
+    }
+    
+    .drag-handle {
+      color: var(--ion-color-step-400) !important;
+      opacity: 0.7 !important;
+      
+      &:hover {
+        background: var(--ion-color-step-200) !important;
+        color: var(--ion-color-primary) !important;
+        opacity: 1 !important;
+      }
+      
+      &:active {
+        background: var(--ion-color-step-300) !important;
+        transform: scale(1.1) !important;
+        opacity: 1 !important;
+      }
+    }
+    
+    // Dark theme visual indicator
+    &::before {
+      background: linear-gradient(45deg, transparent 30%, rgba(var(--ion-color-primary-rgb), 0.1) 50%, transparent 70%) !important;
+    }
+  }
+  
+  .drag-ghost {
+    background: var(--ion-color-step-150) !important;
+    border: 2px solid var(--ion-color-primary) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    color: var(--ion-color-step-950) !important;
+    
+    --background: var(--ion-color-step-150) !important;
+    --color: var(--ion-color-step-950) !important;
+    
+    .ingredient-name {
+      color: var(--ion-color-step-950) !important;
+    }
+    
+    .amount-badge {
+      --background: var(--ion-color-primary) !important;
+      --color: var(--ion-color-primary-contrast) !important;
+    }
+  }
+  
+  .drag-handle {
+    color: var(--ion-color-step-400) !important;
+  }
+  
+  .drop-zone {
+    &:hover {
+      background: var(--ion-color-step-200) !important;
+      transform: scale(1.01) !important;
+    }
+    
+    &.drag-over {
+      background: var(--ion-color-primary-tint) !important;
+      border: 2px dashed var(--ion-color-primary) !important;
+      border-radius: var(--radius-lg) !important;
+      transform: scale(1.02) !important;
+      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3) !important;
+      
+      .category-title {
+        color: var(--ion-color-primary) !important;
+        font-weight: 700 !important;
+      }
+    }
+  }
+  
+  .category-header.drop-zone {
+    &.drag-over {
+      --background: var(--ion-color-primary-tint) !important;
+      border: 2px dashed var(--ion-color-primary) !important;
+      border-radius: var(--radius-lg) !important;
+      
+      .category-title {
+        color: var(--ion-color-primary) !important;
+      }
+      
+      ion-icon {
+        color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+  
   // Collected items section - clean styling
   ion-list[position="bottom"] {
     --background: var(--ion-color-step-100) !important;
@@ -890,5 +1283,58 @@ ion-list[position="bottom"] {
         --color: var(--ion-color-step-50) !important;
       }
     }
+  }
+}
+
+// Mobile-specific fixes for iOS Safari
+@media screen and (max-width: 768px) {
+  // Ensure proper rendering on mobile devices
+  :host {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .categorized-shopping-list {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  // Fix touch event issues on mobile
+  .draggable-item {
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  // Ensure proper contrast on mobile
+  .ingredient-item {
+    background-color: var(--ion-item-background, var(--ion-color-light)) !important;
+  }
+}
+
+// iOS Safari specific fixes
+@supports (-webkit-touch-callout: none) {
+  // iOS Safari specific styles
+  :host {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  ion-content {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  .categorized-shopping-list {
+    background-color: var(--ion-background-color, #ffffff) !important;
+  }
+  
+  // Fix for iOS Safari rendering issues
+  .ingredient-item {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  // Ensure proper touch handling
+  .draggable-item {
+    touch-action: pan-y;
   }
 }
