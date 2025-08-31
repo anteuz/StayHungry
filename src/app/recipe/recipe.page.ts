@@ -1,18 +1,21 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import {Filesystem} from '@capacitor/filesystem';
-import {IonList, LoadingController, ModalController, Platform} from '@ionic/angular';
+import {LoadingController, Platform, ToastController} from '@ionic/angular';
 import {v4 as uuidv4} from 'uuid';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
-import {IngredientOverlayPage} from '../ingredient-overlay/ingredient-overlay.page';
-import {Ingredient} from '../models/ingredient';
 import {Recipe} from '../models/recipe';
 import {CloudStoreService} from '../services/cloud-store.service';
 import {RecipeServiceService} from '../services/recipe-service.service';
-import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
+import {IngredientParserService} from '../services/ingredient-parser.service';
+import {ShoppingListService} from '../services/shopping-list.service';
+import {SimpleStateService} from '../services/simple-state-service';
+import {Ingredient} from '../models/ingredient';
+import {ShoppingList} from '../models/shopping-list';
+import {IngredientMergerService} from '../services/ingredient-merger.service';
 
 @Component({
     selector: 'app-recipe',
@@ -22,24 +25,38 @@ import {compare, groupByVanilla2} from '../shopping-list/shopping-list.page';
 export class RecipePage implements OnInit, OnDestroy {
 
     mode;
-    @ViewChild('ingredientList', {static: false}) ingredientList: IonList;
     recipe: Recipe;
     recipeUUID;
     recipeImageUploadPercentage: number;
     downloadURL: Observable<string>;
     recipeForm: UntypedFormGroup;
     platformTypeCordova: boolean;
+    showInstructions = false;
+
+    // Recipe category options with labels
+    readonly categoryOptions = [
+        { value: 'all', label: 'All Recipes', icon: 'globe' },
+        { value: 'basicStuff', label: 'Basic Stuff', icon: 'basket' },
+        { value: 'food', label: 'Food', icon: 'pizza' },
+        { value: 'drinks', label: 'Drinks', icon: 'wine' },
+        { value: 'desserts', label: 'Desserts', icon: 'ice-cream' },
+        { value: 'householdUtilities', label: 'Household', icon: 'construct' },
+        { value: 'apothecary', label: 'Health', icon: 'medkit' },
+        { value: 'clothes', label: 'Clothes', icon: 'shirt' }
+    ];
 
     constructor(
         private platform: Platform,
-        private modalCtrl: ModalController,
         private route: ActivatedRoute,
         private router: Router,
-
         private cloudStore: CloudStoreService,
-
         private loadingCtrl: LoadingController,
-        private recipeService: RecipeServiceService
+        private recipeService: RecipeServiceService,
+        private ingredientParser: IngredientParserService,
+        private ingredientMergerService: IngredientMergerService,
+        private shoppingListService: ShoppingListService,
+        private stateService: SimpleStateService,
+        private toastController: ToastController
     ) {
     }
 
@@ -58,69 +75,16 @@ export class RecipePage implements OnInit, OnDestroy {
 
         console.log(this.mode);
         if (this.mode === 'new') {
-           this.recipe = new Recipe(uuidv4(), null, null, null, [], null);
+           this.recipe = new Recipe(uuidv4(), null, null, null, [], 'food');
             this.initializeForm();
         }
         if (this.mode === 'view' || this.mode === 'edit') {
             this.recipe = this.recipeService.findUsingUUID(this.recipeUUID);
-            if ((this.recipe.ingredientMap == null || this.recipe.ingredientMap === undefined) && this.recipe.ingredients !== undefined) {
-                this.recipe.ingredients.sort(compare);
-                this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
-            }
             this.initializeForm();
         }
     }
 
-    // Open ingredient overlay and add ingredients
-    async addItems() {
-        let modal = await this.modalCtrl.create({
-            component: IngredientOverlayPage,
-            animated: false,
-            showBackdrop: true,
-            cssClass: 'noBackground',
-            backdropDismiss: true,
-            componentProps:
-                {
-                    'mode': 'insert'
-                }
-        });
-        modal.present().catch(e => console.log('Could not show modal!'));
 
-        const {data} = await modal.onDidDismiss(); // Maybe later?
-        if (data !== undefined) {
-            if (this.recipe.ingredients === null || this.recipe.ingredients === undefined) {
-                this.recipe.ingredients = [];
-            }
-            this.recipe.ingredients.push(...data);
-            this.initializeIngredients();
-        }
-        modal = null;
-    }
-
-    async onEdit(ingredient: Ingredient) {
-        let modal = await this.modalCtrl.create({
-            component: IngredientOverlayPage,
-            animated: false,
-            showBackdrop: true,
-            cssClass: 'noBackground',
-            backdropDismiss: true,
-            componentProps:
-                {
-                    'mode': 'edit',
-                    'ingredient': ingredient
-                }
-        });
-        modal.present().catch(e => console.log('Could not show modal!'));
-
-        const {data} = await modal.onDidDismiss();
-        // if data is provided, if action is cancelled data is undefined (backdrop tapped)
-        if (data !== undefined) {
-            this.recipe.ingredients[this.recipe.ingredients.indexOf(this.findIngredientUsingUUID(data.uuid)[0])] = data;
-            this.initializeIngredients();
-        }
-        modal = null;
-        this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
-    }
 
     onDeleteRecipe() {
         this.cloudStore.removeImage(this.recipe.uuid);
@@ -128,42 +92,9 @@ export class RecipePage implements OnInit, OnDestroy {
         this.router.navigate(['/tabs/tab2'], {relativeTo: this.route});
     }
 
-    getStyle(ingredientColor: string) {
-        return '5px solid var(' + ingredientColor + ')';
-    }
 
-    getStyleClass(ingredient: Ingredient) {
-        if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.recipe.ingredientMap.get(ingredient.item.itemColor).length > 1) {
-            return 'roundedCornersTop';
-        } else if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === 0 && this.recipe.ingredientMap.get(ingredient.item.itemColor).length === 1) {
-            return 'roundedCornersSingle';
-        } else if (this.recipe.ingredientMap.get(ingredient.item.itemColor).indexOf(ingredient) === this.recipe.ingredientMap.get(ingredient.item.itemColor).length - 1) {
-            return 'roundedCornersBottom';
-        } else {
-            return 'roundedCornersMiddle';
-        }
-    }
-
-    initializeIngredients() {
-        if (this.recipe.ingredients != null || this.recipe.ingredients != undefined) {
-            this.recipe.ingredients.sort(compare);
-            this.recipe.ingredientMap = groupByVanilla2(this.recipe.ingredients, ingredient => ingredient.item.itemColor);
-        }
-    }
-
-    onRemoveItem(index: Ingredient) {
-        this.ingredientList.closeSlidingItems().catch(e => 'Could not close open sliding items!');
-        this.recipe.ingredients.splice(this.recipe.ingredients.indexOf(index), 1);
-    }
-
-    findIngredientUsingUUID(searchTerm) {
-        return this.recipe.ingredients.filter((ingredient) => {
-            return ingredient.uuid.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-        });
-    }
 
     initializeForm() {
-
         this.recipeForm = new UntypedFormGroup({
             'recipeName': new UntypedFormControl(this.recipe.name, Validators.required),
             'recipeDescription': new UntypedFormControl(this.recipe.description || null)
@@ -238,6 +169,7 @@ export class RecipePage implements OnInit, OnDestroy {
             console.log('Error taking picture:', error);
         }
     }
+
     onEditRecipe() {
         this.router.navigate(['/tabs/tab2/recipe', 'edit', this.recipe.uuid], {relativeTo: this.route});
     }
@@ -264,12 +196,152 @@ export class RecipePage implements OnInit, OnDestroy {
         this.recipeForm = null;
     }
 
-    onToggleIngredientCollectionDefault(ingredient: Ingredient) {
-        console.log(ingredient.isCollectedAsDefault);
-        this.recipe.ingredients[this.recipe.ingredients.indexOf(ingredient)].isCollectedAsDefault = !ingredient.isCollectedAsDefault;
-    }
+
 
     segmentChanged(event: any) {
         this.recipe.category = event.detail.value;
+    }
+
+    /**
+     * Get category label for display
+     */
+    getCategoryLabel(categoryValue: string): string {
+        const category = this.categoryOptions.find(opt => opt.value === categoryValue);
+        return category ? category.label : 'Unknown';
+    }
+
+    /**
+     * Get category icon for display
+     */
+    getCategoryIcon(categoryValue: string): string {
+        const category = this.categoryOptions.find(opt => opt.value === categoryValue);
+        return category ? category.icon : 'help-circle';
+    }
+
+    /**
+     * Toggle instructions visibility
+     */
+    toggleInstructions() {
+        this.showInstructions = !this.showInstructions;
+    }
+
+    /**
+     * Add ingredients to shopping list
+     */
+    async onAddIngredients() {
+        if (!this.recipe || !this.recipe.recipeIngredient || this.recipe.recipeIngredient.length === 0) {
+            await this.showToast('No ingredients found in this recipe', 'warning');
+            return;
+        }
+
+        const loading = await this.loadingCtrl.create({
+            message: 'Adding ingredients to shopping list...',
+            translucent: false,
+            cssClass: 'loadingDialog'
+        });
+
+        try {
+            await loading.present();
+
+            // Get the active shopping list
+            const appState = await this.stateService.getAppState();
+            let activeShoppingList: ShoppingList;
+
+            if (appState && appState.lastVisited_ShoppingList) {
+                activeShoppingList = this.shoppingListService.findUsingUUID(appState.lastVisited_ShoppingList);
+            }
+
+            // If no active shopping list, get the first available one
+            if (!activeShoppingList) {
+                const shoppingLists = this.shoppingListService.getItems();
+                if (shoppingLists && shoppingLists.length > 0) {
+                    activeShoppingList = shoppingLists[0];
+                }
+            }
+
+            if (!activeShoppingList) {
+                await loading.dismiss();
+                await this.showToast('No shopping list available. Please create one first.', 'warning');
+                return;
+            }
+
+            // Parse recipe ingredients using the ingredient parser service with merging
+            const parsedIngredients = this.ingredientParser.parseRecipeToIngredients(
+                this.recipe.recipeIngredient,
+                { confidenceThreshold: 0.6 }
+            );
+
+            if (parsedIngredients.length === 0) {
+                await loading.dismiss();
+                await this.showToast('No ingredients could be parsed from this recipe', 'warning');
+                return;
+            }
+
+            // Get the current ingredients from the shopping list
+            const existingIngredients = activeShoppingList.items || [];
+            
+            // Use the ingredient merger service to merge ingredients properly
+            const mergedIngredients = this.ingredientMergerService.mergeIngredients(
+                existingIngredients,
+                parsedIngredients
+            );
+
+            // Update the shopping list with merged ingredients
+            activeShoppingList.items = mergedIngredients;
+            
+            // Save the updated shopping list
+            await this.shoppingListService.updateShoppingList(activeShoppingList);
+
+            // Get merge summary for user feedback
+            const mergeSummary = this.ingredientMergerService.getMergeSummary(
+                existingIngredients,
+                parsedIngredients
+            );
+
+            // Update the last visited shopping list
+            this.stateService.updateLastVisitedShoppingList(activeShoppingList.uuid);
+
+            await loading.dismiss();
+            
+            // Show appropriate message based on merge results
+            let message: string;
+            if (mergeSummary.merged > 0 && mergeSummary.added > 0) {
+                message = `Added ${mergeSummary.added} new ingredients and merged ${mergeSummary.merged} existing ones to "${activeShoppingList.name}"`;
+            } else if (mergeSummary.merged > 0) {
+                message = `Merged ${mergeSummary.merged} ingredients with existing ones in "${activeShoppingList.name}"`;
+            } else {
+                message = `Added ${mergeSummary.added} ingredients to "${activeShoppingList.name}"`;
+            }
+            
+            await this.showToast(message, 'success');
+
+            // Navigate to the shopping list
+            this.router.navigate(['/tabs/tab1', activeShoppingList.uuid], { relativeTo: this.route });
+
+        } catch (error) {
+            console.error('Error adding ingredients to shopping list:', error);
+            await loading.dismiss();
+            await this.showToast('Failed to add ingredients to shopping list', 'danger');
+        }
+    }
+
+    /**
+     * Show toast message
+     */
+    private async showToast(message: string, color: string = 'primary') {
+        const toast = await this.toastController.create({
+            message,
+            duration: 3000,
+            color,
+            position: 'bottom'
+        });
+        await toast.present();
+    }
+
+    /**
+     * Open source URL in new tab
+     */
+    openSourceUrl(url: string) {
+        window.open(url, '_blank');
     }
 }

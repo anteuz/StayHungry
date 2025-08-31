@@ -10,6 +10,7 @@ import {ShoppingList} from '../models/shopping-list';
 import {ShoppingListService} from '../services/shopping-list.service';
 import {SimpleStateService} from '../services/simple-state-service';
 import {ThemeService} from '../services/theme.service';
+import {IngredientMergerService} from '../services/ingredient-merger.service';
 
 @Component({
     selector: 'app-shopping-list',
@@ -35,7 +36,8 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         public router: Router,
         public route: ActivatedRoute,
         private stateService: SimpleStateService,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private ingredientMergerService: IngredientMergerService
     ) {
         console.log('Created constructor');
         // If route param is empty, go to last opened shopping list
@@ -374,9 +376,9 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         const {data} = await modal.onDidDismiss();
         // if data is provided, if action is cancelled data is undefined (backdrop tapped)
         if (data !== undefined) {
-            // Add new ingredients to the shopping list
+            // Add new ingredients to the shopping list with merging
             if (Array.isArray(data)) {
-                this.addItemsToShoppingList(data);
+                this.addItemsToShoppingListWithMerge(data);
             } else {
                 // Single ingredient (shouldn't happen in insert mode, but handle it)
                 if (this.shoppingList.items == null) {
@@ -420,7 +422,13 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             if (this.shoppingList.items == null) {
                 this.shoppingList.items = [];
             }
-            this.shoppingList.items.push(data);
+            
+            // Use merging to handle potential duplicates
+            this.shoppingList.items = this.ingredientMergerService.mergeIngredients(
+                this.shoppingList.items, 
+                [data]
+            );
+            
             this.initializeIngredients();
             
             try {
@@ -429,7 +437,7 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             } catch (error) {
                 console.error('Failed to add item to shopping list:', error);
                 // Revert the change if database update fails
-                this.shoppingList.items.pop();
+                this.shoppingList.items = this.shoppingList.items.filter(item => item.uuid !== data.uuid);
                 this.initializeIngredients();
             }
         }
@@ -491,6 +499,21 @@ export class ShoppingListPage implements OnInit, OnDestroy {
             this.shoppingList.items = [];
         }
         this.shoppingList.items.push(...data);
+    }
+
+    /**
+     * Add items to shopping list with intelligent merging
+     */
+    private addItemsToShoppingListWithMerge(newIngredients: Ingredient[]) {
+        if (this.shoppingList.items == null) {
+            this.shoppingList.items = [];
+        }
+        
+        // Use the ingredient merger service to merge ingredients
+        this.shoppingList.items = this.ingredientMergerService.mergeIngredients(
+            this.shoppingList.items, 
+            newIngredients
+        );
     }
 
     /**
