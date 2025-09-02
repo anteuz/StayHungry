@@ -1,7 +1,4 @@
 {
   "name": "StayHungry",
-  "integrations": {
-    "cordova": {}
-  },
   "type": "angular"
 }

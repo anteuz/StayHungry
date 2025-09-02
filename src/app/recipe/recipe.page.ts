@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
-import {Filesystem} from '@capacitor/filesystem';
 import {LoadingController, Platform, ToastController} from '@ionic/angular';
 import {v4 as uuidv4} from 'uuid';
 import {Observable} from 'rxjs';
@@ -30,7 +28,7 @@ export class RecipePage implements OnInit, OnDestroy {
     recipeImageUploadPercentage: number;
     downloadURL: Observable<string>;
     recipeForm: UntypedFormGroup;
-    platformTypeCordova: boolean;
+    platformTypeWeb: boolean;
     showInstructions = false;
 
     // Recipe category options with labels
@@ -61,7 +59,7 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        this.platformTypeCordova = this.platform.is('desktop');
+        this.platformTypeWeb = this.platform.is('desktop') || this.platform.is('mobile');
 
         console.log('onInit');
         // Get Route parameter
@@ -150,24 +148,21 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     async getRecipeImageFromCamera() {
-        try {
-            const image = await Camera.getPhoto({
-                quality: 70,
-                allowEditing: false,
-                resultType: CameraResultType.DataUrl,
-                source: CameraSource.Camera
-            });
-
-            if (image.dataUrl) {
-                // Convert data URL to Blob
-                const response = await fetch(image.dataUrl);
-                const blob = await response.blob();
-                this.recipe.imageURI = blob;
+        // Web-only implementation - trigger file input
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.capture = 'environment'; // Prefer back camera on mobile
+        
+        fileInput.onchange = (event: any) => {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                this.recipe.imageURI = files[0];
                 this.uploadFile();
             }
-        } catch (error) {
-            console.log('Error taking picture:', error);
-        }
+        };
+        
+        fileInput.click();
     }
 
     onEditRecipe() {
@@ -175,7 +170,7 @@ export class RecipePage implements OnInit, OnDestroy {
     }
 
     onCancel() {
-        // Camera cleanup not needed with Capacitor Camera
+        // Web-only cleanup
 
         if (this.downloadURL != null && this.mode === 'new') {
             // remove picture as this will not be persisted

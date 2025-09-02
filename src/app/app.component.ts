@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {Auth, onAuthStateChanged} from '@angular/fire/auth';
 import {Router} from '@angular/router';
-import {SplashScreen} from '@capacitor/splash-screen';
-import {StatusBar, Style} from '@capacitor/status-bar';
 
 import {Platform} from '@ionic/angular';
 import {RecipeServiceService} from './services/recipe-service.service';
@@ -43,8 +41,8 @@ export class AppComponent {
   initializeApp() {
     console.log('Initializing app...');
     
-    // Mobile-specific fixes for iOS black screen issue
-    this.applyMobileFixes();
+    // Web-specific initialization
+    this.applyWebFixes();
     
     this.platform.ready().then(() => {
       console.log('Platform ready');
@@ -53,47 +51,32 @@ export class AppComponent {
       // Initialize theme service - this will auto-detect system preferences
       // and apply the appropriate theme
       
-      // Only set StatusBar style on native platforms
-      if (this.platform.is('hybrid')) {
-        this.updateStatusBarForTheme();
-        SplashScreen.hide();
-      }
+      // Web-only status bar handling
+      this.updateStatusBarForTheme();
     }).catch(e => console.log('Could not initialize platform:', e));
   }
 
-  private applyMobileFixes() {
-    // Apply mobile-specific CSS fixes to prevent black screen
+  private applyWebFixes() {
+    // Apply web-specific CSS fixes
     if (typeof document !== 'undefined') {
-      // Ensure proper background color on mobile
+      // Ensure proper background color on web
       document.documentElement.style.setProperty('--ion-background-color', '#ffffff');
       document.documentElement.style.setProperty('--ion-text-color', '#000000');
       
-      // Add mobile-specific class to body
-      if (this.platform.is('mobile') || this.platform.is('ios')) {
-        document.body.classList.add('mobile-device');
-      }
-      
-      // iOS Safari specific fixes
-      if (this.platform.is('ios')) {
-        document.body.classList.add('ios-device');
-        
-        // Force repaint to prevent black screen
-        setTimeout(() => {
-          if (document.body) {
-            document.body.style.display = 'none';
-            document.body.offsetHeight; // Force reflow
-            document.body.style.display = '';
-          }
-        }, 100);
-      }
+      // Add web-specific class to body
+      document.body.classList.add('web-app');
     }
   }
 
   private updateStatusBarForTheme() {
+    // Web-only theme handling - no native status bar
     const currentTheme = this.themeService.getCurrentTheme();
-    StatusBar.setStyle({ 
-      style: currentTheme === 'dark' ? Style.Dark : Style.Light 
-    });
+    console.log('Current theme:', currentTheme);
+    
+    // Apply theme to document body
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-theme', currentTheme);
+    }
   }
 
   // Subscribe to Auth state changes, switch page automatically when loggin-in or out

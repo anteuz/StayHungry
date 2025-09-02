@@ -21,11 +21,6 @@
     "@angular/platform-browser-dynamic": "^17.3.12",
     "@angular/router": "^17.3.12",
     "@angular/service-worker": "^17.3.12",
-    "@capacitor/camera": "^7.0.2",
-    "@capacitor/core": "^7.4.3",
-    "@capacitor/filesystem": "^7.1.4",
-    "@capacitor/splash-screen": "^7.0.2",
-    "@capacitor/status-bar": "^7.0.2",
     "@ionic/angular": "^6.7.5",
     "@ionic/storage-angular": "^4.0.0",
     "@types/uuid": "^10.0.0",
@@ -35,40 +30,6 @@
     "tslib": "^2.8.1",
     "uuid": "^11.1.0",
     "zone.js": "~0.14.10"
-  },
-  "dependencies_removed_temporarily": {
-    "comment": "Removed for upgrade process - will be re-added with compatible versions",
-    "@angular/fire": "5.2.1",
-    "@angular/http": "8.0.0-beta.10",
-    "@angular/service-worker": "~8.2.2",
-    "@angular/pwa": "^0.800.3",
-    "@ionic-native/camera": "5.8.0",
-    "@ionic-native/core": "5.8.0",
-    "@ionic-native/file": "5.8.0",
-    "@ionic-native/firebase": "5.8.0",
-    "@ionic-native/image-resizer": "5.8.0",
-    "@ionic-native/ionic-webview": "5.8.0",
-    "@ionic-native/network": "5.8.0",
-    "@ionic-native/splash-screen": "5.8.0",
-    "@ionic-native/status-bar": "5.8.0",
-    "@ionic/storage": "2.2.0",
-    "firebase": "^5.8.0",
-    "firebase-tools": "7.2.2",
-    "cordova": "^9.0.0",
-    "cordova-browser": "5.0.4",
-    "cordova-ios": "4.5.5",
-    "cordova-plugin-camera": "^4.0.3",
-    "cordova-plugin-device": "^2.0.2",
-    "cordova-plugin-file": "^6.0.1",
-    "cordova-plugin-firebase": "^2.0.5",
-    "cordova-plugin-ionic-keyboard": "^2.1.3",
-    "cordova-plugin-ionic-webview": "^3.1.1",
-    "cordova-plugin-network-information": "^2.0.1",
-    "cordova-plugin-splashscreen": "^5.0.2",
-    "cordova-plugin-statusbar": "^2.4.2",
-    "cordova-plugin-whitelist": "^1.3.3",
-    "cordova-sqlite-storage": "^2.6.0",
-    "info.protonet.imageresizer": "0.1.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.17",
@@ -83,65 +44,5 @@
     "jest-preset-angular": "^14.6.1",
     "typescript": "^5.4.5"
   },
-  "devDependencies_removed_temporarily": {
-    "comment": "Removed for upgrade process - will be re-added with compatible versions",
-    "@angular-builders/jest": "^8.0.2",
-    "@angular-devkit/architect": "^0.802.2",
-    "@angular-devkit/core": "^8.2.2",
-    "@angular-devkit/schematics": "^8.2.2",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/preset-env": "^7.4.5",
-    "@ionic/lab": "1.0.16",
-    "@types/jest": "^24.0.15",
-    "@wdio/local-runner": "^5.4.14",
-    "codelyzer": "~4.5.0",
-    "cucumber": "^5.1.0",
-    "jest": "^24.8.0",
-    "jest-preset-angular": "^7.1.1",
-    "ts-node": "~7.0.0",
-    "tslint": "^5.12.1",
-    "wdio-webcomponents": "^1.1.0"
-  },
-  "jest_removed_temporarily": {
-    "comment": "Removed for upgrade process - will be re-added with compatible versions",
-    "preset": "jest-preset-angular",
-    "setupFilesAfterEnv": [
-      "<rootDir>/setupJest.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules",
-      "<rootDir>/dist/",
-      "<rootDir>/src/test.ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "<rootDir>/tsconfig.spec.json",
-        "stringifyContentPathRegex": "\\.html$",
-        "asTransformers": [
-          "<rootDir>/node_modules/jest-preset-angular/InlineHtmlStripStylesTransformer"
-        ]
-      }
-    }
-  },
-  "description": "Simple shopping list and recipe helper!",
-  "cordova": {
-    "plugins": {
-      "cordova-plugin-firebase": {},
-      "cordova-plugin-network-information": {},
-      "cordova-plugin-whitelist": {},
-      "cordova-plugin-statusbar": {},
-      "cordova-plugin-device": {},
-      "cordova-plugin-splashscreen": {},
-      "cordova-plugin-ionic-keyboard": {},
-      "cordova-sqlite-storage": {},
-      "cordova-plugin-camera": {},
-      "cordova-plugin-file": {},
-      "cordova-plugin-ionic-webview": {},
-      "info.protonet.imageresizer": {}
-    },
-    "platforms": [
-      "browser",
-      "ios"
-    ]
-  }
+  "description": "Simple shopping list and recipe helper!"
 }
